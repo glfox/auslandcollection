@@ -49,6 +49,6 @@ public class SecurityController {
 
     @RequestMapping(value = "/wx", method = RequestMethod.POST)
     public void WetChatPost(HttpServletRequest request, HttpServletResponse response){
-        //ä¸šåŠ¡é€»è¾‘å¤„ç�†
+        //todo
     }
 }
