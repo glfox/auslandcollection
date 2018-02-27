@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property name="LOG_DIR" value="logs" />
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{"yyyy-MM-dd'T'HH:mm:ssZ",UTC} [%thread] %-5p:[%C-%L][%X{TrxId}] %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+    <appender name="FILE-AUDIT"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/ausland_weixin.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{"yyyy-MM-dd'T'HH:mm:ssZ",UTC} [%thread] %-5p:[%C-%L][%X{TrxId}] %msg%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${LOG_DIR}/ausland_weixin.%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>500MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+	</appender>
+	<logger name="com.ausland.weixin">
+	    <level value="DEBUG" />
+	</logger>
+	<logger name="org.apache.http.impl.conn">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="org.apache.http.impl.client">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="org.apache.http.wire">
+		<!-- Set this to DEBUG when DEBUG Logs needed -->
+		<level value="DEBUG" />
+	</logger>
+	
+	<logger name="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">
+		<level value="WARN" />
+	</logger>
+	
+	<logger name="org.apache.commons.httpclient">
+		<level value="DEBUG" />
+	</logger>
+	
+	<logger name="org.apache.commons.configuration2">
+		<level value="ERROR" />
+	</logger>
+	
+	<logger name="java.beans.PropertyDescriptor">
+		<level value="ERROR" />
+	</logger>
+	
+	<logger name="org.apache.commons.beanutils.converters">
+		<level value="ERROR" />
+	</logger>
+	
+	<logger name="org.springframework.core">
+		<level value="ERROR" />
+	</logger>
+	
+	<logger name="org.springframework.beans">
+		<level value="ERROR" />
+	</logger>
+	
+	<logger name="org.springframework.context">
+		<level value="ERROR" />
+	</logger>
+	
+	<logger name="org.springframework.jndi">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.springframework.web">
+		<level value="ERROR" />
+	</logger>
+
+	<root level="debug">
+		<appender-ref ref="FILE-AUDIT" />
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
