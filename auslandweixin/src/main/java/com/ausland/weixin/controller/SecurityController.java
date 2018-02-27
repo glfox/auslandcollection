@@ -35,7 +35,7 @@ public class SecurityController {
                         @RequestParam(value = "nonce", required = true) String nonce,
                         @RequestParam(value = "echostr", required = true) String echostr) throws IOException {
         try {
-            // 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
+            //密码
             if (SignUtil.checkSignature(signature, timestamp, nonce)) {
                 PrintWriter out = response.getWriter();
                 out.print(echostr);
@@ -44,11 +44,11 @@ public class SecurityController {
         } catch (Exception e){
         	logger.debug("caught exception: "+e.getMessage());
         }
-        logger.debug("连接微信公众号平台测试成功！");
+        logger.debug("验证通过");
     }
 
     @RequestMapping(value = "/wx", method = RequestMethod.POST)
     public void WetChatPost(HttpServletRequest request, HttpServletResponse response){
-        //业务逻辑处理
+        //ä¸šåŠ¡é€»è¾‘å¤„ç�†
     }
 }
