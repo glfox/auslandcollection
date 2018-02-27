@@ -25,4 +25,9 @@ public class AuthController {
 		
 		return authService.getAccessToken(appId, appSecret, grantType);
 	}
+	
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public String testApi() {
+		return "Hi there!";
+	}
 }
