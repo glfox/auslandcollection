@@ -54,25 +54,25 @@ public class SecurityController {
 	
 	@RequestMapping(value = "/wxtest1", method = RequestMethod.GET)
 	   // @RequestMapping(value = "security", method = RequestMethod.GET)
-	    public void WetChatGetTest1(HttpServletRequest request,
-	                        HttpServletResponse response,
-	                        @RequestParam(value = "signature", required = true) String signature,
-	                        @RequestParam(value = "timestamp", required = true) String timestamp,
-	                        @RequestParam(value = "nonce", required = true) String nonce,
-	                        @RequestParam(value = "echostr", required = true) String echostr) throws IOException {
-	        try {
-	            //密码
-	            if (SignUtil.checkSignature(signature, timestamp, nonce)) {
-	            	logger.debug("验证通过");
-	                PrintWriter out = response.getWriter();
-	                out.print(echostr);
-	                out.close();
-	            }
-	        } catch (Exception e){
-	        	logger.debug("caught exception: "+e.getMessage());
-	        }
-	        
-	    }
+    public void WetChatGetTest1(HttpServletRequest request,
+                        HttpServletResponse response,
+                        @RequestParam(value = "signature", required = true) String signature,
+                        @RequestParam(value = "timestamp", required = true) String timestamp,
+                        @RequestParam(value = "nonce", required = true) String nonce,
+                        @RequestParam(value = "echostr", required = true) String echostr) throws IOException {
+        try {
+            //密码
+            if (SignUtil.checkSignature(signature, timestamp, nonce)) {
+            	logger.debug("验证通过");
+                PrintWriter out = response.getWriter();
+                out.print(echostr);
+                out.close();
+            }
+        } catch (Exception e){
+        	logger.debug("caught exception: "+e.getMessage());
+        }
+        
+    }
 	
 
     @RequestMapping(value = "/wx", method = RequestMethod.POST)
