@@ -30,6 +30,8 @@ public class CoreServiceImpl implements CoreService {
 		newMsg.setMsgType("text");
 		newMsg.setCreateTime(new Date().getTime());
 		newMsg.setContent("Hi There!");
+		
+		
 		return null;
 	}
 }
