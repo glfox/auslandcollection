@@ -1,4 +1,4 @@
-package com.ausland.weixin.model;
+package com.ausland.weixin.model.xml;
 
 import java.io.Serializable;
 
