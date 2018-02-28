@@ -22,8 +22,8 @@ import com.ausland.weixin.util.SignUtil;
  
 @Controller
 public class SecurityController {
-	private static final Logger logger = LoggerFactory.getLogger(SecurityController.class);
-
+	private static final Logger logger = LoggerFactory.getLogger(LogisticPackageOrderUploadController.class);
+    
 	@Autowired
     private CoreService coreService;
 	
@@ -64,6 +64,7 @@ public class SecurityController {
                         @RequestParam(value = "nonce", required = true) String nonce,
                         @RequestParam(value = "echostr", required = true) String echostr) throws IOException {
         try {
+        	logger.debug("got validation message.");
             //密码
             if (SignUtil.checkSignature(signature, timestamp, nonce)) {
             	logger.debug("验证通过");
@@ -76,7 +77,6 @@ public class SecurityController {
         }
         
     }
-	
 
     @RequestMapping(value = "/wx", method = RequestMethod.POST)
     public @ResponseBody String WetChatPost(@RequestBody WeChatMessage message,
