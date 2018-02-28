@@ -10,10 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ausland.weixin.model.WeChatMessage;
 import com.ausland.weixin.service.CoreService;
 import com.ausland.weixin.util.SignUtil;
  
@@ -75,9 +78,11 @@ public class SecurityController {
     }
 	
 
-    @RequestMapping(value = "/wx", method = RequestMethod.POST)
-    public String WetChatPost(HttpServletRequest request, HttpServletResponse response){
-        //todo
-    	return coreService.processRequest(request);
+    @RequestMapping(value = "/wx", method = RequestMethod.POST, consumes = "application/xml")
+    public @ResponseBody String WetChatPost(@RequestBody WeChatMessage message,
+    		HttpServletRequest request, HttpServletResponse response){
+    	coreService.processRequest(message);
+    	
+    	return "success";
     }
 }

@@ -1,15 +1,11 @@
 package com.ausland.weixin.service;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.stereotype.Service;
 
-@Service
-public class CoreService {
+import com.ausland.weixin.model.WeChatMessage;
 
-	public  String processRequest(HttpServletRequest request) {
-	    //暂时对消息不作处理
-	      return "";
-	    }
-	
+@Service
+public interface CoreService {
+
+	public String processRequest(WeChatMessage message);
 }
