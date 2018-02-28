@@ -78,9 +78,10 @@ public class SecurityController {
     }
 	
 
-    @RequestMapping(value = "/wx", method = RequestMethod.POST, consumes = "application/xml")
+    @RequestMapping(value = "/wx", method = RequestMethod.POST)
     public @ResponseBody String WetChatPost(@RequestBody WeChatMessage message,
     		HttpServletRequest request, HttpServletResponse response){
+    	logger.debug("got weixin message");
     	coreService.processRequest(message);
     	
     	return "success";
