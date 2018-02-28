@@ -43,6 +43,7 @@ public class SecurityController {
 			@RequestParam(value = "echostr", required = true) String echostr) throws IOException {
 		try {
 			// 密码
+			logger.debug("entered WetChatGet.");
 			if (SignUtil.checkSignature(signature, timestamp, nonce)) {
 				logger.debug("验证通过");
 				PrintWriter out = response.getWriter();
@@ -64,6 +65,7 @@ public class SecurityController {
 			@RequestParam(value = "echostr", required = true) String echostr) throws IOException {
 		try {
 			// 密码
+			logger.debug("entered WetChatGetTest1.");
 			if (SignUtil.checkSignature(signature, timestamp, nonce)) {
 				logger.debug("验证通过");
 				PrintWriter out = response.getWriter();
@@ -78,6 +80,7 @@ public class SecurityController {
 
 	@RequestMapping(value = "/wx", method = RequestMethod.POST)
 	public @ResponseBody String WetChatPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		logger.debug("got WetChatPost.");
 		ServletInputStream in = request.getInputStream();
 		WeChatMessage message = JAXB.unmarshal(in, WeChatMessage.class);
 		coreService.processRequest(message);
