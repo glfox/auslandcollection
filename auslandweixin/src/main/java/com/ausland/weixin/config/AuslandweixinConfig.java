@@ -24,7 +24,9 @@ public class AuslandweixinConfig {
 	@Bean
 	public RestTemplate restTemplate() {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getMessageConverters().add(new Jaxb2RootElementHttpMessageConverter());
+		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+		converters.add(new Jaxb2RootElementHttpMessageConverter());
+		converters.add(new MappingJackson2HttpMessageConverter());
 		return restTemplate;
 	}
 	
