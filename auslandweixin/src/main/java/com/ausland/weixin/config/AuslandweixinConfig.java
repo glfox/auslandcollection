@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +17,9 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @EnableWebMvc
@@ -42,17 +45,17 @@ public class AuslandweixinConfig {
 
 	@Bean
 	public DataSource dataSource() {
-		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setUrl(env.getProperty("spring.datasource.url"));
-		dataSource.setDriverClassName(env.getProperty("spring.datasource.driverclass"));
-		dataSource.setUsername(env.getProperty("spring.datasource.username"));
-		dataSource.setPassword(env.getProperty("spring.datasource.password"));
-		dataSource.setInitialSize(Integer.parseInt(env.getProperty("spring.datasource.dbcp2.initial-size")));
-		dataSource.setMaxTotal(Integer.parseInt(env.getProperty("spring.datasource.dbcp2.max-total")));
-		dataSource.setPoolPreparedStatements(
-				Boolean.parseBoolean(env.getProperty("spring.datasource.dbcp2.pool-prepared-statements")));
-		dataSource.setDefaultQueryTimeout(
-				Integer.parseInt(env.getProperty("spring.datasource.dbcp2.defaultquerytimeout")));
+		
+	  HikariConfig config = new HikariConfig();
+	  config.setJdbcUrl(env.getProperty("spring.datasource.url"));
+	  config.setUsername(env.getProperty("spring.datasource.username"));
+	  config.setPassword(env.getProperty("spring.datasource.password"));
+	  config.setDriverClassName(env.getProperty("spring.datasource.driverclass"));
+	  config.setPoolName(env.getProperty("spring.datasource.hikari.poolname"));
+	  config.addDataSourceProperty("maximumPoolSize", Integer.parseInt(env.getProperty("spring.datasource.hikari.maximum-pool-size")));
+	  config.addDataSourceProperty("connectionTimeout", Integer.parseInt(env.getProperty("spring.datasource.hikari.connection-timeout")));
+	  
+	  HikariDataSource dataSource = new HikariDataSource(config);
 
 		return dataSource;
 	}

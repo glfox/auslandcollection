@@ -78,8 +78,8 @@ public class ContactInfo {
 
 	@Override
 	public String toString() {
-		return "ContactInfo [id=" + id + ", address=" + address + ", name=" + name + ", phoneNumber=" + phoneNumber
-				+ ", backupPhoneNumber=" + backupPhoneNumber + "]";
+		return "ContactInfo [contactInfoId=" + contactInfoId + ", userId=" + userId + ", address=" + address + ", name="
+				+ name + ", phoneNumber=" + phoneNumber + ", backupPhoneNumber=" + backupPhoneNumber + "]";
 	}
 	
 }
