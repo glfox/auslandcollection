@@ -35,6 +35,8 @@ public class AuthServiceImpl implements AuthService {
 	public String getAccessToken() {
 		logger.info("Calling token service...");
 		AuthData data = restTemplate.getForObject(auth_url, AuthData.class, grant_type, appid, secret);
+		if(data == null) return null;
+		logger.debug("got access token:"+data.toString());
 		return data.getAccess_token();
 	}
 }

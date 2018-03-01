@@ -10,38 +10,41 @@ import javax.persistence.Table;
 @Entity
 @Table(name="LogisticPackage")
 public class LogisticPackage {
+
+    @Id
+    @Column(name="trackno", length = 128)	
+    String logisticTrackingNo;
+    
 	@Column(name="weight")	
     double packageWeight;
-    @Id
-    @Column(name="trackno")	
-    String logisticTrackingNo;
-    @Column(name="items")	
+	
+    @Column(name="items", length = 1024)	
     String ProductItems;
-    @Column(name="rname")	
+    @Column(name="rname", nullable = false, length = 64)	
     String receiverName;
-    @Column(name="rphone")	
+    @Column(name="rphone", nullable =false, length = 64)	
     String receiverPhone;
-    @Column(name="rbphone")	
+    @Column(name="rbphone", length = 64)	
     String receiverBackupPhone;
-    @Column(name="raddress")	
+    @Column(name="raddress", nullable = false, length = 1024)	
     String receiverAddress;
-    @Column(name="sname")	
+    @Column(name="sname", length = 64)	
     String senderName;
-    @Column(name="sphone")	
+    @Column(name="sphone", length = 64)	
     String senderPhone;
-    @Column(name="saddress")	
+    @Column(name="saddress", length = 1024)	
     String senderAddress;
-    @Column(name="createdby")	
+    @Column(name="createdby", length = 64)	
     String createdBy;
-    @Column(name="createdtime")	
+    @Column(name="createdtime", nullable = false)	
     Date   createdDateTime;
-    @Column(name="createdsrc")	
+    @Column(name="createdsrc", length = 64)	
     String createdSrc;
-    @Column(name="linkedno")	
+    @Column(name="linkedno", length = 64)	
     String linkedOrderNo;
-    @Column(name="logisticcompany")	
+    @Column(name="logisticcompany", length = 64)	
     String logisticCompany;
-    @Column(name="comments")
+    @Column(name="comments", length = 1024)
     String comments;
 	public double getPackageWeight() {
 		return packageWeight;

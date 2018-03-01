@@ -15,4 +15,9 @@ public class AuthData {
 	public void setExpires_in(int expires_in) {
 		this.expires_in = expires_in;
 	}
+	@Override
+	public String toString() {
+		return "AuthData [access_token=" + access_token + ", expires_in=" + expires_in + "]";
+	}
+	
 }

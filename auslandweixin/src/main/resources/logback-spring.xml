@@ -6,7 +6,7 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{"yyyy-MM-dd'T'HH:mm:ssZ",UTC} [%thread] %-5p:[%C-%L][%X{TrxId}] %msg%n
+				%d{"yyyy-MM-dd'T'HH:mm:ss",CST} [%thread] %-5p:[%C-%L][%X{TrxId}] %msg%n
 			</Pattern>
 		</layout>
 	</appender>
@@ -16,7 +16,7 @@
 		<file>${LOG_DIR}/ausland_weixin.log</file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
-				%d{"yyyy-MM-dd'T'HH:mm:ssZ",UTC} [%thread] %-5p:[%C-%L][%X{TrxId}] %msg%n
+				%d{"yyyy-MM-dd'T'HH:mm:ss",CST} [%thread] %-5p:[%C-%L][%X{TrxId}] %msg%n
 			</Pattern>
 		</encoder>
 
@@ -26,11 +26,47 @@
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>500MB</maxFileSize>
+				<maxFileSize>200MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
-
 	</appender>
+	<appender name="FILE-METRICS-HTTP"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/ausland_weixin_http_incoming.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{"yyyy-MM-dd'T'HH:mm:ss",CST} [%thread] %-5p:[%C-%L][%X{TrxId}] %msg%n
+			</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${LOG_DIR}/ausland_weixin_http_incoming.%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>200MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+	<appender name="FILE-METRICS-HTTP-CLIENT"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/ausland_weixin_http_outgoing.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{"yyyy-MM-dd'T'HH:mm:ss",CST} [%thread] %-5p:[%C-%L][%X{TrxId}] %msg%n
+			</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${LOG_DIR}/ausland_weixin_http_outgoing.%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>200MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+	
 	<logger name="com.ausland.weixin">
 	    <level value="DEBUG" />
 	</logger>
@@ -84,7 +120,15 @@
 	<logger name="org.springframework.web">
 		<level value="ERROR" />
 	</logger>
-
+    <logger name="com.ausland.weixin.config.ClientHttpLoggingInterceptor" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="FILE-METRICS-HTTP-CLIENT" />
+	</logger>
+	<logger name="com.ausland.weixin.config.HttpLoggingFilter" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="FILE-METRICS-HTTP" />
+	</logger>
+	
 	<root level="debug">
 		<appender-ref ref="FILE-AUDIT" />
 		<appender-ref ref="STDOUT" />
