@@ -52,6 +52,7 @@ public class AuslandweixinConfig {
 	  config.setPassword(env.getProperty("spring.datasource.password"));
 	  config.setDriverClassName(env.getProperty("spring.datasource.driverclass"));
 	  config.setPoolName(env.getProperty("spring.datasource.hikari.poolname"));
+
 	  config.addDataSourceProperty("maximumPoolSize", Integer.parseInt(env.getProperty("spring.datasource.hikari.maximum-pool-size")));
 	  config.addDataSourceProperty("connectionTimeout", Integer.parseInt(env.getProperty("spring.datasource.hikari.connection-timeout")));
 	  
