@@ -1,5 +1,5 @@
-<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://impl.common.zh.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://zh.au.service.LogisticsServiceI.com" name="LogisticsServiceImplService" targetNamespace="http://impl.common.zh.com/">
-  <wsdl:import location="http://www.zhonghuan.com.au:8085/API/cxf/common/logisticsservice?wsdl=LogisticsServiceI.wsdl" namespace="http://zh.au.service.LogisticsServiceI.com">
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://impl.common.zh.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://zh.au.service.LogisticsServiceI.com" name="LogisticsServiceImplService" targetNamespace="http://impl.common.zh.com/">
+  <wsdl:import location="zhonghuanlogisticsservice.wsdl" namespace="http://zh.au.service.LogisticsServiceI.com">
     </wsdl:import>
   <wsdl:binding name="LogisticsServiceImplServiceSoapBinding" type="ns1:LogisticsServiceI">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
