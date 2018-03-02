@@ -1,0 +1,73 @@
+1>connect to mysql :
+mysql -h localhost -u root -p 
+
+2>start springboot:
+java -Xmx1024m  -jar auslandweixin.jar &
+
+3>apache logs: /var/log/apache2/access.log error.log
+  spring boot logs: /home/ubuntu/springboot/logs
+
+4>
+  
+  
+  
+curl command:
+1>get access token:
+curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx813359100f7d30dc&secret=ba8523f565575ffc77fcf390897aa24d' --trace-ascii /dev/stdout
+
+{"access_token":"7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF","expires_in":7200}
+ 
+2>get Menu:
+curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
+
+{"is_menu_open":1,"selfmenu_info":{"button":[{"type":"click","name":"单号查询","key":"queryLogistic"},{"type":"click","name":"咨询客服","key":"chat"},{"name":"产品查询","sub_button":{"list":[{"type":"click","name":"价格","key":"queryProduct_price"},{"type":"click","name":"库存","key":"queryProduct_stock"},{"type":"click","name":"新品","key":"queryProduct_new"}]}}]}}
+
+curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/menu/get?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
+
+{"menu":{"button":[{"type":"click","name":"单号查询","key":"queryLogistic","sub_button":[]},{"type":"click","name":"咨询客服","key":"chat","sub_button":[]},{"name":"产品查询","sub_button":[{"type":"click","name":"价格","key":"queryProduct_price","sub_button":[]},{"type":"click","name":"库存","key":"queryProduct_stock","sub_button":[]},{"type":"click","name":"新品","key":"queryProduct_new","sub_button":[]}]}]}}u
+
+3>delete Menu:
+curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
+
+
+4>create Menu:
+curl -k -X POST --data '{"button":[{"type":"click","name":"单号查询","key":"queryLogistic"},{"type":"click","name":"咨询客服","key":"chat"},{"name":"产品查询","sub_button":[{"type":"click","name":"价格","key":"queryProduct_price"},{"type":"click","name":"库存","key": "queryProduct_stock"},{"type":"click","name":"新品","key":"queryProduct_new"}]}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
+  
+  
+  
+  
+  
+ 
+ {
+     "button":[
+     {    
+          "type":"click",
+          "name":"单号查询",
+          "key":"queryLogistic"
+      },
+      {    
+          "type":"click",
+          "name":"咨询客服",
+          "key":"chat"
+      },
+      {
+           "name":"产品查询",
+           "sub_button":[
+           {    
+               "type":"click",
+               "name":"价格",
+               "key":"queryProduct_price"
+            },
+            {    
+               "type":"click",
+               "name":"库存",
+               "key": "queryProduct_stock"
+            },
+            {
+               "type":"click",
+               "name":"新品",
+               "key":"queryProduct_new"
+            }]
+       }]
+ }
+ 

@@ -1,0 +1,26 @@
+1>install jdk 8
+  sudo add-apt-repository ppa:webupd8team/java
+  sudo apt-get update
+  sudo apt-get install oracle-java8-installer
+  javac version
+  sudo update-alternatives --config java (if there is multilple jdk installed, in our case ignore)
+  
+2>install mysql   (root/Lucent123)
+  sudo apt-get update
+  sudo apt-get install mysql-server
+  mysql_secure_installation
+  
+3>install apache and configure request forward
+  sudo apt-get install apache2
+  sudo a2enmod proxy
+  sudo a2enmod proxy_http
+  sudo a2enmod proxy_balancer   (only will be used by load balancer)
+  sudo a2enmod lbmethod_byrequests (only will be used by load balancer)
+  modify /etc/apache2/sites-available/000-default.conf 
+         add following lines:
+                ProxyPreserveHost On
+                ProxyPass / http://127.0.0.1:8080/
+                ProxyPassReverse / http://127.0.0.1:8080/ 
+  sudo systemctl restart apache2
+  
+
