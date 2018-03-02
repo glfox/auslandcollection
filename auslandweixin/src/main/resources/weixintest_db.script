@@ -1,0 +1,29 @@
+/*************Contact table ********************************/
+CREATE TABLE contact (
+  id` int(11) NOT NULL,
+  `address` longtext,
+  `backupphoneno` varchar(64) DEFAULT NULL,
+  `name` varchar(64) DEFAULT NULL,
+  `phoneno` varchar(64) DEFAULT NULL,
+  `userid` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+)
+
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL,
+  `createdtime` date DEFAULT NULL,
+  `createdsrc` varchar(255) DEFAULT NULL,
+  `email` varchar(64) DEFAULT NULL,
+  `updatedtime` date DEFAULT NULL,
+  `password` varchar(64) NOT NULL,
+  `phoneno` varchar(64) NOT NULL,
+  `role` varchar(32) DEFAULT NULL,
+  `status` varchar(32) DEFAULT NULL,
+  `username` varchar(128) NOT NULL,
+  `wechatid` longtext,
+  `wechatopenid` longtext,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY   (`password`),
+  UNIQUE KEY   (`phoneno`)
+) 

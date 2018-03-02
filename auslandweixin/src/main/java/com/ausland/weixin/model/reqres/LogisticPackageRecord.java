@@ -1,98 +1,66 @@
-package com.ausland.weixin.model.db;
+package com.ausland.weixin.model.reqres;
 
-import java.sql.Date;
+ 
+import java.util.Date;
+import java.util.List;
+ 
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class LogisticPackageRecord {
 
-@Entity
-@Table(name="LogisticPackage")
-public class LogisticPackage {
-
-    @Id
-    @Column(name="trackno", length = 128)	
+    	
     String logisticTrackingNo;
-    
-	@Column(name="weight", length = 64)	
+ 
     String packageWeight;
-	
-    @Column(name="items", length = 1024)	
-    String ProductItems;
-    
-    @Column(name="rname", nullable = false, length = 64)	
+    	
+    List<String> ProductItems;
+    	
     String receiverName;
-    
-    @Column(name="rphone", nullable =false, length = 64)	
+   	
     String receiverPhone;
-    
-    @Column(name="rbphone", length = 64)	
+     
     String receiverBackupPhone;
-    
-    @Column(name="raddress", nullable = false, length = 1024)	
+     
     String receiverAddress;
-    
-    @Column(name="sname", length = 64)	
+     
     String senderName;
     
-    @Column(name="sphone", length = 64)	
     String senderPhone;
-    
-    @Column(name="saddress", length = 1024)	
+     
     String senderAddress;
-    
-    @Column(name="createdby", length = 64)	
+     	
     String createdBy;
-    
-    @Column(name="createdtime", nullable = false)	
+     	
     Date   createdDateTime;
     
-    @Column(name="createdsrc", length = 64)	
+    String lastUpdatedBy;
+ 	
+    Date   lastUpdatedDateTime;
+     
     String createdSrc;
-    
-    @Column(name="linkedno", length = 64)	
+     
     String linkedOrderNo;
-    
-    @Column(name="logisticcompany", length = 64)	
+   	
     String logisticCompany;
-    
-    @Column(name="comments", length = 1024)
+     
     String comments;
     
-    @Column(length = 64)
     String status;
     
-    @Column(name="updatedby", length = 64)	
-    String updatedBy;
+    List<String> errors;
     
-    @Column(name="updatedtime")	
-    Date   lastupdatedDateTime;
-    
-	public String getStatus() {
-		return status;
+	public List<String> getErrors() {
+		return errors;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setErrors(List<String> errors) {
+		this.errors = errors;
 	}
-	 
 	public String getPackageWeight() {
 		return packageWeight;
 	}
 	public void setPackageWeight(String packageWeight) {
 		this.packageWeight = packageWeight;
-	}
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-	public Date getLastupdatedDateTime() {
-		return lastupdatedDateTime;
-	}
-	public void setLastupdatedDateTime(Date lastupdatedDateTime) {
-		this.lastupdatedDateTime = lastupdatedDateTime;
 	}
 	public String getLogisticTrackingNo() {
 		return logisticTrackingNo;
@@ -100,11 +68,30 @@ public class LogisticPackage {
 	public void setLogisticTrackingNo(String logisticTrackingNo) {
 		this.logisticTrackingNo = logisticTrackingNo;
 	}
-	public String getProductItems() {
+ 
+	public List<String> getProductItems() {
 		return ProductItems;
 	}
-	public void setProductItems(String productItems) {
+	public void setProductItems(List<String> productItems) {
 		ProductItems = productItems;
+	}
+	public String getLastUpdatedBy() {
+		return lastUpdatedBy;
+	}
+	public void setLastUpdatedBy(String lastUpdatedBy) {
+		this.lastUpdatedBy = lastUpdatedBy;
+	}
+	public Date getLastUpdatedDateTime() {
+		return lastUpdatedDateTime;
+	}
+	public void setLastUpdatedDateTime(Date lastUpdatedDateTime) {
+		this.lastUpdatedDateTime = lastUpdatedDateTime;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	public String getReceiverName() {
 		return receiverName;
@@ -186,23 +173,14 @@ public class LogisticPackage {
 	}
 	@Override
 	public String toString() {
-		return "LogisticPackage [logisticTrackingNo=" + logisticTrackingNo + ", packageWeight=" + packageWeight
+		return "LogisticPackageRecord [logisticTrackingNo=" + logisticTrackingNo + ", packageWeight=" + packageWeight
 				+ ", ProductItems=" + ProductItems + ", receiverName=" + receiverName + ", receiverPhone="
 				+ receiverPhone + ", receiverBackupPhone=" + receiverBackupPhone + ", receiverAddress="
 				+ receiverAddress + ", senderName=" + senderName + ", senderPhone=" + senderPhone + ", senderAddress="
-				+ senderAddress + ", createdBy=" + createdBy + ", createdDateTime=" + createdDateTime + ", createdSrc="
+				+ senderAddress + ", createdBy=" + createdBy + ", createdDateTime=" + createdDateTime
+				+ ", lastUpdatedBy=" + lastUpdatedBy + ", lastUpdatedDateTime=" + lastUpdatedDateTime + ", createdSrc="
 				+ createdSrc + ", linkedOrderNo=" + linkedOrderNo + ", logisticCompany=" + logisticCompany
-				+ ", comments=" + comments + ", status=" + status + ", getStatus()=" + getStatus()
-				+ ", getPackageWeight()=" + getPackageWeight() + ", getLogisticTrackingNo()=" + getLogisticTrackingNo()
-				+ ", getProductItems()=" + getProductItems() + ", getReceiverName()=" + getReceiverName()
-				+ ", getReceiverPhone()=" + getReceiverPhone() + ", getReceiverBackupPhone()="
-				+ getReceiverBackupPhone() + ", getReceiverAddress()=" + getReceiverAddress() + ", getSenderName()="
-				+ getSenderName() + ", getSenderPhone()=" + getSenderPhone() + ", getSenderAddress()="
-				+ getSenderAddress() + ", getCreatedBy()=" + getCreatedBy() + ", getCreatedDateTime()="
-				+ getCreatedDateTime() + ", getCreatedSrc()=" + getCreatedSrc() + ", getLinkedOrderNo()="
-				+ getLinkedOrderNo() + ", getLogisticCompany()=" + getLogisticCompany() + ", getComments()="
-				+ getComments() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
+				+ ", comments=" + comments + ", status=" + status + "]";
 	}
- 
+	 
 }

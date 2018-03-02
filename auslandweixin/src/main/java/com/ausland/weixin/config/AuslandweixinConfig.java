@@ -1,5 +1,6 @@
 package com.ausland.weixin.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -27,6 +28,29 @@ public class AuslandweixinConfig {
 	
 	@Autowired
 	private Environment env;
+	
+	public static List<String> logisticPackageHeaders = null;
+	
+	static
+	{
+		logisticPackageHeaders = new ArrayList<String>();
+		try
+		{
+			logisticPackageHeaders.add("包裹重量");
+			logisticPackageHeaders.add("货运单号");
+			logisticPackageHeaders.add("品名");
+			logisticPackageHeaders.add("收件人");
+			logisticPackageHeaders.add("电话");
+			logisticPackageHeaders.add("地址");
+			logisticPackageHeaders.add("寄件人");
+			logisticPackageHeaders.add("寄件人电话");
+			logisticPackageHeaders.add("寄件人地址");
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	@Bean
 	public RestTemplate restTemplate() {

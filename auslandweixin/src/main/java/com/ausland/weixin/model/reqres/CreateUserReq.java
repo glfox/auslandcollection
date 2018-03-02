@@ -1,7 +1,5 @@
 package com.ausland.weixin.model.reqres;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -19,9 +17,9 @@ public class CreateUserReq {
 	String role;	 
 	String email; 
 	String status;
-	@Column(name="wechatid")
+	@JsonProperty("wechatid")
 	String wechatId;
-	@Column(name="wechatopenid")
+	@JsonProperty("wechatopenid")
 	String wechatOpenId;
 	public String getUserName() {
 		return userName;
