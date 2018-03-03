@@ -1,0 +1,57 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns2:getLogisticsInformationResponse xmlns:ns2="http://zh.au.service.LogisticsServiceI.com">
+         <return><![CDATA[<?xml  version="1.0" encoding="GBK" standalone="no" ?><back><kdgsname>圆通</kdgsname><kdgsdh>812524371062</kdgsdh><fydh>970000169049</fydh><countrytype>au</countrytype><Logisticsback><ztai>商家电子下单</ztai>
+<time>2017-12-12 23:56:52</time>
+</Logisticsback><Logisticsback><ztai>货物已收寄</ztai>
+<time>2017-12-13 10:10:02</time>
+</Logisticsback><Logisticsback><ztai>货物到达悉尼处理中心</ztai>
+<time>2017-12-13 14:50:06</time>
+</Logisticsback><Logisticsback><ztai>货物正在处理中</ztai>
+<time>2017-12-15 06:20:43</time>
+</Logisticsback><Logisticsback><ztai>发往中国</ztai>
+<time>2017-12-15 12:35:19</time>
+</Logisticsback><Logisticsback><ztai>航班预计2017年12月19日到达中国清关口岸，悉尼客服电话：+61 406 773 675，中国客服电话：400-673-9555，微信：cq-zhonghuan</ztai>
+<time>2017-12-15 18:31:02</time>
+</Logisticsback><Logisticsback><ztai>到达中国，等待清关</ztai>
+<time>2017-12-18 10:10:52</time>
+</Logisticsback><Logisticsback><ztai>等待清关</ztai>
+<time>2017-12-19 12:00:00</time>
+</Logisticsback><Logisticsback><ztai>清关中</ztai>
+<time>2017-12-19 14:26:00</time>
+</Logisticsback><Logisticsback><ztai>清关完毕</ztai>
+<time>2017-12-19 16:26:00</time>
+</Logisticsback><Logisticsback><ztai>四川省成都市双流县航空港公司 已揽收</ztai>
+<time>2017-12-19 20:27:00</time>
+</Logisticsback><Logisticsback><ztai>四川省成都市双流县航空港公司 已打包</ztai>
+<time>2017-12-19 21:29:00</time>
+</Logisticsback><Logisticsback><ztai>四川省成都市双流县航空港公司 已发出,下一站 成都转运中心</ztai>
+<time>2017-12-19 21:45:00</time>
+</Logisticsback><Logisticsback><ztai>成都转运中心 已收入</ztai>
+<time>2017-12-19 23:02:00</time>
+</Logisticsback><Logisticsback><ztai>成都转运中心 已发出,下一站 广州转运中心</ztai>
+<time>2017-12-19 23:06:00</time>
+</Logisticsback><Logisticsback><ztai>成都转运中心 已发出,下一站</ztai>
+<time>2017-12-19 23:26:00</time>
+</Logisticsback><Logisticsback><ztai>广州转运中心 已收入</ztai>
+<time>2017-12-21 02:25:00</time>
+</Logisticsback><Logisticsback><ztai>广州转运中心 已收入</ztai>
+<time>2017-12-21 04:50:00</time>
+</Logisticsback><Logisticsback><ztai>广州转运中心 已发出,下一站 江门转运中心</ztai>
+<time>2017-12-21 04:54:00</time>
+</Logisticsback><Logisticsback><ztai>广州转运中心 已发出,下一站</ztai>
+<time>2017-12-21 05:33:00</time>
+</Logisticsback><Logisticsback><ztai>江门转运中心 已收入</ztai>
+<time>2017-12-21 07:44:00</time>
+</Logisticsback><Logisticsback><ztai>江门转运中心 已收入</ztai>
+<time>2017-12-21 08:21:00</time>
+</Logisticsback><Logisticsback><ztai>江门转运中心 已发出,下一站 广东省珠海市</ztai>
+<time>2017-12-21 08:48:00</time>
+</Logisticsback><Logisticsback><ztai>广东省珠海市保税区分部公司 许** 派件中 派件员电话13680370028</ztai>
+<time>2017-12-22 10:52:00</time>
+</Logisticsback><Logisticsback><ztai>客户 签收人: 他人代收 已签收</ztai>
+<time>2017-12-22 19:40:00</time>
+</Logisticsback></back>]]></return>
+      </ns2:getLogisticsInformationResponse>
+   </soap:Body>
+</soap:Envelope>

@@ -1,0 +1,13 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns2:getTeltoFydhResponse xmlns:ns2="http://zh.au.service.LogisticsServiceI.com">
+         <return><![CDATA[<?xml  version="1.0" encoding="utf-8" standalone="no" ?><tel><message>成功</message>
+<issuccess>true</issuccess>
+<fydhlist>
+<chrfydh>970000197505</chrfydh>
+<chrdysj>2018-03-03 06:33:37</chrdysj>
+</fydhlist>
+</tel>]]></return>
+      </ns2:getTeltoFydhResponse>
+   </soap:Body>
+</soap:Envelope>
