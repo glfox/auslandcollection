@@ -106,7 +106,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 	}
 	
 	@Override
-	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo, Boolean onlyTrackingNo) {
+	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo, Boolean fetchDetails) {
 		QueryZhongHuanLastThreeMonthByPhoneNoRes res = new QueryZhongHuanLastThreeMonthByPhoneNoRes();
 		
 		if(StringUtils.isEmpty(phoneNo) || validationUtil.isValidChinaMobileNo(phoneNo) == false)
@@ -139,7 +139,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 				res.setErrorDetails("got error message from zhonghuan getTelToFydh services:"+tel.getMessage());
 				return res;
 			}
-			if(onlyTrackingNo == true) return res;
+			if(fetchDetails == false) return res;
 			
 			if("true".equalsIgnoreCase(tel.getIssuccess()) && tel.getFydhlist() != null && tel.getFydhlist().size() > 0)
 			{
