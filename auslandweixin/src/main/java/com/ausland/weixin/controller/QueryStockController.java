@@ -1,6 +1,5 @@
 package com.ausland.weixin.controller;
 
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,32 +11,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
+import com.ausland.weixin.service.QueryStockService;
 import com.ausland.weixin.service.QueryZhongHuanService;
 
 @RestController
-@RequestMapping(value = "/query/zhonghuan")
-public class QueryZhongHuanController {
+@RequestMapping(value = "/query/stock")
+public class QueryStockController {
 
-	private static final Logger logger = LoggerFactory.getLogger(QueryZhongHuanController.class);
+	
+private static final Logger logger = LoggerFactory.getLogger(QueryZhongHuanController.class);
     
 	@Autowired
-	private QueryZhongHuanService queryZhongHuanService; 
+	private QueryStockService queryStockService; 
 
-	@RequestMapping(value = "/lastthreemonth", method = RequestMethod.GET)
+	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(@RequestParam(name="phone", required = true) String phoneNo, 
 			@RequestParam(name="details", required = true) Boolean fetchDetails, HttpServletRequest request, HttpServletResponse response)
 	{
 		logger.debug("entered QueryZhongHuanController.queryZhongHuanLastThreeMonthbyPhoneNo with phoneno:"+phoneNo+"; fetch details:"+fetchDetails);
-		return queryZhongHuanService.queryZhongHuanLastThreeMonthbyPhoneNo(phoneNo, fetchDetails);
+		return QueryStockService.queryZhongHuanLastThreeMonthbyPhoneNo(phoneNo, fetchDetails);
 	}
-
-	@RequestMapping(value = "/detailsbytrackingno", method = RequestMethod.GET)
-	public QueryZhongHuanDetailsByTrackingNoRes queryZhongHuanDetailsByTrackingNo(@RequestParam(name="trackingno", required = true) String trackingNo)
-	{
-		logger.debug("enetered QueryZhongHuanController.queryZhongHuanDetailsByTrackingNo with trackingNo:"+trackingNo);
-		return queryZhongHuanService.queryZhongHuanDetailsByTrackingNo(trackingNo);
-	}
-	
 }
