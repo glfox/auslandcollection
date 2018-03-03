@@ -7,7 +7,7 @@
         <xs:element name="fydhlist">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:long" name="chrfydh"/>
+              <xs:element type="xs:string" name="chrfydh"/>
               <xs:element type="xs:string" name="chrdysj"/>
             </xs:sequence>
           </xs:complexType>

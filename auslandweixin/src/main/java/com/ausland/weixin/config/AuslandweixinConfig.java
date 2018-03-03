@@ -91,7 +91,7 @@ public class AuslandweixinConfig {
 		
 		return restTemplate;
 	}
-	
+	/*
 	@Bean
 	public Jaxb2Marshaller jaxb2MarshallerSOAP() {
 		Jaxb2Marshaller marshallerSOAP = new Jaxb2Marshaller();
@@ -106,7 +106,7 @@ public class AuslandweixinConfig {
 		template.setMarshaller(jaxb2MarshallerSOAP());
 		template.setUnmarshaller(jaxb2MarshallerSOAP());
 		return template;
-	}
+	}*/
 	
 	@Bean
 	public CommonsMultipartResolver getResolver() throws IOException {

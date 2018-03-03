@@ -8,6 +8,8 @@
 
 package com.ausland.weixin.model.zhonghuan.xml;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -56,12 +58,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "tel")
 public class Tel {
 
-    @XmlElement(required = true)
+ 
     protected String message;
     @XmlElement(required = true)
     protected String issuccess;
-    @XmlElement(required = true)
-    protected Tel.Fydhlist fydhlist;
+ 
+    protected List<Fydh> fydhlist;
 
     /**
      * Gets the value of the message property.
@@ -119,7 +121,7 @@ public class Tel {
      *     {@link Tel.Fydhlist }
      *     
      */
-    public Tel.Fydhlist getFydhlist() {
+    public List<Fydh> getFydhlist() {
         return fydhlist;
     }
 
@@ -131,7 +133,7 @@ public class Tel {
      *     {@link Tel.Fydhlist }
      *     
      */
-    public void setFydhlist(Tel.Fydhlist value) {
+    public void setFydhlist(List<Fydh> value) {
         this.fydhlist = value;
     }
 
@@ -161,17 +163,17 @@ public class Tel {
         "chrfydh",
         "chrdysj"
     })
-    public static class Fydhlist {
+    public static class Fydh{
 
-        protected long chrfydh;
-        @XmlElement(required = true)
+        protected String chrfydh;
+     
         protected String chrdysj;
 
         /**
          * Gets the value of the chrfydh property.
          * 
          */
-        public long getChrfydh() {
+        public String getChrfydh() {
             return chrfydh;
         }
 
@@ -179,7 +181,7 @@ public class Tel {
          * Sets the value of the chrfydh property.
          * 
          */
-        public void setChrfydh(long value) {
+        public void setChrfydh(String value) {
             this.chrfydh = value;
         }
 

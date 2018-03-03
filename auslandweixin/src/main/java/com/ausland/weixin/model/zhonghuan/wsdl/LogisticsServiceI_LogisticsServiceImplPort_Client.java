@@ -28,10 +28,7 @@ public final class LogisticsServiceI_LogisticsServiceImplPort_Client {
 
     private static final QName SERVICE_NAME = new QName("http://impl.common.zh.com/", "LogisticsServiceImplService");
 
-    private LogisticsServiceI_LogisticsServiceImplPort_Client() {
-    }
-
-    public static void main(String args[]) throws java.lang.Exception {
+   	public static void main(String args[]) throws java.lang.Exception {
         URL wsdlURL = LogisticsServiceImplService.WSDL_LOCATION;
         if (args.length > 0 && args[0] != null && !"".equals(args[0])) { 
             File wsdlFile = new File(args[0]);

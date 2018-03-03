@@ -6,16 +6,57 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ValidationUtil {
 
+	
+	@Value("${zhonghuan.trackno.length}")
+	private Integer zhonghuantracknolength;
+	
+	@Value("${zhonghuan.trackno.startswith}")
+	private String zhonghuantracknoStartwith;
+	
+	
 	public static void main(String[] args) {
+		ValidationUtil u = new ValidationUtil();
 		// TODO Auto-generated method stub
-       System.out.println(isValidChinaMobileNo("15618983927"));
-       System.out.println(trimPhoneNo("156 18983927 "));
+       System.out.println(u.isValidChinaMobileNo("15618983927"));
+       System.out.println(u.trimPhoneNo("156 18983927 "));
+       System.out.print(u.removeCDATA("<![CDATA[<?xml  version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?><tel><message>成功</message>\r\n" + 
+       		"<issuccess>true</issuccess>\r\n" + 
+       		"<fydhlist>\r\n" + 
+       		"<chrfydh>970000197505</chrfydh>\r\n" + 
+       		"<chrdysj>2018-03-03 06:33:37</chrdysj>\r\n" + 
+       		"</fydhlist>\r\n" + 
+       		"</tel>]]>"));
 	}
 	
-	public static boolean isValidChinaMobileNo(String phoneNo)
+	
+	public boolean isValidZhongHuanTrackNo(String trackingNo)
+	{
+		if(StringUtils.isEmpty(trackingNo))
+		{
+			return false;
+		}
+		
+		String no = trackingNo.trim();
+		if(!no.startsWith(zhonghuantracknoStartwith) || no.length() != zhonghuantracknolength)
+		{
+			return false;
+		}
+		
+		char[] chars = no.toCharArray();
+		for(char ch : chars)
+		{
+			if(!Character.isDigit(ch))
+				return false;
+		}
+		return true;
+	}
+	public boolean isValidChinaMobileNo(String phoneNo)
 	{
 		if(phoneNo == null || phoneNo.length() != 11) return false;
 		String regExp = "^((13[0-9])|(15[^4])|(18[0,2,3,5-9])|(17[0-8])|(147))\\d{8}$";  
@@ -24,7 +65,19 @@ public class ValidationUtil {
         return m.matches();  
 	}
 	
-	public static String trimPhoneNo(String phoneNo)
+	public String removeCDATA(String text) {
+		if(StringUtils.isEmpty(text))
+			return "";
+	    String resultString = "";
+	    Pattern regex = Pattern.compile("(?<!(<!\\[CDATA\\[))|((.*)\\w+\\W)");
+	    Matcher regexMatcher = regex.matcher(text);
+	    while (regexMatcher.find()) {
+	        resultString += regexMatcher.group();
+	    }
+	    return resultString;
+	}
+	
+	public String trimPhoneNo(String phoneNo)
 	{
 		if(StringUtils.isEmpty(phoneNo)) return "";
 		List<Character> chars = new ArrayList<Character>();

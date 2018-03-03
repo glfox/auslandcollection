@@ -16,11 +16,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ausland.weixin.config.AuslandweixinConfig;
-import com.ausland.weixin.controller.LogisticPackageOrderUploadController;
 import com.ausland.weixin.model.reqres.LogisticPackageRecord;
 import com.ausland.weixin.model.reqres.UploadLogisticPackageRes;
 import com.ausland.weixin.service.LogisticPackageOrderUploadService;
@@ -30,8 +30,11 @@ import com.ausland.weixin.util.ValidationUtil;
 @Service
 public class LogisticPackageOrderUploadServiceImpl implements LogisticPackageOrderUploadService{
 
-	private static final Logger logger = LoggerFactory.getLogger(LogisticPackageOrderUploadController.class);
+	private static final Logger logger = LoggerFactory.getLogger(LogisticPackageOrderUploadServiceImpl.class);
     
+	@Autowired
+	private ValidationUtil validationUtil;
+	
 	@Override
 	public UploadLogisticPackageRes uploadLogisticPackageOrder(MultipartFile csvFile) 
 	{
@@ -209,8 +212,8 @@ public class LogisticPackageOrderUploadServiceImpl implements LogisticPackageOrd
 	        	}
 	        	else
 	        	{
-	        		cell = ValidationUtil.trimPhoneNo(cell);
-	        		if(ValidationUtil.isValidChinaMobileNo(cell))
+	        		cell = validationUtil.trimPhoneNo(cell);
+	        		if(validationUtil.isValidChinaMobileNo(cell))
 	        		{
 	        			errors.add("收件人电话不对");
 	        			record.setStatus("error"); 

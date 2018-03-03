@@ -1,9 +1,10 @@
 package com.ausland.weixin.service;
 
-import java.util.List;
+import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
+import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
 
 public interface QueryZhongHuanService {
 
-	List<String> queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo);
-	String queryZhongHuanDetailsByTrackingNo(String trackingNo);
+	QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo, Boolean onlyTrackingNo);
+	QueryZhongHuanDetailsByTrackingNoRes queryZhongHuanDetailsByTrackingNo(String trackingNo);
 }

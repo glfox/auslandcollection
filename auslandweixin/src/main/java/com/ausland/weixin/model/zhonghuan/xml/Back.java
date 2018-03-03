@@ -62,14 +62,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "back")
 public class Back {
 
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     protected String kdgsname;
     protected long kdgsdh;
     protected long fydh;
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     protected String countrytype;
     @XmlElement(name = "Logisticsback")
-    protected List<Back.Logisticsback> logisticsback;
+    protected List<Logisticsback> logisticsback;
 
     /**
      * Gets the value of the kdgsname property.
@@ -173,9 +173,9 @@ public class Back {
      * 
      * 
      */
-    public List<Back.Logisticsback> getLogisticsback() {
+    public List<Logisticsback> getLogisticsback() {
         if (logisticsback == null) {
-            logisticsback = new ArrayList<Back.Logisticsback>();
+            logisticsback = new ArrayList<Logisticsback>();
         }
         return this.logisticsback;
     }
@@ -208,9 +208,9 @@ public class Back {
     })
     public static class Logisticsback {
 
-        @XmlElement(required = true)
+        @XmlElement(required = false)
         protected String ztai;
-        @XmlElement(required = true)
+        @XmlElement(required = false)
         protected String time;
 
         /**
