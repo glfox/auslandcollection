@@ -26,7 +26,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryZhongHuanContr
 	private QueryStockService queryStockService; 
 
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
-	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(@RequestParam(name="phone", required = true) String phoneNo, 
+	public QueryStockRes queryZhongHuanLastThreeMonthbyPhoneNo(@RequestParam(name="phone", required = true) String phoneNo, 
 			@RequestParam(name="details", required = true) Boolean fetchDetails, HttpServletRequest request, HttpServletResponse response)
 	{
 		logger.debug("entered QueryZhongHuanController.queryZhongHuanLastThreeMonthbyPhoneNo with phoneno:"+phoneNo+"; fetch details:"+fetchDetails);
