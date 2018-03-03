@@ -11,7 +11,17 @@ java -Xmx1024m  -jar auslandweixin.jar &
   
   
   
+  
 curl command:
+
+chongqingzhonghuan services:
+1>get wsdl
+curl -k GET http://www.zhonghuan.com.au:8085/API/cxf/common/logisticsservice?wsdl --trace-ascii /dev/stdout
+2>
+
+
+teng xun services:
+
 1>get access token:
 curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx813359100f7d30dc&secret=ba8523f565575ffc77fcf390897aa24d' --trace-ascii /dev/stdout
 
