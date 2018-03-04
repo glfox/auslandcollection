@@ -24,6 +24,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -170,5 +171,14 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter{
 	@Bean
 	public PlatformTransactionManager txManager() {
 		return new DataSourceTransactionManager(dataSource());
+	}
+	
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+				.allowedHeaders("*")
+				.allowedMethods("*")
+				.allowCredentials(true)
+				.allowedOrigins("*");
 	}
 }
