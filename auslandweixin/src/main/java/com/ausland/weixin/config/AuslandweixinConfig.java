@@ -41,30 +41,26 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableWebMvc
 @EnableSwagger2
-@ComponentScan({"com.ausland.weixin"})
-public class AuslandweixinConfig extends WebMvcConfigurerAdapter{
-	
+@ComponentScan({ "com.ausland.weixin" })
+public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
+
 	@Autowired
 	private Environment env;
-	
+
 	@Value("${multipart.file.total.size}")
 	private int multipartTotalSize;
-	
+
 	@Value("${multipart.file.per.size}")
 	private int multipartPerSize;
-	
-	
+
 	@Value("${resttemplate.http.timeout}")
 	private int resttemplate_http_timeout;
-	
-	 
+
 	public static List<String> logisticPackageHeaders = null;
-	
-	static
-	{
+
+	static {
 		logisticPackageHeaders = new ArrayList<String>();
-		try
-		{
+		try {
 			logisticPackageHeaders.add("包裹重量");
 			logisticPackageHeaders.add("货运单号");
 			logisticPackageHeaders.add("品名");
@@ -74,69 +70,59 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter{
 			logisticPackageHeaders.add("寄件人");
 			logisticPackageHeaders.add("寄件人电话");
 			logisticPackageHeaders.add("寄件人地址");
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	  @Bean
-	    public Docket api() { 
-	        return new Docket(DocumentationType.SWAGGER_2)  
-	          .select()                                  
-	          .apis(RequestHandlerSelectors.any())              
-	          .paths(PathSelectors.any())                          
-	          .build();                                           
-	    }
-	  
-	  @Override
-	  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	@Bean
+	public Docket api() {
+		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
+				.paths(PathSelectors.any()).build();
+	}
 
-	         registry.addResourceHandler("swagger-ui.html")
-	                  .addResourceLocations("classpath:/META-INF/resources/");
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-	          registry.addResourceHandler("/webjars/**")
-	                  .addResourceLocations("classpath:/META-INF/resources/webjars/");
+		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
 
-	  }
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+
+	}
+
 	@Bean
 	public RestTemplate restTemplate() {
-		
+
 		RestTemplate restTemplate = new RestTemplate();
 		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
 		converters.add(new Jaxb2RootElementHttpMessageConverter());
 		converters.add(new MappingJackson2HttpMessageConverter());
-		CloseableHttpClient httpClient = HttpClients.custom().build(); 
+		CloseableHttpClient httpClient = HttpClients.custom().build();
 		HttpComponentsClientHttpRequestFactory requestFactoryInternal = new HttpComponentsClientHttpRequestFactory();
 		requestFactoryInternal.setHttpClient(httpClient);
 		requestFactoryInternal.setConnectTimeout(resttemplate_http_timeout);
 		requestFactoryInternal.setReadTimeout(resttemplate_http_timeout);
-		
-		BufferingClientHttpRequestFactory requestFactory = new BufferingClientHttpRequestFactory(requestFactoryInternal);
+
+		BufferingClientHttpRequestFactory requestFactory = new BufferingClientHttpRequestFactory(
+				requestFactoryInternal);
 		restTemplate.setRequestFactory(requestFactory);
 		ClientHttpLoggingInterceptor clientHttpLoggingInterceptor = new ClientHttpLoggingInterceptor(requestFactory);
 		restTemplate.getInterceptors().add(clientHttpLoggingInterceptor);
-		
+
 		return restTemplate;
 	}
 	/*
-	@Bean
-	public Jaxb2Marshaller jaxb2MarshallerSOAP() {
-		Jaxb2Marshaller marshallerSOAP = new Jaxb2Marshaller();
-		marshallerSOAP.setContextPaths("com.ausland.weixin.model.wsdl");
-		marshallerSOAP.setMtomEnabled(true);
-		return marshallerSOAP;
-	}
-	
-	@Bean
-	WebServiceTemplate webServiceTemplate() {
-		WebServiceTemplate template = new WebServiceTemplate();
-		template.setMarshaller(jaxb2MarshallerSOAP());
-		template.setUnmarshaller(jaxb2MarshallerSOAP());
-		return template;
-	}*/
-	
+	 * @Bean public Jaxb2Marshaller jaxb2MarshallerSOAP() { Jaxb2Marshaller
+	 * marshallerSOAP = new Jaxb2Marshaller();
+	 * marshallerSOAP.setContextPaths("com.ausland.weixin.model.wsdl");
+	 * marshallerSOAP.setMtomEnabled(true); return marshallerSOAP; }
+	 * 
+	 * @Bean WebServiceTemplate webServiceTemplate() { WebServiceTemplate
+	 * template = new WebServiceTemplate();
+	 * template.setMarshaller(jaxb2MarshallerSOAP());
+	 * template.setUnmarshaller(jaxb2MarshallerSOAP()); return template; }
+	 */
+
 	@Bean
 	public CommonsMultipartResolver getResolver() throws IOException {
 		CommonsMultipartResolver resolver = new PostPutMultipartResolver();
@@ -144,7 +130,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter{
 		resolver.setMaxUploadSizePerFile(multipartPerSize);
 		return resolver;
 	}
-	
+
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
@@ -152,18 +138,18 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter{
 
 	@Bean
 	public DataSource dataSource() {
-		
-	  HikariConfig config = new HikariConfig();
-	  config.setJdbcUrl(env.getProperty("spring.datasource.url"));
-	  config.setUsername(env.getProperty("spring.datasource.username"));
-	  config.setPassword(env.getProperty("spring.datasource.password"));
-	  config.setDriverClassName(env.getProperty("spring.datasource.driverclass"));
-	  config.setPoolName(env.getProperty("spring.datasource.hikari.poolname"));
 
-	  config.addDataSourceProperty("maximumPoolSize", Integer.parseInt(env.getProperty("spring.datasource.hikari.maximum-pool-size")));
-	  config.addDataSourceProperty("connectionTimeout", Integer.parseInt(env.getProperty("spring.datasource.hikari.connection-timeout")));
-	  
-	  HikariDataSource dataSource = new HikariDataSource(config);
+		HikariConfig config = new HikariConfig();
+		config.setJdbcUrl(env.getProperty("spring.datasource.url"));
+		config.setUsername(env.getProperty("spring.datasource.username"));
+		config.setPassword(env.getProperty("spring.datasource.password"));
+		config.setDriverClassName(env.getProperty("spring.datasource.driverclass"));
+		config.setPoolName(env.getProperty("spring.datasource.hikari.poolname"));
+
+		config.setMaximumPoolSize(Integer.parseInt(env.getProperty("spring.datasource.hikari.maximum-pool-size")));
+		config.setConnectionTimeout(Integer.parseInt(env.getProperty("spring.datasource.hikari.connection-timeout")));
+
+		HikariDataSource dataSource = new HikariDataSource(config);
 
 		return dataSource;
 	}
@@ -172,13 +158,9 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter{
 	public PlatformTransactionManager txManager() {
 		return new DataSourceTransactionManager(dataSource());
 	}
-	
+
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**")
-				.allowedHeaders("*")
-				.allowedMethods("*")
-				.allowCredentials(true)
-				.allowedOrigins("*");
+		registry.addMapping("/**").allowedHeaders("*").allowedMethods("*").allowCredentials(true).allowedOrigins("*");
 	}
 }
