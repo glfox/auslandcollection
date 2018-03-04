@@ -14,7 +14,7 @@ public class LogisticPackageRecord {
  
     String packageWeight;
     	
-    List<String> ProductItems;
+    String ProductItems;
     	
     String receiverName;
    	
@@ -68,11 +68,11 @@ public class LogisticPackageRecord {
 	public void setLogisticTrackingNo(String logisticTrackingNo) {
 		this.logisticTrackingNo = logisticTrackingNo;
 	}
- 
-	public List<String> getProductItems() {
+  
+	public String getProductItems() {
 		return ProductItems;
 	}
-	public void setProductItems(List<String> productItems) {
+	public void setProductItems(String productItems) {
 		ProductItems = productItems;
 	}
 	public String getLastUpdatedBy() {

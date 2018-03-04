@@ -23,7 +23,7 @@ import com.ausland.weixin.util.SignUtil;
 
 @Controller
 public class SecurityController {
-	private static final Logger logger = LoggerFactory.getLogger(LogisticPackageOrderUploadController.class);
+	private static final Logger logger = LoggerFactory.getLogger(SecurityController.class);
     
 	@Autowired
     private CoreService coreService;

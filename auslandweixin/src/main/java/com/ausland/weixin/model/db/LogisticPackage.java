@@ -1,7 +1,5 @@
 package com.ausland.weixin.model.db;
 
-import java.sql.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -46,7 +44,7 @@ public class LogisticPackage {
     String createdBy;
     
     @Column(name="createdtime", nullable = false)	
-    Date   createdDateTime;
+    String   createdDateTime;
     
     @Column(name="createdsrc", length = 64)	
     String createdSrc;
@@ -60,6 +58,9 @@ public class LogisticPackage {
     @Column(name="comments", length = 1024)
     String comments;
     
+    @Column(name="validationerrors", length = 2048)
+    String validationErrors;
+    
     @Column(length = 64)
     String status;
     
@@ -67,8 +68,15 @@ public class LogisticPackage {
     String updatedBy;
     
     @Column(name="updatedtime")	
-    Date   lastupdatedDateTime;
+    String   lastupdatedDateTime;
     
+    
+	public String getValidationErrors() {
+		return validationErrors;
+	}
+	public void setValidationErrors(String validationErrors) {
+		this.validationErrors = validationErrors;
+	}
 	public String getStatus() {
 		return status;
 	}
@@ -88,10 +96,10 @@ public class LogisticPackage {
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
-	public Date getLastupdatedDateTime() {
+	public String getLastupdatedDateTime() {
 		return lastupdatedDateTime;
 	}
-	public void setLastupdatedDateTime(Date lastupdatedDateTime) {
+	public void setLastupdatedDateTime(String lastupdatedDateTime) {
 		this.lastupdatedDateTime = lastupdatedDateTime;
 	}
 	public String getLogisticTrackingNo() {
@@ -154,10 +162,10 @@ public class LogisticPackage {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	public Date getCreatedDateTime() {
+	public String getCreatedDateTime() {
 		return createdDateTime;
 	}
-	public void setCreatedDateTime(Date createdDateTime) {
+	public void setCreatedDateTime(String createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
 	public String getCreatedSrc() {

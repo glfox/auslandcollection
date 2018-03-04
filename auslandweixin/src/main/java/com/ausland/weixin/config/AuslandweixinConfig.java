@@ -30,8 +30,11 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 @Configuration
 @EnableWebMvc
+@EnableSwagger2
 public class AuslandweixinConfig {
 	
 	@Autowired

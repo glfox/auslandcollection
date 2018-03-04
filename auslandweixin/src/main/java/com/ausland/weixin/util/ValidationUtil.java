@@ -1,14 +1,21 @@
 package com.ausland.weixin.util;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
+ 
 @Service
 public class ValidationUtil {
 
@@ -19,7 +26,15 @@ public class ValidationUtil {
 	@Value("${zhonghuan.trackno.startswith}")
 	private String zhonghuantracknoStartwith;
 	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	
+	private static final SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HHmmss");
+ 
+	private static final Logger logger = LoggerFactory.getLogger(ValidationUtil.class);
+
 	public static void main(String[] args) {
 		ValidationUtil u = new ValidationUtil();
 		// TODO Auto-generated method stub
@@ -34,6 +49,11 @@ public class ValidationUtil {
        		"</tel>]]>"));
 	}
 	
+	public String getCurrentDateString()
+	{
+		Date date = new Date();
+		return simpleDateTimeFormat.format(date);
+	}
 	
 	public boolean isValidZhongHuanTrackNo(String trackingNo)
 	{
@@ -96,5 +116,6 @@ public class ValidationUtil {
 		}
 		return new String(CS);
 	}
-
+	
+	
 }
