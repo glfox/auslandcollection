@@ -28,7 +28,12 @@ public class ErrorActionDaoImpl implements ErrorActionDao {
 		try
 		{
 			String sql = "insert into erroraction(errorModule, errorAction, errorDetails, createdDateTime, status) values(?,?,?,?,?)";
-			jdbcTemplate.update(sql,ea.getErrorModule(), ea.getErrorAction(), ea.getErrorDetails().substring(0, 2048), validationUtil.getClass(), ea.getStatus());
+			if(ea.getErrorDetails() != null && ea.getErrorDetails().length() > 2048)
+			{
+				ea.setErrorDetails(ea.getErrorDetails().substring(0,2048));
+			}
+			
+			jdbcTemplate.update(sql,ea.getErrorModule(), ea.getErrorAction(), ea.getErrorDetails(), validationUtil.getClass(), ea.getStatus());
 		}
 		catch(Exception e)
 		{

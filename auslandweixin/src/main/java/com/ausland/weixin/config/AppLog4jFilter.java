@@ -9,10 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
  
-
+@Component
 public class AppLog4jFilter extends OncePerRequestFilter {
 
 	private final static Logger logger = Logger.getLogger(AppLog4jFilter.class);

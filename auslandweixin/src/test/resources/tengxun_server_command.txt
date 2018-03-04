@@ -7,7 +7,8 @@ java -Xmx1024m  -jar auslandweixin.jar &
 3>apache logs: /var/log/apache2/access.log error.log
   spring boot logs: /home/ubuntu/springboot/logs
 
-4>
+4>swagger url:
+http://118.24.75.119/auslandweixin/swagger-ui.html
   
   
   

@@ -1,11 +1,15 @@
 package com.ausland.weixin.model.db;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="erroraction")
@@ -28,11 +32,13 @@ public class ErrorAction {
 	@Column(length=64)
 	String createdBy;
 	
-	@Column(length=64, nullable = false)
-	String createdDateTime;
+	@Column(name="createdTime", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	Date createdDateTime;
 	
-	@Column(length=64)
-	String lastUpdatedDateTime;
+	@Column(name="updatedTime")
+	@Temporal(TemporalType.TIMESTAMP)
+	Date lastUpdatedDateTime;
 	
 	@Column(length=64)
 	String status;
@@ -77,19 +83,21 @@ public class ErrorAction {
 		this.createdBy = createdBy;
 	}
 
-	public String getCreatedDateTime() {
+ 
+
+	public Date getCreatedDateTime() {
 		return createdDateTime;
 	}
 
-	public void setCreatedDateTime(String createdDateTime) {
+	public void setCreatedDateTime(Date createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
 
-	public String getLastUpdatedDateTime() {
+	public Date getLastUpdatedDateTime() {
 		return lastUpdatedDateTime;
 	}
 
-	public void setLastUpdatedDateTime(String lastUpdatedDateTime) {
+	public void setLastUpdatedDateTime(Date lastUpdatedDateTime) {
 		this.lastUpdatedDateTime = lastUpdatedDateTime;
 	}
 

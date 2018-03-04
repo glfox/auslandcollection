@@ -12,11 +12,13 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,13 +60,14 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
         	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);  
         	return res;
         }
-        if(!excelFile.getOriginalFilename().endsWith("xls") && !excelFile.getOriginalFilename().endsWith("xlsx"))
+        String fileExtension = FilenameUtils.getExtension(excelFile.getOriginalFilename());
+        if(fileExtension == null || (!fileExtension.equalsIgnoreCase("xls") && !fileExtension.equalsIgnoreCase("xlsx")))
         {
-        	res.setErrorDetails("chosen file is not excel format:"+excelFile.getOriginalFilename());
+        	res.setErrorDetails("chosen file extension is not correct:"+fileExtension);
         	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED); 
         	return res;
         }
-        String fileNamewithFullPath = excelDirectory+FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+        String fileNamewithFullPath = excelDirectory+FilenameUtils.getBaseName(excelFile.getOriginalFilename())+"."+fileExtension;
         if(isFileExists(fileNamewithFullPath) == true)
         {
         	res.setErrorDetails("same excel file already exists in "+fileNamewithFullPath);
@@ -106,7 +109,7 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
 		    if(csvFile.isEmpty())
 		    	return "excel file:"+ csvFile.getOriginalFilename() + " is empty.";
 		    byte[] bytes = csvFile.getBytes();
-		    Path path = Paths.get(excelDirectory+fileName);
+		    Path path = Paths.get(fileName);
 		    Files.write(path, bytes);
 		    return null;
 		}
@@ -162,13 +165,13 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
 	private String validateExcelFile(MultipartFile excelFile, List<LogisticPackage> records)
 	{
 		StringBuffer errorMessage = new StringBuffer();
-		 
+		//Workbook[] wbs = new Workbook[] { new HSSFWorkbook(), new XSSFWorkbook() };
 		Workbook workbook = null;
         InputStream  inputStream = null;
         try
         {
         	inputStream = excelFile.getInputStream();
-        	workbook = new XSSFWorkbook(excelFile.getInputStream());
+        	workbook = WorkbookFactory.create(inputStream);// new XSSFWorkbook(excelFile.getInputStream());
         	Sheet datatypeSheet = workbook.getSheetAt(0);
             Iterator<Row> iterator = datatypeSheet.iterator();
             int i = 0;
@@ -372,7 +375,7 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
 		}
         record.setCreatedSrc(fileName);
         
-        record.setCreatedDateTime(validationUtil.getCurrentDateString());
+        record.setCreatedDateTime(validationUtil.getCurrentDate());
         if(StringUtils.isEmpty(strB.toString()))
         {
         	record.setStatus("ok");

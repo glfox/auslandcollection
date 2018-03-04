@@ -4,11 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +56,20 @@ public class PackageDaoImpl implements PackageDao{
 							preparedStatement.setString(9,  lp.getSenderPhone());
 							preparedStatement.setString(10,  lp.getSenderAddress());
 							preparedStatement.setString(11,  lp.getCreatedBy());
-							preparedStatement.setString(12,  lp.getCreatedDateTime());
+							if(lp.getCreatedDateTime() != null)
+							{
+								long millis = DateUtils.truncate(lp.getCreatedDateTime(), Calendar.MILLISECOND).getTime();
+								java.sql.Timestamp sq = new java.sql.Timestamp(millis );
+								preparedStatement.setTimestamp(12,sq);
+							}
+							
 							preparedStatement.setString(13,  lp.getCreatedSrc());
 							preparedStatement.setString(14,  lp.getLogisticCompany());
 							preparedStatement.setString(15,  lp.getComments());
-							if(lp.getValidationErrors() != null)
+							if(lp.getValidationErrors() != null && lp.getValidationErrors().length() > 2048)
 							{
-								preparedStatement.setString(16,  lp.getValidationErrors().substring(0, 2048));
+								lp.setValidationErrors(lp.getValidationErrors().substring(0,2048));
+								preparedStatement.setString(16,  lp.getValidationErrors());
 							}
 							
 							preparedStatement.setString(17,  lp.getStatus());
@@ -131,9 +141,9 @@ public class PackageDaoImpl implements PackageDao{
 				LogisticPackage lp = new LogisticPackage();
 				lp.setComments((String)row.get("comments"));
 				lp.setCreatedBy((String)row.get("createdby"));
-				lp.setCreatedDateTime((String)row.get("createdtime"));
+				lp.setCreatedDateTime((Date)row.get("createdtime"));
 				lp.setCreatedSrc((String)row.get("createdsrc"));
-				lp.setLastupdatedDateTime((String)row.get("updatedtime"));
+				lp.setLastupdatedDateTime((Date)row.get("updatedtime"));
 				lp.setLinkedOrderNo((String)row.get("linkedno"));
 				lp.setLogisticCompany((String)row.get("logisticcompany"));
 				lp.setPackageWeight((String)row.get("weight"));

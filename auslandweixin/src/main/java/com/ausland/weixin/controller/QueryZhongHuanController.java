@@ -1,6 +1,5 @@
 package com.ausland.weixin.controller;
 
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

@@ -40,19 +40,20 @@ public class ValidationUtil {
 		// TODO Auto-generated method stub
        System.out.println(u.isValidChinaMobileNo("15618983927"));
        System.out.println(u.trimPhoneNo("156 18983927 "));
-       System.out.print(u.removeCDATA("<![CDATA[<?xml  version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?><tel><message>成功</message>\r\n" + 
-       		"<issuccess>true</issuccess>\r\n" + 
-       		"<fydhlist>\r\n" + 
-       		"<chrfydh>970000197505</chrfydh>\r\n" + 
-       		"<chrdysj>2018-03-03 06:33:37</chrdysj>\r\n" + 
-       		"</fydhlist>\r\n" + 
-       		"</tel>]]>"));
+       System.out.println(u.removeCDATA("<tel><message>成功</message>"));
+       System.out.print(u.removeCDATA("<![CDATA[<?xml  version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?><tel><message>成功</message><issuccess>true</issuccess><fydhlist><chrfydh>970000197505</chrfydh> <chrdysj>2018-03-03 06:33:37</chrdysj> </fydhlist> </tel>]]>"));
 	}
 	
 	public String getCurrentDateString()
 	{
 		Date date = new Date();
 		return simpleDateTimeFormat.format(date);
+	}
+	
+	public Date getCurrentDate()
+	{
+		Date date = new Date();
+		return date;
 	}
 	
 	public boolean isValidZhongHuanTrackNo(String trackingNo)
@@ -79,10 +80,13 @@ public class ValidationUtil {
 	public boolean isValidChinaMobileNo(String phoneNo)
 	{
 		if(phoneNo == null || phoneNo.length() != 11) return false;
-		String regExp = "^((13[0-9])|(15[^4])|(18[0,2,3,5-9])|(17[0-8])|(147))\\d{8}$";  
-        Pattern p = Pattern.compile(regExp);  
-        Matcher m = p.matcher(phoneNo);  
-        return m.matches();  
+		char[] chars = phoneNo.toCharArray();
+		for(char ch : chars)
+		{
+			if(!Character.isDigit(ch))
+				return false;
+		}
+		return true;
 	}
 	
 	public String removeCDATA(String text) {

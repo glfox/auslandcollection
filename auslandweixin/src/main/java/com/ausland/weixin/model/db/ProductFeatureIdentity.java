@@ -1,11 +1,13 @@
 package com.ausland.weixin.model.db;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 
 @Embeddable
-public class ProductFeatureIdentity {
+public class ProductFeatureIdentity implements Serializable{
 
 	@NotNull
 	@Column(length = 128)

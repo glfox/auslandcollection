@@ -119,7 +119,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 		try
 		{
 			String xmlRes = port.getTeltoFydh(trimedPhoneNo, zhonghuanusername, zhonghuanpassword, zhonghuanno);
-			xmlRes = validationUtil.removeCDATA(xmlRes);
+			//xmlRes = validationUtil.removeCDATA(xmlRes);
 			if(StringUtils.isEmpty(xmlRes))
 			{
 				res.setErrorDetails("got empty response from zhonghuan getTelToFydh service."); 
@@ -185,7 +185,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 	private QueryZhongHuanDetailsByTrackingNoRes getTrackingDetailsbyTrackingNo(String trackingNo)
 	{
 		QueryZhongHuanDetailsByTrackingNoRes res = new QueryZhongHuanDetailsByTrackingNoRes();
-		if(StringUtils.isEmpty(trackingNo) || validationUtil.isValidZhongHuanTrackNo(trackingNo)) 
+		if(StringUtils.isEmpty(trackingNo) || validationUtil.isValidZhongHuanTrackNo(trackingNo) == false) 
 		{
 			res.setErrorDetails("trackingNo:"+ trackingNo +" is not valid.");
 			return res;

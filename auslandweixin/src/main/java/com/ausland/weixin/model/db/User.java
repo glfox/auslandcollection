@@ -1,11 +1,15 @@
 package com.ausland.weixin.model.db;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 @Entity
@@ -35,10 +39,14 @@ public class User {
 	String wechatId;
 	@Column(name="wechatopenid",length = 256)
 	String wechatOpenId;
+	
 	@Column(name="createdtime")
-	String createdDateTime;
+	@Temporal(TemporalType.TIMESTAMP)
+	Date createdDateTime;
+	
 	@Column(name="updatedtime")
-	String lastUpdatedDateTime;
+	@Temporal(TemporalType.TIMESTAMP)
+	Date lastUpdatedDateTime;
     	
 	public Integer getId() {
 		return id;
@@ -110,19 +118,19 @@ public class User {
 		this.createdSrc = createdSrc;
 	}
 	
-	public String getCreatedDateTime() {
+	public Date getCreatedDateTime() {
 		return createdDateTime;
 	}
 	
-	public void setCreatedDateTime(String createdDateTime) {
+	public void setCreatedDateTime(Date createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
 	
-	public String getLastUpdatedDateTime() {
+	public Date getLastUpdatedDateTime() {
 		return lastUpdatedDateTime;
 	}
 	
-	public void setLastUpdatedDateTime(String lastUpdatedDateTime) {
+	public void setLastUpdatedDateTime(Date lastUpdatedDateTime) {
 		this.lastUpdatedDateTime = lastUpdatedDateTime;
 	}
 	 

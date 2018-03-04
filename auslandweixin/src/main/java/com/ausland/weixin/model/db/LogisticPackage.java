@@ -1,9 +1,13 @@
 package com.ausland.weixin.model.db;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="LogisticPackage")
@@ -44,7 +48,8 @@ public class LogisticPackage {
     String createdBy;
     
     @Column(name="createdtime", nullable = false)	
-    String   createdDateTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    Date   createdDateTime;
     
     @Column(name="createdsrc", length = 64)	
     String createdSrc;
@@ -67,8 +72,10 @@ public class LogisticPackage {
     @Column(name="updatedby", length = 64)	
     String updatedBy;
     
+
     @Column(name="updatedtime")	
-    String   lastupdatedDateTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    Date   lastupdatedDateTime;
     
     
 	public String getValidationErrors() {
@@ -96,10 +103,10 @@ public class LogisticPackage {
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
-	public String getLastupdatedDateTime() {
+	public Date getLastupdatedDateTime() {
 		return lastupdatedDateTime;
 	}
-	public void setLastupdatedDateTime(String lastupdatedDateTime) {
+	public void setLastupdatedDateTime(Date lastupdatedDateTime) {
 		this.lastupdatedDateTime = lastupdatedDateTime;
 	}
 	public String getLogisticTrackingNo() {
@@ -162,10 +169,10 @@ public class LogisticPackage {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	public String getCreatedDateTime() {
+	public Date getCreatedDateTime() {
 		return createdDateTime;
 	}
-	public void setCreatedDateTime(String createdDateTime) {
+	public void setCreatedDateTime(Date createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
 	public String getCreatedSrc() {
