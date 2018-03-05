@@ -8,7 +8,12 @@ nohup java -Xmx1024m  -jar auslandweixin.jar &
   spring boot logs: /home/ubuntu/springboot/logs
 
 4>swagger url:
+prod:
 http://118.24.75.119:8080/auslandweixin/swagger-ui.html
+test:
+http://118.24.75.119:8081/auslandtest/swagger-ui.html
+local:
+http://localhost:8081/auslandtest/swagger-ui.html
   
 5>actuator url:
 http://118.24.75.119/auslandweixin/health

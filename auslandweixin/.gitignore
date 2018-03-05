@@ -1,6 +1,6 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
-*.properties
+application.properties
 **/logs/*.log
 **/WebContent/*
 .DS_Store
