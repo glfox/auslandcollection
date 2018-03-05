@@ -43,4 +43,11 @@ public class CustomSendMessage {
 	public void setContent(String content) {
 		this.content = content;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("<xml><ToUserName><![CDATA[%s]]></ToUserName> <FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[%s]]></MsgType><Content><![CDATA[%s]]></Content></xml>", 
+				toUserName, fromUserName, createTime, msgType, content);
+	}
+	
 }

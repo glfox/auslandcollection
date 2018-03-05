@@ -50,5 +50,10 @@ public class WeChatMessage implements Serializable {
 	public void setContent(String content) {
 		this.content = content;
 	}
+	@Override
+	public String toString() {
+		return "WeChatMessage [toUserName=" + toUserName + ", fromUserName=" + fromUserName + ", createTime="
+				+ createTime + ", msgType=" + msgType + ", content=" + content + "]";
+	}
 	
 }

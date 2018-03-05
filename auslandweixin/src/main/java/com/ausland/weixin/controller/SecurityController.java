@@ -79,12 +79,18 @@ public class SecurityController {
 	}
 
 	@RequestMapping(value = "/wx", method = RequestMethod.POST)
-	public @ResponseBody String WetChatPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public @ResponseBody WeChatMessage WetChatPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		logger.debug("got WetChatPost.");
 		ServletInputStream in = request.getInputStream();
 		WeChatMessage message = JAXB.unmarshal(in, WeChatMessage.class);
+		logger.debug("got message  "+message.toString());
 		logger.debug("got message:"+message.getContent());
-		coreService.processRequest(message);
-		return "success";
+		//coreService.processRequest(message);
+		WeChatMessage reply = new WeChatMessage();
+		reply.setContent(message.getContent());
+		reply.setCreateTime(message.getCreateTime());
+		reply.setFromUserName(message.getToUserName());
+		reply.setToUserName(message.getFromUserName());
+		return reply;
 	}
 }

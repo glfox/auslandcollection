@@ -31,13 +31,14 @@ public class CoreServiceImpl implements CoreService {
 		String serverName = message.getToUserName();
 		String userName = message.getFromUserName();
 		CustomSendMessage newMsg = new CustomSendMessage();
+	
 		newMsg.setFromUserName(serverName);
 		newMsg.setToUserName(userName);
 		newMsg.setMsgType("text");
 		newMsg.setCreateTime(new Date().getTime());
-		newMsg.setContent("Hi There!");
+		newMsg.setContent(message.getContent());
 		
-		weChatMessageService.sendMessage(newMsg);
+		weChatMessageService.sendMessage(newMsg.toString());
 		return "success";
 	}
 }

@@ -2,7 +2,7 @@
 mysql -h localhost -u root -p 
 
 2>start springboot:
-java -Xmx1024m  -jar auslandweixin.jar &
+nohup java -Xmx1024m  -jar auslandweixin.jar &
 
 3>apache logs: /var/log/apache2/access.log error.log
   spring boot logs: /home/ubuntu/springboot/logs
@@ -39,17 +39,35 @@ curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com
 {"menu":{"button":[{"type":"click","name":"单号查询","key":"queryLogistic","sub_button":[]},{"type":"click","name":"咨询客服","key":"chat","sub_button":[]},{"name":"产品查询","sub_button":[{"type":"click","name":"价格","key":"queryProduct_price","sub_button":[]},{"type":"click","name":"库存","key":"queryProduct_stock","sub_button":[]},{"type":"click","name":"新品","key":"queryProduct_new","sub_button":[]}]}]}}u
 
 3>delete Menu:
-curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
+curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=7_wQ437sWnqFVLimTiN2CzueAY6Q_kQSJu7ImpjjUW0tjEOqxNq1420wuPYHVxN96tczNdw2sW7ptraHTHOwpLQcCqAWr-UuEzph9Z2uuAg4apAKod3agl9lJKz29gwlSV7Newq2GNUIwkJJ5rOKJgADAIED' --trace-ascii /dev/stdout
 
 
 4>create Menu:
 curl -k -X POST --data '{"button":[{"type":"click","name":"单号查询","key":"queryLogistic"},{"type":"click","name":"咨询客服","key":"chat"},{"name":"产品查询","sub_button":[{"type":"click","name":"价格","key":"queryProduct_price"},{"type":"click","name":"库存","key": "queryProduct_stock"},{"type":"click","name":"新品","key":"queryProduct_new"}]}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
   
   
+  7_wQ437sWnqFVLimTiN2CzueAY6Q_kQSJu7ImpjjUW0tjEOqxNq1420wuPYHVxN96tczNdw2sW7ptraHTHOwpLQcCqAWr-UuEzph9Z2uuAg4apAKod3agl9lJKz29gwlSV7Newq2GNUIwkJJ5rOKJgADAIED
+
   
+5>get userinfo:
+curl -k  GET 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=h9Z2uuAg4apAKod3agl9lJKz29gwlSV7Newq2GNUIwkJJ5rOKJgADAIED&openid=gh_ec558daefbc8&lang=zh_CN' --trace-ascii /dev/stdout
   
+curl -k  GET 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=7_n9QkUYsaYYSNTjin1B5EayF2bx0e1KrA3ZM2wFoAZFaYT3OV4xR14DBQo3QsGEsp4juRZLs8lPIDKUEc0ol5a-39R9xWoZAMCNZt4NPFA8yCyfoF3dpuhKVPvKC0Tqyg2qV1_pyvHOiIBt9iECTiAFAMKB&openid=oMr-01VlzxTG0IsFwcSJVITmvRS4&lang=zh_CN' --trace-ascii /dev/stdout
   
+6>reply weixin message:
  
+ <xml> <ToUserName>< ![CDATA[toUser] ]></ToUserName> <FromUserName>< ![CDATA[fromUser] ]></FromUserName> <CreateTime>12345678</CreateTime> <MsgType>< ![CDATA[text] ]></MsgType> <Content>< ![CDATA[你好] ]></Content> </xml>
+ 
+ curl -k -X POST --data "{\r\n    \"ToUserName\": \"oMr-01VlzxTG0IsFwcSJVITmvRS4\", \r\n    \"FromUserName\": \"gh_ec558daefbc8\", \r\n    \"CreateTime\": 1520224686841, \r\n    \"MsgType\": \"text\", \r\n    \"Content\": \"Hi\"\r\n}" 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=7_n9QkUYsaYYSNTjin1B5EayF2bx0e1KrA3ZM2wFoAZFaYT3OV4xR14DBQo3QsGEsp4juRZLs8lPIDKUEc0ol5a-39R9xWoZAMCNZt4NPFA8yCyfoF3dpuhKVPvKC0Tqyg2qV1_pyvHOiIBt9iECTiAFAMKB' --trace-ascii /dev/stdout
+ 
+ {
+    "ToUserName": "oMr-01VlzxTG0IsFwcSJVITmvRS4", 
+    "FromUserName": "gh_ec558daefbc8", 
+    "CreateTime": 1520224686841, 
+    "MsgType": "text", 
+    "Content": "Hi"
+}
+
  {
      "button":[
      {    

@@ -13,6 +13,9 @@ tengxun cloud server:
   sudo apt-get install mysql-server
   mysql_secure_installation
   
+  open 3306 port for outside access:
+  
+  
 3>install apache and configure request forward
   sudo apt-get install apache2
   sudo a2enmod proxy
@@ -26,4 +29,4 @@ tengxun cloud server:
                 ProxyPassReverse / http://127.0.0.1:8080/ 
   sudo systemctl restart apache2
   
-
+4>
