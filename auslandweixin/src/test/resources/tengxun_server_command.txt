@@ -2,7 +2,7 @@
 mysql -h localhost -u root -p 
 
 2>start springboot:
-nohup java -Xmx1024m  -jar auslandweixin.jar &
+nohup java -Xmx512m  -jar auslandweixin.jar &
 
 3>apache logs: /var/log/apache2/access.log error.log
   spring boot logs: /home/ubuntu/springboot/logs
