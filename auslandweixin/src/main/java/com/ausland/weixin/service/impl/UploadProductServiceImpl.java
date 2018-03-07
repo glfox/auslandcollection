@@ -254,13 +254,10 @@ public class UploadProductServiceImpl implements UploadProductService{
 		}
 		Iterator<Cell> cellIterator = currentRow.iterator();
 		int i = 0;
-		while(cellIterator.hasNext())
+		Product p = new Product();
+		while(cellIterator.hasNext() && i <= AuslandweixinConfig.productUploadExcelHeaders.size())
 		{
 	        i ++;
-	        Product p = new Product();
-	        p.setCreatedSrc(fileName); 
-	        p.setCreatedDateTime(validationUtil.getCurrentDate());
-	        p.setStockStatus(AuslandApplicationConstants.STOCKTATUS_INSTOCK);
 	        Cell currentCell = cellIterator.next();
 	        String cell = "";
 			if(currentCell.getCellTypeEnum() == CellType.STRING)
@@ -273,7 +270,7 @@ public class UploadProductServiceImpl implements UploadProductService{
 				cell = currentCell.getNumericCellValue() +"";
 				logger.debug("cell "+i +":"+cell);
 			}
-			
+					
 	        if(i == 1)
 	        {
 	        	//产品图片
@@ -327,6 +324,11 @@ public class UploadProductServiceImpl implements UploadProductService{
 	        	{
 	        		p.setProductWeight(cell.trim());
 	        	}
+	        	 
+		        p.setCreatedSrc(fileName); 
+		        p.setCreatedDateTime(validationUtil.getCurrentDate());
+		        p.setStockStatus(AuslandApplicationConstants.STOCKTATUS_INSTOCK);
+		        
 	        	if(!StringUtils.isEmpty(p.getSize()))
 	        	{
 	        		String[] sizes = p.getSize().split("/");
@@ -344,6 +346,7 @@ public class UploadProductServiceImpl implements UploadProductService{
 	        	    			p1.setProductId(p.getProductId());
 	        	    			p1.setProductName(p.getProductName());
 	        	    			p1.setProductWeight(p.getProductWeight());
+	        	    			p1.setStockStatus(p.getStockStatus());
 	        	    			p1.setSize(size);
 	        	    			records.add(p1);
 	        	    		}
@@ -355,10 +358,7 @@ public class UploadProductServiceImpl implements UploadProductService{
 	        		records.add(p);
 	        	}
 	        }
-	        else
-	        {
-	        	continue;
-	        }
+	       
 		}
         return null;
 	}

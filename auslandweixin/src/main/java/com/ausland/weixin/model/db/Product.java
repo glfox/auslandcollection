@@ -1,16 +1,12 @@
 package com.ausland.weixin.model.db;
 
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,13 +16,13 @@ import javax.persistence.TemporalType;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     Integer id;
     
-    @Column(name="productId", length = 128)	
+    @Column(length = 128)	
     String productId;
     
-    @Column(name="productName", length = 512)	
+    @Column(length = 512)	
     String productName;
     
     @Column(length = 64)	
@@ -56,29 +52,29 @@ public class Product {
     @Column(length = 64)	
     String productCategory;
     
-	@Column(name="weight", length = 64)	
+	@Column(length = 64)	
     String productWeight;
     
-    @Column(name="createdby", length = 64)	
+    @Column(length = 64)	
     String createdBy;
     
-    @Column(name="createdtime", nullable = false)	
+    @Column(nullable = false)	
     @Temporal(TemporalType.TIMESTAMP)
     Date   createdDateTime;
     
-    @Column(name="createdsrc", length = 64)	
+    @Column(length = 64)	
     String createdSrc;
     
-    @Column(name="comments", length = 1024)
+    @Column(length = 1024)
     String comments;
     
     @Column(length = 64)
     String status;
         
-    @Column(name="updatedby", length = 64)	
+    @Column(length = 64)	
     String updatedBy;
     
-    @Column(name="updatedtime")	
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     Date   lastupdatedDateTime;
     

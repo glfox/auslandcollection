@@ -3,10 +3,12 @@ package com.ausland.weixin.dao;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.ausland.weixin.model.db.Product;
 
-public interface ProductRepository extends JpaRepository<Product, String>{
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Integer>{
 
 	List<Product> findByProductId(String productId);
 	List<Product> findByProductIdAndStockStatus(String productId, String stockStatus);

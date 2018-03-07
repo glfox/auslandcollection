@@ -15,10 +15,7 @@ public class ContactInfo {
 	@Column(name="id")	
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Integer contactInfoId;
-    
-	@Column(name="userid", nullable = false)
-	Integer userId;
-	
+  	
 	@Column(name="address",length = 1024)	
 	String address;
 	
@@ -39,13 +36,6 @@ public class ContactInfo {
 		this.contactInfoId = contactInfoId;
 	}
 
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
 
 	public String getAddress() {
 		return address;
@@ -78,11 +68,5 @@ public class ContactInfo {
 	public void setBackupPhoneNumber(String backupPhoneNumber) {
 		this.backupPhoneNumber = backupPhoneNumber;
 	}
-
-	@Override
-	public String toString() {
-		return "ContactInfo [contactInfoId=" + contactInfoId + ", userId=" + userId + ", address=" + address + ", name="
-				+ name + ", phoneNumber=" + phoneNumber + ", backupPhoneNumber=" + backupPhoneNumber + "]";
-	}
-	
+ 
 }

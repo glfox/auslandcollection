@@ -22,6 +22,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -42,6 +43,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableWebMvc
 @EnableSwagger2
 @ComponentScan({ "com.ausland.weixin" })
+//@EnableTransactionManagement
 public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 
 	@Autowired
@@ -171,11 +173,11 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 
 		return dataSource;
 	}
-
+/*
 	@Bean
 	public PlatformTransactionManager txManager() {
 		return new DataSourceTransactionManager(dataSource());
-	}
+	}*/
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {

@@ -36,6 +36,7 @@ public class QueryStockServiceImpl implements QueryStockService{
     		StockInfo stock = new StockInfo();
     		stock.setBrandName(p.getBrand());
     		stock.setColor(p.getColor());
+    		stock.setSize(p.getSize());
     		stock.setProductId(p.getProductId());
     		stock.setProductName(p.getProductName());
     		stock.setFeature1(p.getFeature1());
