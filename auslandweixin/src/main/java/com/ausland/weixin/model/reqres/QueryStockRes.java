@@ -9,7 +9,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class QueryStockRes {
 
 	String errorDetails;
-	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	String status;
 	List<StockInfo> stockInfoList;
 	
 	public String getErrorDetails() {

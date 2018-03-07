@@ -37,15 +37,33 @@ private static final Logger logger = LoggerFactory.getLogger(UploadZhonghuanCour
 		return uploadZhonghuanCourierExcelService.uploadZhonghuanCourierExcel(excelFile);
 	}
 	
-	@RequestMapping(value = "/query", method = RequestMethod.GET)
-	public QueryUploadLogisticPackageRes queryByFileName(@RequestParam(name = "filename", required = false)String excelFileName,
-			                                             @RequestParam(name = "fromDate", required = false)String fromDate,
-			                                             @RequestParam(name = "toDate", required = false)String toDate,
-			                                             @RequestParam(name = "receiverPhone", required = false)String receiverPhone,
+	@RequestMapping(value = "/querybyuploadedexcelname", method = RequestMethod.GET)
+	public QueryUploadLogisticPackageRes queryByFileName(@RequestParam(name = "filename", required = true)String excelFileName,
+			                                             HttpServletRequest httpServletRequest) throws IOException 
+	{
+		logger.debug("entered queryByFileName.");
+		return uploadZhonghuanCourierExcelService.queryZhonghuanUploadedRecordsByUploadedExcelName(excelFileName);
+	}
+	
+	
+	@RequestMapping(value = "/querybyuploadeddaterange", method = RequestMethod.GET)
+	public QueryUploadLogisticPackageRes queryByDateRange(@RequestParam(name = "fromDate", required = true)String fromDate,
+			                                             @RequestParam(name = "toDate", required = true)String toDate,
 			                                           HttpServletRequest httpServletRequest) throws IOException 
 	{
-		logger.debug("entered uploadLogisticPackageOrder.");
-		return uploadZhonghuanCourierExcelService.queryZhonghuanUploadedRecords(excelFileName, fromDate, toDate, receiverPhone);
+		logger.debug("entered queryByDateRange.");
+		return uploadZhonghuanCourierExcelService.queryZhonghuanUploadedRecordsByDateRange(fromDate, toDate);
 	}
+	
+	@RequestMapping(value = "/query", method = RequestMethod.GET)
+	public QueryUploadLogisticPackageRes queryByReceiverPhoneAndDateRange(@RequestParam(name = "receiverPhone", required = true)String receiverPhone,
+			@RequestParam(name = "fromDate", required = true)String fromDate,
+            @RequestParam(name = "toDate", required = true)String toDate,
+			                                           HttpServletRequest httpServletRequest) throws IOException 
+	{
+		logger.debug("entered queryByReceiverPhoneAndDateRange.");
+		return uploadZhonghuanCourierExcelService.queryZhonghuanUploadedRecordsByPhoneAndDateRange(receiverPhone, fromDate, toDate);
+	}
+	
 	
 }

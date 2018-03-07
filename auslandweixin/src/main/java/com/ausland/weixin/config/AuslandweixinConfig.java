@@ -57,6 +57,8 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	private int resttemplate_http_timeout;
 
 	public static List<String> logisticPackageHeaders = null;
+	
+	public static List<String> productUploadExcelHeaders = null;
 
 	static {
 		logisticPackageHeaders = new ArrayList<String>();
@@ -73,6 +75,22 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		productUploadExcelHeaders = new ArrayList<String>();
+		try {
+			productUploadExcelHeaders.add("产品图片");
+			productUploadExcelHeaders.add("产品品牌");
+			productUploadExcelHeaders.add("产品名称");
+			productUploadExcelHeaders.add("产品编号");		
+			productUploadExcelHeaders.add("产品颜色");
+			productUploadExcelHeaders.add("产品尺码");
+			productUploadExcelHeaders.add("产品毛重");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	@Bean

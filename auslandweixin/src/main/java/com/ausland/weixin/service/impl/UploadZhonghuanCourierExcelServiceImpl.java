@@ -6,20 +6,20 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.config.AuslandweixinConfig;
-import com.ausland.weixin.dao.PackageDao;
+import com.ausland.weixin.dao.LogisticPackageRepository;
 import com.ausland.weixin.model.db.LogisticPackage;
 import com.ausland.weixin.model.reqres.QueryUploadLogisticPackageRes;
 import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
@@ -43,7 +43,7 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
 	private ValidationUtil validationUtil;
 	
 	@Autowired
-	private PackageDao packageDao;
+	private LogisticPackageRepository logisticPackageRepository;
 	
 	@Value("${upload.courier.excel.server.directory}")
 	private String excelDirectory;
@@ -97,7 +97,26 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
         	return res;
         }
         logger.debug("save records in db.");
-        packageDao.saveRecordsInDb(records);
+        if(records.size() <= AuslandApplicationConstants.DB_BATCH_SIZE)
+        {
+        	logisticPackageRepository.save(records);
+        	logisticPackageRepository.flush();
+        }
+        else
+        {
+        	//split to batch size and loop 
+        	int i = 0;
+        	while(i < records.size())
+        	{
+        		int endIndex = Math.min(i + AuslandApplicationConstants.DB_BATCH_SIZE, records.size());
+        		List<LogisticPackage> sublist = records.subList(i, endIndex);
+        		logisticPackageRepository.save(sublist);
+        		logisticPackageRepository.flush();
+        		i = i + AuslandApplicationConstants.DB_BATCH_SIZE;
+        	}
+        	 
+        }
+
         res.setUploadResult(AuslandApplicationConstants.STATUS_OK);
         return res;
 	}
@@ -120,7 +139,7 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
 	}
 	
 	
-	@Override
+	/*@Override
 	public QueryUploadLogisticPackageRes queryZhonghuanUploadedRecords(String excelFileName,
 			String fromDate, String toDate, String receiverPhone) {
 
@@ -141,7 +160,7 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
         res.setRecords(list);
         res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		return res;
-	}
+	}*/
 	
 	private boolean isFileExists(String fileNamewithFullPath)
 	{
@@ -416,5 +435,87 @@ public class UploadZhonghuanCourierExcelServiceImpl implements UploadZhonghuanCo
 			return false;
 		return true;
     }
+
+	@Override
+	public QueryUploadLogisticPackageRes queryZhonghuanUploadedRecordsByUploadedExcelName(String excelFileName) {
+		QueryUploadLogisticPackageRes res = new QueryUploadLogisticPackageRes();
+		try
+		{
+			List<LogisticPackage> list = logisticPackageRepository.findByCreatedSrc(excelFileName);
+			res.setStatus(AuslandApplicationConstants.STATUS_OK);
+			res.setRecords(list);
+			return res;
+		}
+		catch(Exception e)
+		{
+			res.setErrorDetails("caught exception in db:"+e.getMessage());
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+		}
+		return res;
+	}
+
+	@Override
+	public QueryUploadLogisticPackageRes queryZhonghuanUploadedRecordsByDateRange(String fromDate, String toDate) {
+		QueryUploadLogisticPackageRes res = new QueryUploadLogisticPackageRes();
+		Date from = null;
+		Date to = null;
+		try
+		{
+			from = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT).parse(fromDate);
+			to = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT).parse(toDate);
+		}
+		catch(Exception e)
+		{
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			res.setErrorDetails("cannot parse the fromDate, toDate string:"+e.getMessage());
+			return res;
+		}
+		
+		try
+		{
+			List<LogisticPackage> list = logisticPackageRepository.findByCreatedDateTimeBetween(from, to);
+			res.setStatus(AuslandApplicationConstants.STATUS_OK);
+			res.setRecords(list);
+			return res;
+		}
+		catch(Exception e)
+		{
+			res.setErrorDetails("caught exception in db:"+e.getMessage());
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+		}
+		return res;
+	}
+
+	@Override
+	public QueryUploadLogisticPackageRes queryZhonghuanUploadedRecordsByPhoneAndDateRange(String receiverPhone, String fromDate, String toDate) {
+		QueryUploadLogisticPackageRes res = new QueryUploadLogisticPackageRes();
+		Date from = null;
+		Date to = null;
+		try
+		{
+			from = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT).parse(fromDate);
+			to = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT).parse(toDate);
+		}
+		catch(Exception e)
+		{
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			res.setErrorDetails("cannot parse the fromDate, toDate string:"+e.getMessage());
+			return res;
+		}
+		
+		try
+		{
+			List<LogisticPackage> list = logisticPackageRepository.findByReceiverPhoneAndCreatedDateTimeBetween(receiverPhone, from, to);
+			res.setStatus(AuslandApplicationConstants.STATUS_OK);
+			res.setRecords(list);
+			return res;
+		}
+		catch(Exception e)
+		{
+			res.setErrorDetails("caught exception in db:"+e.getMessage());
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+		}
+		return res;
+	}
 
 }

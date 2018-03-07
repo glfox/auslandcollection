@@ -25,7 +25,7 @@ public class QueryStockController {
 	@Autowired
 	private QueryStockService queryStockService; 
 
-	@RequestMapping(value = "/product", method = RequestMethod.GET)
+	@RequestMapping(value = "/productid", method = RequestMethod.GET)
 	public QueryStockRes queryStockByProductId(@RequestParam(name="productId", required = true) String productId,
 			                                   @RequestParam(name="stockStatus", required = false) String stockStatus,
 			                                   HttpServletRequest request, HttpServletResponse response)
@@ -38,7 +38,7 @@ public class QueryStockController {
 	
 	
 	@RequestMapping(value = "/brand", method = RequestMethod.GET)
-	public QueryStockRes queryStockByBrandName(@RequestParam(name="bandname", required = true) String brandName,
+	public QueryStockRes queryStockByBrandName(@RequestParam(name="brandname", required = true) String brandName,
 			                                   @RequestParam(name="stockStatus", required = false) String stockStatus,
 			                                   HttpServletRequest request, HttpServletResponse response)
 	{

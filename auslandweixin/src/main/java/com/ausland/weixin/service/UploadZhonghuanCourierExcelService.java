@@ -10,6 +10,8 @@ public interface UploadZhonghuanCourierExcelService {
 	
 	UploadZhonghanCourierExcelRes uploadZhonghuanCourierExcel(MultipartFile excelFile);
 	
-	QueryUploadLogisticPackageRes queryZhonghuanUploadedRecords(String excelFileName, String fromDate, String toDate, String receiverPhone);
+	QueryUploadLogisticPackageRes queryZhonghuanUploadedRecordsByUploadedExcelName(String excelFileName);
+	QueryUploadLogisticPackageRes queryZhonghuanUploadedRecordsByDateRange(String fromDate, String toDate);
+	QueryUploadLogisticPackageRes queryZhonghuanUploadedRecordsByPhoneAndDateRange(String receiverPhone, String fromDate, String toDate);
 
 }

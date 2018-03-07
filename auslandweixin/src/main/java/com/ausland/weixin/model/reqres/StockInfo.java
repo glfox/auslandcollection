@@ -5,19 +5,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class StockInfo {
 	
-    String errorDetails;
     String productId;
     String productName;
     String brandName;
     String color;
     String size;
-    String additonal;
+    String feature1;
+    String feature2;
     String stockStatus;
-
-	public String getErrorDetails() {
-		return errorDetails;
-	}
-
+ 
 	public String getBrandName() {
 		return brandName;
 	}
@@ -42,16 +38,20 @@ public class StockInfo {
 		this.size = size;
 	}
 
-	public String getAdditonal() {
-		return additonal;
+	public String getFeature1() {
+		return feature1;
 	}
 
-	public void setAdditonal(String additonal) {
-		this.additonal = additonal;
+	public void setFeature1(String feature1) {
+		this.feature1 = feature1;
 	}
 
-	public void setErrorDetails(String errorDetails) {
-		this.errorDetails = errorDetails;
+	public String getFeature2() {
+		return feature2;
+	}
+
+	public void setFeature2(String feature2) {
+		this.feature2 = feature2;
 	}
 
 	public String getProductId() {
