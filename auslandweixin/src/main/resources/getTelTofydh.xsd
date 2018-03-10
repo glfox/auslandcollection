@@ -2,13 +2,30 @@
   <xs:element name="tel">
     <xs:complexType>
       <xs:sequence>
-        <xs:element type="xs:string" name="message"/>
+        <xs:element type="xs:string" name="message"  minOccurs="0"/>
         <xs:element type="xs:string" name="issuccess"/>
-        <xs:element name="fydhlist">
+        <xs:element name="fydhlist" maxOccurs="unbounded" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:string" name="chrfydh"/>
-              <xs:element type="xs:string" name="chrdysj"/>
+              <xs:element type="xs:string" name="chrlrsj"  minOccurs="0"/>
+              <xs:element type="xs:long" name="chrfydh"  minOccurs="0"/>
+              <xs:element type="xs:string" name="chrbgdh"  minOccurs="0"/>
+              <xs:element type="xs:float" name="chrzl"  minOccurs="0"/>
+              <xs:element type="xs:string" name="chrshzt"  minOccurs="0"/>
+              <xs:element type="xs:string" name="ckdhm" minOccurs="0"/>
+              <xs:element type="xs:string" name="chrsjr" minOccurs="0"/>
+              <xs:element type="xs:string" name="chrsjrdz" minOccurs="0"/>
+              <xs:element type="xs:string" name="chrsjrdh" minOccurs="0"/>
+              <xs:element name="njxx" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="chrggxh" minOccurs="0"/>
+                    <xs:element type="xs:string" name="chrpp" minOccurs="0"/>
+                    <xs:element type="xs:string" name="chrpm" minOccurs="0"/>
+                    <xs:element type="xs:string" name="chrjs" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

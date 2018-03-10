@@ -12,11 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
  
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.CustomSendMessage;
 import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
+import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
 import com.ausland.weixin.model.xml.WeChatMessage;
 import com.ausland.weixin.model.zhonghuan.xml.Back;
 import com.ausland.weixin.model.zhonghuan.xml.Back.Logisticsback;
@@ -89,10 +91,10 @@ public class CoreServiceImpl implements CoreService {
 		newMsg.setMsgType("text");
 		newMsg.setCreateTime(new Date().getTime());
 		
-		logger.debug("reply message:"+newMsg.toString());
+		logger.debug("reply message:"+newMsg.toXMLString());
 		try {
 			response.setCharacterEncoding("UTF-8");
-			response.getWriter().write(newMsg.toString());
+			response.getWriter().write(newMsg.toXMLString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -100,5 +102,70 @@ public class CoreServiceImpl implements CoreService {
 		
 		//weChatMessageService.sendMessage(newMsg.toString());
 		return "success";
+	}
+
+	@Override
+	@Async
+	public void asyncProcessRequest(WeChatMessage message) {
+		String serverName = message.getToUserName();
+		String userName = message.getFromUserName();
+		CustomSendMessage newMsg = new CustomSendMessage();
+		if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()))
+		{
+			if(validationUtil.isValidChinaMobileNo(message.getContent()) == true)
+	    	{
+				QueryZhongHuanLastThreeMonthByPhoneNoRes res =  queryZhongHuanService.queryZhongHuanLastThreeMonthbyPhoneNo(message.getContent(), false);
+	    	}
+	    	else if(validationUtil.isValidZhongHuanTrackNo(message.getContent()) == true)
+	    	{
+	    		
+	    	}
+		}
+		
+	    if(!AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()) ||
+	       (validationUtil.isValidZhongHuanTrackNo(message.getContent())== false  && validationUtil.isValidChinaMobileNo(message.getContent()) == false ) )
+	    {
+	    	newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
+	    }
+	    else
+	    {
+	    	
+	    	QueryZhongHuanDetailsByTrackingNoRes res = queryZhongHuanService.queryZhongHuanDetailsByTrackingNo(message.getContent().trim());
+	    	if(res == null)
+	    	{
+	    		newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
+	    	}
+	    	else
+	    	{
+	    		if(StringUtils.isEmpty(res.getErrorDetails()))
+		    	{
+		    		Back back = res.getBack();
+		    		if(back == null || back.getLogisticsback() == null || back.getLogisticsback().size()<= 0)
+		    		{
+		    			newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_NOCOURIERINFO);
+		    		}
+		    		else
+		    		{
+		    			StringBuffer strb = new StringBuffer();
+		    			for(Back.Logisticsback  lb : back.getLogisticsback())
+		    			{
+		    				strb.append(lb.getTime()).append(":").append(lb.getZtai()).append("\n");
+		    			}
+		    			newMsg.setContent(strb.toString());
+		    		}
+		    	}
+		    	else
+		    	{
+		    		newMsg.setContent(res.getErrorDetails());
+		    	}
+	    	}
+	    	
+	    }
+		newMsg.setFromUserName(serverName);
+		newMsg.setToUserName(userName);
+		newMsg.setMsgType("text");
+		newMsg.setCreateTime(new Date().getTime());
+		
+		logger.debug("reply message:"+newMsg.toXMLString());
 	}
 }

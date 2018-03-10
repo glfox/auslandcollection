@@ -10,4 +10,5 @@ import com.ausland.weixin.model.xml.WeChatMessage;
 public interface CoreService {
 
 	public String processRequest(WeChatMessage message,HttpServletResponse response);
+	public void asyncProcessRequest(WeChatMessage message);
 }

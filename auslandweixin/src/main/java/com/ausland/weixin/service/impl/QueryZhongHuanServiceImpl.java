@@ -139,21 +139,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 				res.setErrorDetails("got error message from zhonghuan getTelToFydh services:"+tel.getMessage());
 				return res;
 			}
-			if(fetchDetails == false) return res;
-			
-			if("true".equalsIgnoreCase(tel.getIssuccess()) && tel.getFydhlist() != null && tel.getFydhlist().size() > 0)
-			{
-				//get the details from tracking no
-				List<QueryZhongHuanDetailsByTrackingNoRes> backresList = new ArrayList<QueryZhongHuanDetailsByTrackingNoRes>();
-				for(Fydh fydh : tel.getFydhlist())
-				{
-					QueryZhongHuanDetailsByTrackingNoRes backres = getTrackingDetailsbyTrackingNo(fydh.getChrfydh());
-					backresList.add(backres);
-				}
-				res.setTrackingDetails(backresList);
-				return res;
-			}
-		 
+		    return res;
 		}
 		catch(Exception e)
 		{
