@@ -5,56 +5,43 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CustomSendMessage {
-	@JsonProperty("ToUserName")
+	@JsonProperty("touser")
 	private String toUserName;
-	@JsonProperty("FromUserName")
-	private String fromUserName;
-	@JsonProperty("CreateTime")
-	private long createTime;
-	@JsonProperty("MsgType")
+ 
+	@JsonProperty("msgtype")
 	private String msgType;
-	@JsonProperty("Content")
-	private String content;
+	
+	@JsonProperty("text")
+	private MessageContent content;
+
 	public String getToUserName() {
 		return toUserName;
 	}
+
 	public void setToUserName(String toUserName) {
 		this.toUserName = toUserName;
 	}
-	public String getFromUserName() {
-		return fromUserName;
-	}
-	public void setFromUserName(String fromUserName) {
-		this.fromUserName = fromUserName;
-	}
-	public long getCreateTime() {
-		return createTime;
-	}
-	public void setCreateTime(long createTime) {
-		this.createTime = createTime;
-	}
+
 	public String getMsgType() {
 		return msgType;
 	}
+
 	public void setMsgType(String msgType) {
 		this.msgType = msgType;
 	}
-	public String getContent() {
+
+	public MessageContent getContent() {
 		return content;
 	}
-	public void setContent(String content) {
+
+	public void setContent(MessageContent content) {
 		this.content = content;
 	}
+
 	@Override
 	public String toString() {
-		return "CustomSendMessage [toUserName=" + toUserName + ", fromUserName=" + fromUserName + ", createTime="
-				+ createTime + ", msgType=" + msgType + ", content=" + content + "]";
+		return "CustomSendMessage [toUserName=" + toUserName + ", msgType=" + msgType + ", content=" + content + "]";
 	}
 	
- 
-	public String toXMLString() {
-		return String.format("<xml><ToUserName><![CDATA[%s]]></ToUserName> <FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[%s]]></MsgType><Content><![CDATA[%s]]></Content></xml>", 
-				toUserName, fromUserName, createTime, msgType, content);
-	}
 	 
 }

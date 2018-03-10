@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.CustomSendMessage;
+import com.ausland.weixin.model.MessageContent;
 import com.ausland.weixin.model.reqres.GongZhongHaoUserInfoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
@@ -49,7 +50,7 @@ public class CoreServiceImpl implements CoreService {
 	@Autowired
 	private ValidationUtil validationUtil;
 
-	@Override
+	/*@Override
 	public String processRequest(WeChatMessage message, HttpServletResponse response) {
 		String serverName = message.getToUserName();
 		String userName = message.getFromUserName();
@@ -107,7 +108,7 @@ public class CoreServiceImpl implements CoreService {
 		
 		//weChatMessageService.sendMessage(newMsg.toString());
 		return "success";
-	}
+	}*/
 
 	@Override
 	@Async
@@ -123,7 +124,9 @@ public class CoreServiceImpl implements CoreService {
 				QueryZhongHuanLastThreeMonthByPhoneNoRes res =  queryZhongHuanService.queryZhongHuanLastThreeMonthbyPhoneNo(message.getContent());
 				if(res == null)
 		    	{
-		    		newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
+					MessageContent mContent = new MessageContent();
+					mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
+					newMsg.setContent(mContent);
 		    	}
 		    	else
 		    	{
@@ -131,16 +134,22 @@ public class CoreServiceImpl implements CoreService {
 			    	{
 			    		if(res.getFydhList() == null  || res.getFydhList().size()<= 0)
 			    		{
-			    			newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_NOORDERINFO);
+			    			MessageContent mContent = new MessageContent();
+							mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_NOORDERINFO);
+			    			newMsg.setContent(mContent);
 			    		}
 			    		else
 			    		{
-			    			newMsg.setContent(res.getFydhList().toString());
+			    			MessageContent mContent = new MessageContent();
+							mContent.setContent(res.getFydhList().toString());
+			    			newMsg.setContent(mContent);
 			    		}
 			    	}
 			    	else
 			    	{
-			    		newMsg.setContent(res.getErrorDetails());
+			    		MessageContent mContent = new MessageContent();
+						mContent.setContent(res.getErrorDetails());
+		    			newMsg.setContent(mContent);
 			    	}
 		    	}
 	    	}
@@ -151,7 +160,9 @@ public class CoreServiceImpl implements CoreService {
 	    	else
 	    	{
 	    		logger.debug("got text message which is not valid phoneno nor the valid trackingno:"+message.getContent());
-	    		newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
+	    		MessageContent mContent = new MessageContent();
+				mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
+	    		newMsg.setContent(mContent);
 	    	}
 		}
 		else if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_EVENT.equalsIgnoreCase(message.getMsgType()))
@@ -161,17 +172,15 @@ public class CoreServiceImpl implements CoreService {
 			GongZhongHaoUserInfoRes res = gongZhongHaoSubscriberUserService.getWeChatUserInfo(message.getFromUserName());
 			if(res == null)
 			{
-				newMsg.setContent("cannot fetch wechat userinfo from openid:"+message.getFromUserName());
+				//newMsg.setContent("cannot fetch wechat userinfo from openid:"+message.getFromUserName());
 			}
 			else
 			{
-				newMsg.setContent(res.toString());
+				//newMsg.setContent(res.toString());
 			}
 		}
-		newMsg.setFromUserName(serverName);
 		newMsg.setToUserName(userName);
 		newMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
-		newMsg.setCreateTime(new Date().getTime());
 		
 		logger.debug("send message:"+newMsg.toString());
 		weChatMessageService.sendMessage(newMsg);
