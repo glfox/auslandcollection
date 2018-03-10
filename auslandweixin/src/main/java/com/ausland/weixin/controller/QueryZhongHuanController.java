@@ -26,10 +26,10 @@ public class QueryZhongHuanController {
 
 	@RequestMapping(value = "/lastthreemonth", method = RequestMethod.GET)
 	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(@RequestParam(name="phone", required = true) String phoneNo, 
-			@RequestParam(name="details", required = true) Boolean fetchDetails, HttpServletRequest request, HttpServletResponse response)
+			                                                                              HttpServletRequest request, HttpServletResponse response)
 	{
-		logger.debug("entered QueryZhongHuanController.queryZhongHuanLastThreeMonthbyPhoneNo with phoneno:"+phoneNo+"; fetch details:"+fetchDetails);
-		return queryZhongHuanService.queryZhongHuanLastThreeMonthbyPhoneNo(phoneNo, fetchDetails);
+		logger.debug("entered QueryZhongHuanController.queryZhongHuanLastThreeMonthbyPhoneNo with phoneno:"+phoneNo);
+		return queryZhongHuanService.queryZhongHuanLastThreeMonthbyPhoneNo(phoneNo);
 	}
 
 	@RequestMapping(value = "/detailsbytrackingno", method = RequestMethod.GET)

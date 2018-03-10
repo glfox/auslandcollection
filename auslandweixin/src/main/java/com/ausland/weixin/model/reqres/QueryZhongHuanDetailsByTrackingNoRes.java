@@ -7,8 +7,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class QueryZhongHuanDetailsByTrackingNoRes {
 
 	String errorDetails;
+	String status;
 	Back back;
 	 
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public String getErrorDetails() {
 		return errorDetails;
 	}
@@ -23,8 +30,8 @@ public class QueryZhongHuanDetailsByTrackingNoRes {
 	}
 	@Override
 	public String toString() {
-		return "QueryZhongHuanDetailsByTrackingNoRes [errorDetails=" + errorDetails + ", back=" + back + "]";
+		return "QueryZhongHuanDetailsByTrackingNoRes [errorDetails=" + errorDetails + ", status=" + status + ", back="
+				+ back + "]";
 	}
-	 
 	
 }

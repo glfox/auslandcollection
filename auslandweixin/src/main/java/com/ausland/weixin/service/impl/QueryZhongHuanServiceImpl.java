@@ -22,12 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
+import com.ausland.weixin.model.reqres.ZhongHuanFydhDetails;
 import com.ausland.weixin.model.zhonghuan.wsdl.LogisticsServiceI;
 import com.ausland.weixin.model.zhonghuan.xml.Back;
 import com.ausland.weixin.model.zhonghuan.xml.Tel;
 import com.ausland.weixin.model.zhonghuan.xml.Tel.Fydh;
+import com.ausland.weixin.model.zhonghuan.xml.Tel.Fydh.Njxx;
 import com.ausland.weixin.service.QueryZhongHuanService;
 import com.ausland.weixin.util.ValidationUtil;
 
@@ -106,12 +109,13 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 	}
 	
 	@Override
-	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo, Boolean fetchDetails) {
+	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo) {
 		QueryZhongHuanLastThreeMonthByPhoneNoRes res = new QueryZhongHuanLastThreeMonthByPhoneNoRes();
 		
 		if(StringUtils.isEmpty(phoneNo) || validationUtil.isValidChinaMobileNo(phoneNo) == false)
 		{
 			res.setErrorDetails("input phone number is invalid.");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 			return res;
 		} 
 		String trimedPhoneNo = validationUtil.trimPhoneNo(phoneNo);
@@ -123,6 +127,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 			if(StringUtils.isEmpty(xmlRes))
 			{
 				res.setErrorDetails("got empty response from zhonghuan getTelToFydh service."); 
+				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 				return res;
 			}
 			 
@@ -131,14 +136,18 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 			if(tel == null)
 			{
 				res.setErrorDetails("cannot parse xml back to Tel object");
+				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 				return res;
 			}
-			res.setTrackingNos(tel);
 			if(!"true".equalsIgnoreCase(tel.getIssuccess()))
 			{
 				res.setErrorDetails("got error message from zhonghuan getTelToFydh services:"+tel.getMessage());
+				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 				return res;
 			}
+			List<ZhongHuanFydhDetails> list = parseTelToFydhList(tel);
+			res.setFydhList(list);
+			res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		    return res;
 		}
 		catch(Exception e)
@@ -150,6 +159,51 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 		return res;
 	}
 	
+	private List<ZhongHuanFydhDetails> parseTelToFydhList(Tel tel)
+	{
+		List<ZhongHuanFydhDetails> list = new ArrayList<ZhongHuanFydhDetails>();
+		if(tel == null || tel.getFydhlist() == null || tel.getFydhlist().size()<= 0)
+			return list;
+		for(Fydh fydh : tel.getFydhlist())
+		{
+			ZhongHuanFydhDetails details = new ZhongHuanFydhDetails();
+			details.setCourierChinaNumber(fydh.getChrbgdh());
+			details.setCourierCompany(fydh.getCkdhm());
+			details.setCourierCreatedDateTime(fydh.getChrlrsj());
+			details.setCourierNumber(fydh.getChrfydh());
+			details.setCustomStatus(fydh.getChrshzt());
+			details.setReceiverAddress(fydh.getChrsjrdz());
+			details.setReceiverName(fydh.getChrsjr());
+			details.setReceiverPhone(fydh.getChrsjrdh());
+			details.setWeight(fydh.getChrzl());
+			if(fydh.getNjxx() != null && fydh.getNjxx().size() > 0)
+			{
+				StringBuffer strb = new StringBuffer();
+				for(Njxx njxx:fydh.getNjxx())
+				{
+					if(!StringUtils.isEmpty(njxx.getChrpm()))
+					{
+						strb.append(njxx.getChrpm()).append(" ");
+					}
+					if(!StringUtils.isEmpty(njxx.getChrpp()))
+					{
+						strb.append(njxx.getChrpp()).append(" ");
+					}
+					if(!StringUtils.isEmpty(njxx.getChrggxh()))
+					{
+						strb.append(njxx.getChrggxh()).append(" ");
+					}
+					if(!StringUtils.isEmpty(njxx.getChrjs()))
+					{
+						strb.append(njxx.getChrjs()).append(" ");
+					}
+					strb.append(",");
+				}
+				details.setProductItems(strb.toString());
+			}
+		}
+		return list;
+	}
 	private Back parseXmlToBack(String xml)
 	{
 		if(StringUtils.isEmpty(xml)) return null;

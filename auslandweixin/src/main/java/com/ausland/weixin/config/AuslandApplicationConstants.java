@@ -8,8 +8,9 @@ public class AuslandApplicationConstants {
 	public static final String WEIXIN_MSG_TYPE_TEXT="text";
 	public static final String WEIXIN_MSG_TYPE_EVENT="event";
 	public static final String WELCOME_SUBSCRIBE="欢迎关注AUSLAND微信公众号";
-	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT="请输入重庆中环的单号查询物流信息";
-	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_NOCOURIERINFO="没有找到重庆中环对应物流信息";
+	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT="请输入手机号查询最近三个月的单号信息，或者输入重庆中环的单号查询具体物流信息";
+	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_NOORDERINFO="没有找到最近三个月内该手机号对应的重庆中环单号信息 ";
+	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_NOCOURIERINFO="没有找到重庆中环对应单号的物流信息";
 	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR="服务器异常请稍后再试";
 	public static final Integer DB_BATCH_SIZE=20;
 	public static final String STOCKTATUS_INSTOCK = "INSTOCK";

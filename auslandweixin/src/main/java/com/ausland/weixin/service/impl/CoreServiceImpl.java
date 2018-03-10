@@ -114,11 +114,37 @@ public class CoreServiceImpl implements CoreService {
 		{
 			if(validationUtil.isValidChinaMobileNo(message.getContent()) == true)
 	    	{
-				QueryZhongHuanLastThreeMonthByPhoneNoRes res =  queryZhongHuanService.queryZhongHuanLastThreeMonthbyPhoneNo(message.getContent(), false);
+				QueryZhongHuanLastThreeMonthByPhoneNoRes res =  queryZhongHuanService.queryZhongHuanLastThreeMonthbyPhoneNo(message.getContent());
+				if(res == null)
+		    	{
+		    		newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
+		    	}
+		    	else
+		    	{
+		    		if(AuslandApplicationConstants.STATUS_OK.equalsIgnoreCase(res.getStatus()))
+			    	{
+			    		if(res.getFydhList() == null  || res.getFydhList().size()<= 0)
+			    		{
+			    			newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_NOORDERINFO);
+			    		}
+			    		else
+			    		{
+			    			newMsg.setContent(res.getFydhList().toString());
+			    		}
+			    	}
+			    	else
+			    	{
+			    		newMsg.setContent(res.getErrorDetails());
+			    	}
+		    	}
 	    	}
 	    	else if(validationUtil.isValidZhongHuanTrackNo(message.getContent()) == true)
 	    	{
-	    		
+	    		QueryZhongHuanDetailsByTrackingNoRes res = queryZhongHuanService.queryZhongHuanDetailsByTrackingNo(message.getContent().trim());
+	    	}
+	    	else
+	    	{
+	    		//
 	    	}
 		}
 		
