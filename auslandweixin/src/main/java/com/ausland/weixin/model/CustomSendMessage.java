@@ -1,7 +1,9 @@
 package com.ausland.weixin.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CustomSendMessage {
 	@JsonProperty("ToUserName")
 	private String toUserName;

@@ -17,12 +17,14 @@ import org.springframework.stereotype.Service;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.CustomSendMessage;
+import com.ausland.weixin.model.reqres.GongZhongHaoUserInfoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
 import com.ausland.weixin.model.xml.WeChatMessage;
 import com.ausland.weixin.model.zhonghuan.xml.Back;
 import com.ausland.weixin.model.zhonghuan.xml.Back.Logisticsback;
 import com.ausland.weixin.service.CoreService;
+import com.ausland.weixin.service.GongZhongHaoSubscriberUserService;
 import com.ausland.weixin.service.QueryZhongHuanService;
 import com.ausland.weixin.service.WeChatMessageService;
 import com.ausland.weixin.util.ValidationUtil;
@@ -35,11 +37,14 @@ public class CoreServiceImpl implements CoreService {
 	@Value("${message.send.url}")
 	private String messageSendUrl;
 
-	/*@Autowired
-	private WeChatMessageService weChatMessageService;*/
+	 @Autowired
+	private WeChatMessageService weChatMessageService; 
 	
 	@Autowired
 	private QueryZhongHuanService queryZhongHuanService; 
+	
+	@Autowired
+	GongZhongHaoSubscriberUserService gongZhongHaoSubscriberUserService;
 	
 	@Autowired
 	private ValidationUtil validationUtil;
@@ -112,6 +117,7 @@ public class CoreServiceImpl implements CoreService {
 		CustomSendMessage newMsg = new CustomSendMessage();
 		if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()))
 		{
+			logger.debug("got a text message:"+message.getContent());
 			if(validationUtil.isValidChinaMobileNo(message.getContent()) == true)
 	    	{
 				QueryZhongHuanLastThreeMonthByPhoneNoRes res =  queryZhongHuanService.queryZhongHuanLastThreeMonthbyPhoneNo(message.getContent());
@@ -144,54 +150,31 @@ public class CoreServiceImpl implements CoreService {
 	    	}
 	    	else
 	    	{
-	    		//
+	    		logger.debug("got text message which is not valid phoneno nor the valid trackingno:"+message.getContent());
+	    		newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
 	    	}
 		}
-		
-	    if(!AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()) ||
-	       (validationUtil.isValidZhongHuanTrackNo(message.getContent())== false  && validationUtil.isValidChinaMobileNo(message.getContent()) == false ) )
-	    {
-	    	newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
-	    }
-	    else
-	    {
-	    	
-	    	QueryZhongHuanDetailsByTrackingNoRes res = queryZhongHuanService.queryZhongHuanDetailsByTrackingNo(message.getContent().trim());
-	    	if(res == null)
-	    	{
-	    		newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
-	    	}
-	    	else
-	    	{
-	    		if(StringUtils.isEmpty(res.getErrorDetails()))
-		    	{
-		    		Back back = res.getBack();
-		    		if(back == null || back.getLogisticsback() == null || back.getLogisticsback().size()<= 0)
-		    		{
-		    			newMsg.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_NOCOURIERINFO);
-		    		}
-		    		else
-		    		{
-		    			StringBuffer strb = new StringBuffer();
-		    			for(Back.Logisticsback  lb : back.getLogisticsback())
-		    			{
-		    				strb.append(lb.getTime()).append(":").append(lb.getZtai()).append("\n");
-		    			}
-		    			newMsg.setContent(strb.toString());
-		    		}
-		    	}
-		    	else
-		    	{
-		    		newMsg.setContent(res.getErrorDetails());
-		    	}
-	    	}
-	    	
-	    }
+		else if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_EVENT.equalsIgnoreCase(message.getMsgType()))
+		{
+			// this is the user subscribe event
+			logger.debug("got a event message:"+message.getContent());
+			GongZhongHaoUserInfoRes res = gongZhongHaoSubscriberUserService.getWeChatUserInfo(message.getFromUserName());
+			if(res == null)
+			{
+				newMsg.setContent("cannot fetch wechat userinfo from openid:"+message.getFromUserName());
+			}
+			else
+			{
+				newMsg.setContent(res.toString());
+			}
+		}
 		newMsg.setFromUserName(serverName);
 		newMsg.setToUserName(userName);
-		newMsg.setMsgType("text");
+		newMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
 		newMsg.setCreateTime(new Date().getTime());
 		
-		logger.debug("reply message:"+newMsg.toXMLString());
+		logger.debug("send message:"+newMsg.toString());
+		weChatMessageService.sendMessage(newMsg);
+		logger.debug("after send.");
 	}
 }

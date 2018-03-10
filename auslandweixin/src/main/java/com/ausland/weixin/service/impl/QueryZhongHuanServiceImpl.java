@@ -228,6 +228,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 		if(StringUtils.isEmpty(trackingNo) || validationUtil.isValidZhongHuanTrackNo(trackingNo) == false) 
 		{
 			res.setErrorDetails("trackingNo:"+ trackingNo +" is not valid.");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 			return res;
 		}
 		 
@@ -238,14 +239,17 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 			if(back == null)
 			{
 				res.setErrorDetails("cannot parse xml back to Back object");
+				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 				return res;
 			}
+			res.setStatus(AuslandApplicationConstants.STATUS_OK);
 			res.setBack(back);
 			return res;
 		}
 		catch(Exception e)
 		{
 			logger.error("caught exception during getLogisticInformation from zhonghuan:"+e.getMessage());
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 			res.setErrorDetails("caught exception during getLogisticInformation from zhonghuan:" + e.getMessage());
 		}
 		return  res;
@@ -253,8 +257,6 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 
 	@Override
 	public QueryZhongHuanDetailsByTrackingNoRes queryZhongHuanDetailsByTrackingNo(String trackingNo) {
-		// TODO Auto-generated method stub
-		 
 		try
 		{
 			QueryZhongHuanDetailsByTrackingNoRes backres = getTrackingDetailsbyTrackingNo(trackingNo);

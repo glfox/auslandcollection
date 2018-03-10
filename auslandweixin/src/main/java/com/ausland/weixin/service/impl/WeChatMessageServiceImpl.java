@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.ausland.weixin.model.CustomSendMessage;
-import com.ausland.weixin.model.xml.WeChatMessage;
+import com.ausland.weixin.model.CustomSendMessageRes;
 import com.ausland.weixin.service.AuthService;
 import com.ausland.weixin.service.WeChatMessageService;
 
@@ -29,11 +29,12 @@ public class WeChatMessageServiceImpl implements WeChatMessageService {
 	private String msgSendUrl;
 	
 	@Override
-	public void sendMessage(String message) {
+	public CustomSendMessageRes sendMessage(CustomSendMessage message) {
 		logger.info("Send message:" + message);
 		String accessToken = accessTokenService.getAccessToken();
-		String str = restTemplate.postForObject(msgSendUrl, message, String.class, accessToken);
-		logger.info("Send message successfully. " + str);
+		CustomSendMessageRes res = restTemplate.postForObject(msgSendUrl, message, CustomSendMessageRes.class, accessToken);
+		logger.info("Send message res. " + res);
+		return res;
 	}
 
 	private HttpHeaders buildHttpHeader(String accessToken) {

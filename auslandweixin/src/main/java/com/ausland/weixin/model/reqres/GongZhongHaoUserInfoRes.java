@@ -98,6 +98,13 @@ public class GongZhongHaoUserInfoRes {
 	public void setTagid_list(String tagid_list) {
 		this.tagid_list = tagid_list;
 	}
+	@Override
+	public String toString() {
+		return "GongZhongHaoUserInfoRes [subscribe=" + subscribe + ", openid=" + openid + ", sex=" + sex + ", city="
+				+ city + ", country=" + country + ", province=" + province + ", language=" + language + ", headimagurl="
+				+ headimagurl + ", subscribe_time=" + subscribe_time + ", unionid=" + unionid + ", remark=" + remark
+				+ ", groupid=" + groupid + ", tagid_list=" + tagid_list + "]";
+	}
 	
 	
 }

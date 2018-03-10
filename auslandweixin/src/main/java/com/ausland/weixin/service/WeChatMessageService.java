@@ -1,9 +1,9 @@
 package com.ausland.weixin.service;
 
 import com.ausland.weixin.model.CustomSendMessage;
-import com.ausland.weixin.model.xml.WeChatMessage;
+import com.ausland.weixin.model.CustomSendMessageRes;
 
 public interface WeChatMessageService {
 	
-	void sendMessage(String message);
+	CustomSendMessageRes sendMessage(CustomSendMessage message);
 }
