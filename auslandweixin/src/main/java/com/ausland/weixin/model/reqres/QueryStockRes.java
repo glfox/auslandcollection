@@ -8,15 +8,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QueryStockRes {
 
+	String status;
+	List<StockInfo> stockInfoList;
 	String errorDetails;
+	
 	public String getStatus() {
 		return status;
 	}
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	String status;
-	List<StockInfo> stockInfoList;
 	
 	public String getErrorDetails() {
 		return errorDetails;

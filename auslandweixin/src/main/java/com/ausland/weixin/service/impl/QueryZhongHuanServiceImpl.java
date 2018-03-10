@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.FaultOutInterceptor;
@@ -199,9 +200,16 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 					}
 					strb.append(",");
 				}
-				details.setProductItems(strb.toString());
+				String productItems = strb.toString();
+				if(productItems.endsWith(","))
+				{
+					productItems = productItems.substring(0, productItems.lastIndexOf(","));
+				}
+				details.setProductItems(productItems);
 			}
+			list.add(details);
 		}
+		logger.debug("returns ZhongHuanFydhDetails list: "+ToStringBuilder.reflectionToString(list));
 		return list;
 	}
 	private Back parseXmlToBack(String xml)

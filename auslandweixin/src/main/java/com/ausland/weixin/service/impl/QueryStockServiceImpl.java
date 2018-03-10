@@ -41,6 +41,7 @@ public class QueryStockServiceImpl implements QueryStockService{
     		stock.setProductName(p.getProductName());
     		stock.setFeature1(p.getFeature1());
             stock.setFeature2(p.getFeature2());
+            stock.setStockStatus(p.getStockStatus());
             stockList.add(stock);
     	}
     	return stockList;
