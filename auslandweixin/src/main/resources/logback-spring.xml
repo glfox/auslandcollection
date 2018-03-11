@@ -70,15 +70,18 @@
 	<logger name="com.ausland.weixin">
 	    <level value="DEBUG" />
 	</logger>
+	<logger name="com.zaxxer.hikari">
+	  <level value="INFO" />
+	</logger>
 	<logger name="org.apache.http.impl.conn">
-		<level value="DEBUG" />
+		<level value="INFO" />
 	</logger>
 	<logger name="org.apache.http.impl.client">
-		<level value="DEBUG" />
+		<level value="INFO" />
 	</logger>
 	<logger name="org.apache.http.wire">
 		<!-- Set this to DEBUG when DEBUG Logs needed -->
-		<level value="DEBUG" />
+		<level value="INFO" />
 	</logger>
 	
 	<logger name="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">

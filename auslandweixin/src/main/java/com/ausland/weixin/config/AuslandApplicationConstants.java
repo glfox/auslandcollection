@@ -6,6 +6,7 @@ public class AuslandApplicationConstants {
 	public static final String STATUS_FAILED = "failed";
 	public static final String STATUS_PARTIAL = "partial";
 	public static final String WEIXIN_MSG_TYPE_TEXT="text";
+	public static final Integer WEIXIN_MSG_TYPE_TEXT_MAXLENGTH=2046;
 	public static final String WEIXIN_MSG_TYPE_EVENT="event";
 	public static final String WELCOME_SUBSCRIBE="欢迎关注AUSLAND微信公众号";
 	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT="请输入手机号查询最近三个月的单号信息，或者输入重庆中环的单号查询具体物流信息";
