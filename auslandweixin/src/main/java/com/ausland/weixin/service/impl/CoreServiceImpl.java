@@ -131,7 +131,7 @@ public class CoreServiceImpl implements CoreService {
 			{
 				strb.append("</a>");
 			}
-			strb.append("\n时间：").append(details.getCourierCreatedDateTime()).append("\n状态：").append(details.getCustomStatus()).append("\n收件人：").append(details.getReceiverName()).append("\n商品：").append("\n");
+			strb.append("\n时间：").append(details.getCourierCreatedDateTime()).append("\n状态：").append(details.getCustomStatus()).append("\n收件人：").append(details.getReceiverName()).append("\n商品：").append(productItems).append("\n");
             if(strb.toString().getBytes("utf-8").length > AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT_MAXLENGTH)
 			{
 				logger.debug("added the string:"+preString);
@@ -187,6 +187,7 @@ public class CoreServiceImpl implements CoreService {
 	    			try
 	    			{
 	    				List<String> contentList = splitFydh(res.getFydhList());
+	    				logger.debug("will send out "+contentList.size()+" messages to user:"+toUserName);
 	    				for(String s:contentList)
 	    				{
 	    					CustomSendMessage mesg = new CustomSendMessage();

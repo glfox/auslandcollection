@@ -194,7 +194,6 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 			{
 				details.setReceiverName(fydh.getChrsjr().replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
 			}
-			details.setReceiverName(fydh.getChrsjr());
 			details.setReceiverPhone(fydh.getChrsjrdh());
 			details.setWeight(fydh.getChrzl());
 			if(fydh.getNjxx() != null && fydh.getNjxx().size() > 0)

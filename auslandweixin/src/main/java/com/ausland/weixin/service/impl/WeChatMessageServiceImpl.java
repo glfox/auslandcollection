@@ -75,10 +75,9 @@ public class WeChatMessageServiceImpl implements WeChatMessageService {
 			catch(Exception e)
 			{
 				logger.debug("got exception:"+e.getMessage());
-				CustomSendMessageRes res = new CustomSendMessageRes();
-				res.setErrmsg("cannot parse the utf-8 content.");
-				res.setErrorcode(AuslandApplicationConstants.STATUS_FAILED);
-				return res;
+				MessageContent mc = new MessageContent();
+	        	mc.setContent("数据解析异常："+e.getMessage());
+				message.setContent(mc);
 			}
 		}
 		CustomSendMessageRes res = restTemplate.postForObject(msgSendUrl, message, CustomSendMessageRes.class, accessToken);
