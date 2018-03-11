@@ -1,10 +1,12 @@
 package com.ausland.weixin.model.reqres;
 
+import java.io.Serializable;
+
 import com.ausland.weixin.model.zhonghuan.xml.Back;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class QueryZhongHuanDetailsByTrackingNoRes {
+public class QueryZhongHuanDetailsByTrackingNoRes implements Serializable{
 
 	String errorDetails;
 	String status;

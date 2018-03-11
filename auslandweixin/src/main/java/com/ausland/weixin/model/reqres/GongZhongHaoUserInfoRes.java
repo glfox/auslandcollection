@@ -1,10 +1,16 @@
 package com.ausland.weixin.model.reqres;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class GongZhongHaoUserInfoRes {
+public class GongZhongHaoUserInfoRes  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int subscribe;
 	private String openid;
 	private int sex;   //0: unknown 1: man 2: woman
@@ -16,9 +22,12 @@ public class GongZhongHaoUserInfoRes {
 	private String subscribe_time;
 	private String unionid;
 	private String remark;
-	private String groupid;
-	private String tagid_list;
-	
+	private int groupid;
+	private int[] tagid_list;
+	private String nickname;
+	private String subscribe_scene;
+	private int qr_scene;
+	private String qr_scene_str;
 	
 	public int getSubscribe() {
 		return subscribe;
@@ -86,25 +95,46 @@ public class GongZhongHaoUserInfoRes {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	public String getGroupid() {
+	public int getGroupid() {
 		return groupid;
 	}
-	public void setGroupid(String groupid) {
+	public void setGroupid(int groupid) {
 		this.groupid = groupid;
 	}
-	public String getTagid_list() {
+	public int[] getTagid_list() {
 		return tagid_list;
 	}
-	public void setTagid_list(String tagid_list) {
+	public void setTagid_list(int[] tagid_list) {
 		this.tagid_list = tagid_list;
 	}
-	@Override
-	public String toString() {
-		return "GongZhongHaoUserInfoRes [subscribe=" + subscribe + ", openid=" + openid + ", sex=" + sex + ", city="
-				+ city + ", country=" + country + ", province=" + province + ", language=" + language + ", headimagurl="
-				+ headimagurl + ", subscribe_time=" + subscribe_time + ", unionid=" + unionid + ", remark=" + remark
-				+ ", groupid=" + groupid + ", tagid_list=" + tagid_list + "]";
+	public String getNickname() {
+		return nickname;
 	}
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+	public String getSubscribe_scene() {
+		return subscribe_scene;
+	}
+	public void setSubscribe_scene(String subscribe_scene) {
+		this.subscribe_scene = subscribe_scene;
+	}
+	public int getQr_scene() {
+		return qr_scene;
+	}
+	public void setQr_scene(int qr_scene) {
+		this.qr_scene = qr_scene;
+	}
+	public String getQr_scene_str() {
+		return qr_scene_str;
+	}
+	public void setQr_scene_str(String qr_scene_str) {
+		this.qr_scene_str = qr_scene_str;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
 	
 	
 }

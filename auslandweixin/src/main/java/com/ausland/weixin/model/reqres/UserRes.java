@@ -1,5 +1,6 @@
 package com.ausland.weixin.model.reqres;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 
@@ -10,7 +11,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class UserRes {
+public class UserRes  implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	String id;
 	

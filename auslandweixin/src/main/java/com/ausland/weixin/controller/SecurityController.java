@@ -60,9 +60,10 @@ public class SecurityController {
 		ServletInputStream in = request.getInputStream();
 		WeChatMessage message = JAXB.unmarshal(in, WeChatMessage.class);
 		logger.debug("got message  "+message.toString());
-		logger.debug("got message:"+message.getContent());
+		
 		//coreService.processRequest(message, response);
 		coreService.asyncProcessRequest(message);
+		logger.debug("got message:"+message.getContent());
 		return "success";
 	}
 }

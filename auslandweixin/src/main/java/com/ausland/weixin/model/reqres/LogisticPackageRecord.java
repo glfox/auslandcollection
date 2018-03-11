@@ -1,13 +1,14 @@
 package com.ausland.weixin.model.reqres;
 
  
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
  
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class LogisticPackageRecord {
+public class LogisticPackageRecord  implements Serializable{
 
     	
     String logisticTrackingNo;

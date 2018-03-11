@@ -1,11 +1,17 @@
 package com.ausland.weixin.model.reqres;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class StockInfo {
+public class StockInfo  implements Serializable{
 	
-    String productId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	String productId;
     String productName;
     String brandName;
     String color;

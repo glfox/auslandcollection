@@ -8,6 +8,7 @@
 
 package com.ausland.weixin.model.zhonghuan.xml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -60,12 +61,12 @@ import javax.xml.bind.annotation.XmlType;
     "logisticsback"
 })
 @XmlRootElement(name = "back")
-public class Back {
+public class Back implements Serializable{
 
     @XmlElement(required = false)
     protected String kdgsname;
-    protected long kdgsdh;
-    protected long fydh;
+    protected String kdgsdh;
+    protected String fydh;
     @XmlElement(required = false)
     protected String countrytype;
     @XmlElement(name = "Logisticsback")
@@ -99,7 +100,7 @@ public class Back {
      * Gets the value of the kdgsdh property.
      * 
      */
-    public long getKdgsdh() {
+    public String getKdgsdh() {
         return kdgsdh;
     }
 
@@ -107,7 +108,7 @@ public class Back {
      * Sets the value of the kdgsdh property.
      * 
      */
-    public void setKdgsdh(long value) {
+    public void setKdgsdh(String value) {
         this.kdgsdh = value;
     }
 
@@ -115,7 +116,7 @@ public class Back {
      * Gets the value of the fydh property.
      * 
      */
-    public long getFydh() {
+    public String getFydh() {
         return fydh;
     }
 
@@ -123,7 +124,7 @@ public class Back {
      * Sets the value of the fydh property.
      * 
      */
-    public void setFydh(long value) {
+    public void setFydh(String value) {
         this.fydh = value;
     }
 
@@ -206,7 +207,7 @@ public class Back {
         "ztai",
         "time"
     })
-    public static class Logisticsback {
+    public static class Logisticsback  implements Serializable{
 
         @XmlElement(required = false)
         protected String ztai;
