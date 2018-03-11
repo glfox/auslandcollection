@@ -190,6 +190,10 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 			details.setCourierNumber(fydh.getChrfydh());
 			details.setCustomStatus(fydh.getChrshzt());
 			details.setReceiverAddress(fydh.getChrsjrdz());
+			if(!StringUtils.isEmpty(fydh.getChrsjr()))
+			{
+				details.setReceiverName(fydh.getChrsjr().replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
+			}
 			details.setReceiverName(fydh.getChrsjr());
 			details.setReceiverPhone(fydh.getChrsjrdh());
 			details.setWeight(fydh.getChrzl());

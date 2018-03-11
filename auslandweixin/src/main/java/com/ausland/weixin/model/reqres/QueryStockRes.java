@@ -9,6 +9,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QueryStockRes  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String status;
 	List<StockInfo> stockInfoList;
 	String errorDetails;

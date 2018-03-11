@@ -131,7 +131,7 @@ public class CoreServiceImpl implements CoreService {
 			{
 				strb.append("</a>");
 			}
-			strb.append("\n时间：").append(details.getCourierCreatedDateTime()).append("\n状态：").append(details.getCustomStatus()).append("\n收件人：").append(details.getReceiverName()).append("\n商品：").append(productItems).append("\n收件人地址：").append(address).append("\n");
+			strb.append("\n时间：").append(details.getCourierCreatedDateTime()).append("\n状态：").append(details.getCustomStatus()).append("\n收件人：").append(details.getReceiverName()).append("\n商品：").append("\n");
             if(strb.toString().getBytes("utf-8").length > AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT_MAXLENGTH)
 			{
 				logger.debug("added the string:"+preString);
@@ -147,7 +147,7 @@ public class CoreServiceImpl implements CoreService {
 				{
 					strb.append("</a>");
 				}
-				strb.append("\n时间：").append(details.getCourierCreatedDateTime()).append("\n状态：").append(details.getCustomStatus()).append("\n收件人：").append(details.getReceiverName()).append("\n商品：").append(productItems).append("\n收件人地址：").append(address).append("\n");
+				strb.append("\n时间：").append(details.getCourierCreatedDateTime()).append("\n状态：").append(details.getCustomStatus()).append("\n收件人：").append(details.getReceiverName()).append("\n商品：").append(productItems).append("\n");
 				//strb.append("【").append(i).append("】:").append("<a href=\"").append(auslandHostUrl).append(queryZhonghuanTrackingNoDetailsUrl).append("?trackingno=").append(details.getCourierNumber()).append("\">").append(details.getCourierNumber()).append("</a>").append("\n时间：").append(details.getCourierCreatedDateTime()).append("\n状态：").append(details.getCustomStatus()).append("\n收件人：").append(details.getReceiverName()).append("\n商品：").append(productItems).append("\n收件人地址：").append(address).append("\n");
 			}
 			i ++;

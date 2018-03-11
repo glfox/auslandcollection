@@ -7,7 +7,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ZhongHuanFydhDetails  implements Serializable{
 
-	  String courierCreatedDateTime;//电子下单时间chrlrsj
+	  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	String courierCreatedDateTime;//电子下单时间chrlrsj
       String courierNumber;  //分运单号chrfydh
       String courierChinaNumber; //国内单号
       String weight; //重量

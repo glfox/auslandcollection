@@ -36,6 +36,7 @@ public class WeChatMessageServiceImpl implements WeChatMessageService {
 	@Override
 	public CustomSendMessageRes sendMessage(CustomSendMessage message) {
 		logger.info("Send message:" + message);
+		String accessToken = accessTokenService.getAccessToken();
 		if(message != null 
 		&& AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()) 
 		&& message.getContent() != null)
@@ -47,12 +48,28 @@ public class WeChatMessageServiceImpl implements WeChatMessageService {
 				byte[] bytes = str.getBytes("utf-8");
 		        if(bytes.length > AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT_MAXLENGTH)
 		        {
-		        	byte[] bytenew = new byte[AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT_MAXLENGTH];
-		        	System.arraycopy(bytes, 0, bytenew, 0, AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT_MAXLENGTH);
-		        	String content = new String(bytenew);
-		        	MessageContent mc = new MessageContent();
-		        	mc.setContent(content);
-		        	message.setContent(mc);
+		        	int startIndex = 0;
+		        	int length = AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT_MAXLENGTH;
+		        	while(startIndex < bytes.length)
+		        	{
+		        		byte[] bytenew = new byte[length];
+		        		System.arraycopy(bytes, startIndex, bytenew, 0, length);
+			        	String content = new String(bytenew);
+			        	
+			        	MessageContent mc = new MessageContent();
+			        	mc.setContent(content);
+			        	CustomSendMessage mesg = new CustomSendMessage();
+			        	mesg.setContent(mc);
+			        	mesg.setToUserName(message.getToUserName());
+			        	mesg.setMsgType(message.getMsgType());
+			        	CustomSendMessageRes res = restTemplate.postForObject(msgSendUrl, mesg, CustomSendMessageRes.class, accessToken);
+			    		logger.info("Send message got res. " + res.toString());
+			    		startIndex = startIndex + length;
+			    		length = Math.min(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT_MAXLENGTH, bytes.length - startIndex);
+		        	}
+		        	CustomSendMessageRes res = new CustomSendMessageRes();
+		        	res.setErrorcode(AuslandApplicationConstants.STATUS_OK);
+		        	return res;
 		        }
 			}
 			catch(Exception e)
@@ -63,9 +80,7 @@ public class WeChatMessageServiceImpl implements WeChatMessageService {
 				res.setErrorcode(AuslandApplicationConstants.STATUS_FAILED);
 				return res;
 			}
-			
 		}
-		String accessToken = accessTokenService.getAccessToken();
 		CustomSendMessageRes res = restTemplate.postForObject(msgSendUrl, message, CustomSendMessageRes.class, accessToken);
 		logger.info("Send message got res. " + res.toString());
 		return res;
