@@ -31,6 +31,5 @@ tengxun cloud server:
                 ProxyPassReverse /auslandtest http://127.0.0.1:8081/auslandtest/
   sudo systemctl restart apache2
   
-4>test phone no:    13520128002
-  test tracking no: 970000195094
+
 

@@ -1,9 +1,11 @@
 package com.ausland.weixin.model.reqres;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ZhongHuanFydhDetails {
+public class ZhongHuanFydhDetails  implements Serializable{
 
 	  String courierCreatedDateTime;//电子下单时间chrlrsj
       String courierNumber;  //分运单号chrfydh

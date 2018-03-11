@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,15 +50,23 @@ public class ValidationUtil {
 
 	public static void main(String[] args) {
 		ValidationUtil u = new ValidationUtil();
+		SimpleDateFormat df = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT);
+		try {
+			Date d = df.parse("2018-03-04 23:01:02");
+			System.out.println(df.format(d));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		// TODO Auto-generated method stub
        System.out.println(u.isValidChinaMobileNo("15618983927"));
        System.out.println(u.trimPhoneNo("156 18983927 "));
        System.out.println(u.removeCDATA("<tel><message>成功</message>"));
        System.out.print(u.removeCDATA("<![CDATA[<?xml  version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?><tel><message>成功</message><issuccess>true</issuccess><fydhlist><chrfydh>970000197505</chrfydh> <chrdysj>2018-03-03 06:33:37</chrdysj> </fydhlist> </tel>]]>"));
-	   File file = new File("/home/ubuntu/upload/product/" + "Price List（S）.xls");
-       u.readExcel(file);
+	  
 	}
-	
+		
 	private void readExcel(File file)
 	{
 

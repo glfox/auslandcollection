@@ -1,5 +1,6 @@
 package com.ausland.weixin.model.reqres;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -7,8 +8,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class QueryZhongHuanLastThreeMonthByPhoneNoRes {
-    String status;
+public class QueryZhongHuanLastThreeMonthByPhoneNoRes implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	String status;
 	String errorDetails;
 	List<ZhongHuanFydhDetails> fydhList;
 	public String getErrorDetails() {

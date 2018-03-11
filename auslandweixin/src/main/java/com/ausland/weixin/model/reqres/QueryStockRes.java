@@ -1,12 +1,13 @@
 package com.ausland.weixin.model.reqres;
 
  
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class QueryStockRes {
+public class QueryStockRes  implements Serializable{
 
 	String status;
 	List<StockInfo> stockInfoList;

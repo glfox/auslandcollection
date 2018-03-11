@@ -1,9 +1,11 @@
 package com.ausland.weixin.model.reqres;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class GongZhongHaoUserInfoRes {
+public class GongZhongHaoUserInfoRes  implements Serializable{
 
 	private int subscribe;
 	private String openid;

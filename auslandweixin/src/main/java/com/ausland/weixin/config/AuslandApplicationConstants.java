@@ -16,6 +16,6 @@ public class AuslandApplicationConstants {
 	public static final Integer DB_BATCH_SIZE=20;
 	public static final String STOCKTATUS_INSTOCK = "INSTOCK";
 	public static final String STOCKTATUS_OUTOFSTOCK = "OUTOFSTOCK";
-	public static final String DATETIME_STRING_FORMAT = "yyyy-MM-dd-HHmmss";
+	public static final String DATETIME_STRING_FORMAT = "yyyy-MM-dd HHmmss";
 	public static final String DATE_STRING_FORMAT = "yyyy-MM-dd";
 }

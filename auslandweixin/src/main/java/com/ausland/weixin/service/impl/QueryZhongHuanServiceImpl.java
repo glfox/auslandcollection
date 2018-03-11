@@ -1,18 +1,21 @@
 package com.ausland.weixin.service.impl;
 
 import java.io.StringReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+import javax.cache.annotation.CacheResult;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.FaultOutInterceptor;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
@@ -34,6 +37,7 @@ import com.ausland.weixin.model.zhonghuan.xml.Tel.Fydh;
 import com.ausland.weixin.model.zhonghuan.xml.Tel.Fydh.Njxx;
 import com.ausland.weixin.service.QueryZhongHuanService;
 import com.ausland.weixin.util.ValidationUtil;
+import com.ausland.weixin.util.ZhongHuanFydhDetailsComparator;
 
  
 @Service
@@ -110,6 +114,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 	}
 	
 	@Override
+	@CacheResult(cacheName="zhonghuanlastthreemonth")
 	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo) {
 		QueryZhongHuanLastThreeMonthByPhoneNoRes res = new QueryZhongHuanLastThreeMonthByPhoneNoRes();
 		
@@ -147,6 +152,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 				return res;
 			}
 			List<ZhongHuanFydhDetails> list = parseTelToFydhList(tel);
+			Collections.sort(list, new ZhongHuanFydhDetailsComparator());
 			res.setFydhList(list);
 			res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		    return res;
@@ -170,7 +176,17 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 			ZhongHuanFydhDetails details = new ZhongHuanFydhDetails();
 			details.setCourierChinaNumber(fydh.getChrbgdh());
 			details.setCourierCompany(fydh.getCkdhm());
-			details.setCourierCreatedDateTime(fydh.getChrlrsj());
+			if(!StringUtils.isEmpty(fydh.getChrlrsj()))
+			{
+				SimpleDateFormat df = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT);
+				try {
+					Date d = df.parse(fydh.getChrlrsj());
+					details.setCourierCreatedDateTime(df.format(d));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			details.setCourierNumber(fydh.getChrfydh());
 			details.setCustomStatus(fydh.getChrshzt());
 			details.setReceiverAddress(fydh.getChrsjrdz());
@@ -263,6 +279,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 		return  res;
 	}
 
+	@CacheResult(cacheName="zhonghuandetails")
 	@Override
 	public QueryZhongHuanDetailsByTrackingNoRes queryZhongHuanDetailsByTrackingNo(String trackingNo) {
 		try
