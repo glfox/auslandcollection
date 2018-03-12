@@ -10,6 +10,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "xml")
 @XmlAccessorType(XmlAccessType.NONE)
 public class WeChatMessage implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@XmlElement(name = "ToUserName")
 	private String toUserName;
 	@XmlElement(name = "FromUserName")
