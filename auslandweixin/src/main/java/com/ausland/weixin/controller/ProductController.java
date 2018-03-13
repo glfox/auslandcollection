@@ -113,7 +113,7 @@ private static final Logger logger = LoggerFactory.getLogger(ProductController.c
     
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public GlobalRes uploadProductFromExcel(@RequestPart(required = true)MultipartFile excelFile,
-			                                           HttpServletRequest httpServletRequest) throws IOException 
+			                                HttpServletRequest httpServletRequest) throws IOException 
 	{
 		logger.debug("entered uploadLogisticPackageOrder.");
 		return productService.uploadProductFromExcel(excelFile);
