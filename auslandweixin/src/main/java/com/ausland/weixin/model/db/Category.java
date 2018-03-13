@@ -18,7 +18,7 @@ public class Category {
     Integer categoryId;
     
     @Column(length = 128)	
-    String CategoryName;
+    String categoryName;
 
 	public Integer getCategoryId() {
 		return categoryId;
@@ -29,16 +29,16 @@ public class Category {
 	}
 
 	public String getCategoryName() {
-		return CategoryName;
+		return categoryName;
 	}
 
 	public void setCategoryName(String categoryName) {
-		CategoryName = categoryName;
+		categoryName = categoryName;
 	}
 
 	@Override
 	public String toString() {
-		return "Category [categoryId=" + categoryId + ", CategoryName=" + CategoryName + "]";
+		return "Category [categoryId=" + categoryId + ", CategoryName=" + categoryName + "]";
 	}
      
 

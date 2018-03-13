@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -369,7 +370,7 @@ public class ProductServiceImpl implements ProductService{
         	return res;
         }
         
-        String createdSrc = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+        String createdSrc = FilenameUtils.getBaseName(excelFile.getOriginalFilename())+"."+FilenameUtils.getExtension(excelFile.getOriginalFilename());
         List<Product> productList = new ArrayList<Product>();
         for(ProductRes pres : records)
         {
@@ -435,7 +436,7 @@ public class ProductServiceImpl implements ProductService{
         	Sheet datatypeSheet = workbook.getSheetAt(0);
             Iterator<Row> iterator = datatypeSheet.iterator();
             int i = 0;
-            String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+            HashMap<String, ProductRes> map = new HashMap<String, ProductRes>();
         	while(iterator.hasNext())
         	{
         		Row currentRow = iterator.next();
@@ -452,17 +453,8 @@ public class ProductServiceImpl implements ProductService{
         		{
         			try
         			{
-        				List<ProductRes> productList = new ArrayList<ProductRes>();
-        			    String errorMsg = provisionOneRow(fileName, currentRow, productList);
-        			    if(StringUtils.isEmpty(errorMsg))
-        			    {
-        			    	//records.add(record);
-        			    	if(productList.size() > 0)
-        			    	{
-        			    		records.addAll(productList);
-        			    	}
-        			    }
-        			    else
+        			    String errorMsg = provisionOneRow(currentRow, map);
+        			    if(!StringUtils.isEmpty(errorMsg))
         			    {
         			    	int line = i + 2;
         			    	errorMessage.append(";parse line: "+ line + "got errormsg:"+errorMsg);
@@ -477,6 +469,9 @@ public class ProductServiceImpl implements ProductService{
         		}
         		i ++;
         	}
+        	
+        	records.addAll(map.values());
+        	logger.debug("added "+ records.size()+" products to the result list.");
         }
         catch(Exception e)
         {
@@ -503,7 +498,7 @@ public class ProductServiceImpl implements ProductService{
         return errorMessage.toString();
 	}
 	
-	private String provisionOneRow(String fileName, Row currentRow, List<ProductRes> records)
+	private String provisionOneRow(Row currentRow, HashMap<String, ProductRes> recordsMap)
 	{
 	   
 		if(currentRow == null)
@@ -512,7 +507,7 @@ public class ProductServiceImpl implements ProductService{
 		}
 		Iterator<Cell> cellIterator = currentRow.iterator();
 		int i = 0;
-		ProductRes p = new ProductRes();
+		ProductRes p = null;
 		while(cellIterator.hasNext() && i <= AuslandweixinConfig.productUploadExcelHeaders.size())
 		{
 	        i ++;
@@ -528,13 +523,31 @@ public class ProductServiceImpl implements ProductService{
 				cell = currentCell.getNumericCellValue() +"";
 				logger.debug("cell "+i +":"+cell);
 			}
-					
+			String productId = null;
+			String color = null;
 	        if(i == 1)
 	        {
-	        	//产品图片
-	        	continue;
+	        	//产品编号
+	        	if(StringUtils.isEmpty(cell))
+	        		return "Does not contain productId";
+	        	productId = cell.trim();
+	        	if(recordsMap.containsKey(productId))
+	        	{
+	        		p = recordsMap.get(productId);
+	        	}
+	        	else
+	        	{
+	        		p = new ProductRes();
+	        		p.setProductId(productId);
+	        		recordsMap.put(productId, p);
+	        	}
 	        }
 	        else if(i == 2)
+	        {
+	        	//产品图片
+	        	continue;	        	
+	        }
+	        else if(i == 3)
 	        {
 	        	//产品品牌
 	        	if(!StringUtils.isEmpty(cell))
@@ -542,7 +555,7 @@ public class ProductServiceImpl implements ProductService{
 	        		p.setBrand(cell.trim());
 	        	} 
 	        }
-	        else if(i == 3)
+	        else if(i == 4)
 	        {
 	        	//产品名称
 	        	if(!StringUtils.isEmpty(cell))
@@ -550,29 +563,33 @@ public class ProductServiceImpl implements ProductService{
 	        		p.setProductName(cell.trim());
 	        	}	        	
 	        }
-	        else if(i == 4)
-	        {
-	        	//产品编号
-	        	if(!StringUtils.isEmpty(cell))
-	        	{
-	        		p.setProductId(cell.trim());
-	        	}
-	        	
-	        }
 	        else if(i == 5)
 	        {
 	        	//产品颜色
-	        	if(!StringUtils.isEmpty(cell))
-	        	{
-	        		p.setColor(cell.trim());
-	        	} 
+	        	if(StringUtils.isEmpty(cell))
+	        	   return "Does not have color field."; 
+        		color = cell.trim();
 	        }
 	        else if(i == 6)
 	        {
 	        	//产品尺码
-	        	if(!StringUtils.isEmpty(cell))
+	        	if(StringUtils.isEmpty(cell))
+	        	    return "Does not have size field.";
+	        	String[] sizes = cell.trim().split(",");
+	        	if(sizes.length <= 0)
+	        		return "Does not contain size field.";
+	        	
+	        	if(p.getStock() == null)
+        		{
+        			List<StockInfo> stockInfoList = new ArrayList<StockInfo>();
+        			p.setStock(stockInfoList);
+        		}
+	        	for(String size : sizes)
 	        	{
-	        		p.setSize(cell.trim());
+	        		StockInfo stockInfo = new StockInfo();
+		        	stockInfo.setColor(color);
+		        	stockInfo.setSize(size);
+		        	p.getStock().add(stockInfo);  
 	        	}
 	        }
 	        else if(i == 7)
@@ -582,41 +599,8 @@ public class ProductServiceImpl implements ProductService{
 	        	{
 	        		p.setProductWeight(cell.trim());
 	        	}
-	        	 
-		        p.setCreatedSrc(fileName); 
-		        p.setCreatedDateTime(validationUtil.getCurrentDate());
-		        p.setStockStatus(AuslandApplicationConstants.STOCKTATUS_INSTOCK);
-		        
-	        	if(!StringUtils.isEmpty(p.getSize()))
-	        	{
-	        		String[] sizes = p.getSize().split("/");
-	        	    if(sizes != null && sizes.length > 0)
-	        	    {
-	        	    	for(String size : sizes)
-	        	    	{
-	        	    		if(!StringUtils.isEmpty(size))
-	        	    		{
-	        	    			Product p1 = new Product();
-	        	    			p1.setBrand(p.getBrand());
-	        	    			p1.setColor(p.getColor());
-	        	    			p1.setCreatedDateTime(p.getCreatedDateTime());
-	        	    			p1.setCreatedSrc(p.getCreatedSrc());
-	        	    			p1.setProductId(p.getProductId());
-	        	    			p1.setProductName(p.getProductName());
-	        	    			p1.setProductWeight(p.getProductWeight());
-	        	    			p1.setStockStatus(p.getStockStatus());
-	        	    			p1.setSize(size);
-	        	    			records.add(p1);
-	        	    		}
-	        	    	}
-	        	    }
-	        	}
-	        	else
-	        	{ 
-	        		records.add(p);
-	        	}
+	        	return null;
 	        }
-	       
 		}
         return null;
 	}
