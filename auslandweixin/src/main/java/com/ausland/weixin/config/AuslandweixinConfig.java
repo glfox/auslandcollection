@@ -78,10 +78,10 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		
 		productUploadExcelHeaders = new ArrayList<String>();
 		try {
+			productUploadExcelHeaders.add("产品编号");
 			productUploadExcelHeaders.add("产品图片");
 			productUploadExcelHeaders.add("产品品牌");
-			productUploadExcelHeaders.add("产品名称");
-			productUploadExcelHeaders.add("产品编号");		
+			productUploadExcelHeaders.add("产品名称");		
 			productUploadExcelHeaders.add("产品颜色");
 			productUploadExcelHeaders.add("产品尺码");
 			productUploadExcelHeaders.add("产品毛重");
