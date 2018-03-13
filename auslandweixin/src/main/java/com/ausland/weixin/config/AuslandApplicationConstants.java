@@ -18,4 +18,5 @@ public class AuslandApplicationConstants {
 	public static final String STOCKTATUS_OUTOFSTOCK = "OUTOFSTOCK";
 	public static final String DATETIME_STRING_FORMAT = "yyyy-MM-dd HHmmss";
 	public static final String DATE_STRING_FORMAT = "yyyy-MM-dd";
+	public static final String IMAGE_HEADER = "data:image/jpeg:base64,";
 }

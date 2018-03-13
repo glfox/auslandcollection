@@ -29,16 +29,19 @@ import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.config.AuslandweixinConfig;
 import com.ausland.weixin.dao.LogisticPackageRepository;
 import com.ausland.weixin.dao.ProductRepository;
+import com.ausland.weixin.dao.ProductStockRepository;
 import com.ausland.weixin.model.db.LogisticPackage;
 import com.ausland.weixin.model.db.Product;
+import com.ausland.weixin.model.reqres.CreateProductReq;
+import com.ausland.weixin.model.reqres.CreateProductRes;
 import com.ausland.weixin.model.reqres.UploadProductReq;
 import com.ausland.weixin.model.reqres.UploadProductRes;
 import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
-import com.ausland.weixin.service.UploadProductService;
+import com.ausland.weixin.service.ProductService;
 import com.ausland.weixin.util.ValidationUtil;
 
 @Service
-public class UploadProductServiceImpl implements UploadProductService{
+public class ProductServiceImpl implements ProductService{
 
 	@Autowired
 	private ValidationUtil validationUtil;
@@ -46,19 +49,43 @@ public class UploadProductServiceImpl implements UploadProductService{
 	@Autowired
 	private ProductRepository productRepository;
 	
-	private static final Logger logger = LoggerFactory.getLogger(UploadProductServiceImpl.class);
+	@Autowired
+	private ProductStockRepository productStockRepository;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
     
 	@Value("${upload.product.excel.server.directory}")
 	private String excelDirectory;
-	
-	
+
 	@Override
-	public UploadProductRes uploadProduct(UploadProductReq req) {
-		// TODO Auto-generated method stub
+	public CreateProductRes createProduct(CreateProductReq req) {
+		CreateProductRes res = new CreateProductRes();
+		String ret = validateCreateProductReq(req);
+		if(!StringUtils.isEmpty(ret))
+		{
+			res.setErrorDetails(ret);
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		Product product = new Product();
+		
+	}
+	
+	private String validateCreateProductReq(CreateProductReq req)
+	{
+		if(req == null || StringUtils.isEmpty(req.getProductId()))
+		{
+			return "没有商品Id";
+		}
+		Product p = productRepository.findByProductId(req.getProductId());
+		if(p != null)
+		{
+			return "商品Id已经存在";
+		}
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public UploadZhonghanCourierExcelRes uploadProductFromExcel(MultipartFile excelFile) {
 		UploadZhonghanCourierExcelRes res = new UploadZhonghanCourierExcelRes();
         if(excelFile == null || excelFile.isEmpty() || excelFile.getOriginalFilename() == null)
@@ -391,5 +418,5 @@ public class UploadProductServiceImpl implements UploadProductService{
 		if(i < templateHeaders.size())
 			return false;
 		return true;
-    }
+    }*/
 }

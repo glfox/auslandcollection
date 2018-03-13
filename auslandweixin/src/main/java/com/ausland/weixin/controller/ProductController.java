@@ -11,39 +11,49 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ausland.weixin.model.reqres.UploadProductReq;
-import com.ausland.weixin.model.reqres.UploadProductRes;
-import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
-import com.ausland.weixin.service.UploadProductService;
+import com.ausland.weixin.model.reqres.CreateProductReq;
+import com.ausland.weixin.model.reqres.CreateProductRes;
+import com.ausland.weixin.service.ProductService;
+import com.ausland.weixin.util.ImageUtil;
 
 @RestController
 @MultipartConfig
 @RequestMapping(value = "/provisioning/product")
-public class UploadProductController {
+public class ProductController {
 	
-private static final Logger logger = LoggerFactory.getLogger(UploadProductController.class);
+private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     
 	@Autowired
-	private UploadProductService uploadProductService; 
+	private ProductService productService; 
+	
+	@Autowired
+	private ImageUtil imageUtil;
 	
 	@RequestMapping(value = "/createproduct", method = RequestMethod.POST)
-	public UploadProductRes createProduct(@RequestBody(required = true) UploadProductReq uploadProductRequest,
+	public CreateProductRes createProduct(@RequestBody(required = true) CreateProductReq req,
+			@RequestPart(required = true)MultipartFile smallImage,
 			HttpServletRequest httpServletRequest) throws IOException 
 	{
 		logger.debug("entered uploadLogisticPackageOrder.");
-		return uploadProductService.uploadProduct(uploadProductRequest);
+		return productService.createProduct(req);
 	}
 	
-    
+	public String testImage(@RequestPart(required = true) MultipartFile smallImage,
+			                @RequestParam int height, @RequestParam int width)
+	{
+		return imageUtil.getResizedImage(smallImage, height, width);
+	}
+   /* 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public UploadZhonghanCourierExcelRes uploadProductFromExcel(@RequestPart(required = true)MultipartFile excelFile,
 			                                           HttpServletRequest httpServletRequest) throws IOException 
 	{
 		logger.debug("entered uploadLogisticPackageOrder.");
 		return uploadProductService.uploadProductFromExcel(excelFile);
-	}
+	}*/
 }

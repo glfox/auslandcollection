@@ -48,4 +48,6 @@ public class UserRes  implements Serializable{
 	
 	@Column(name="wechatopenid")
 	String wechatOpenId;
+	
+	
 }

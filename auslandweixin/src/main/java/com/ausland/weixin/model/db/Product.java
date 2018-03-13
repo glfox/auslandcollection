@@ -4,8 +4,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -16,13 +14,10 @@ import javax.persistence.TemporalType;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    Integer id;
-    
-    @Column(length = 128)	
+	@Column(length = 128)	
     String productId;
     
-    @Column(length = 512)	
+    @Column(length = 128)	
     String productName;
     
     @Column(length = 64)	
@@ -31,20 +26,8 @@ public class Product {
     @Column(length = 256)
     String productMainImageUrl;
     
-    @Column(length = 256)
-    String productImageUrl1;
-    
-    @Column(length = 256)
-    String productImageUrl2;
-    
-    @Column(length = 256)
-    String productImageUrl3;
-    
-    @Column(length = 256)
-    String productImageUrl4;
-    
-    @Column(length = 256)
-    String productImageUrl5;
+    @Column(length = 10240)
+    String productSmallImage;
     
     @Column(length = 256)
     String productMainVideoUrl;
@@ -77,22 +60,7 @@ public class Product {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     Date   lastupdatedDateTime;
-    
-    @Column(length = 32)	
-    String size;
-    
-	@Column(length = 32)
-    String color;
-	
-	@Column(length = 64)
-    String feature1;
-	
-	@Column(length = 64)
-    String feature2;
-	
-	@Column(length = 32)
-    String stockStatus;
-	
+
 	public String getProductId() {
 		return productId;
 	}
@@ -124,45 +92,13 @@ public class Product {
 	public void setProductMainImageUrl(String productMainImageUrl) {
 		this.productMainImageUrl = productMainImageUrl;
 	}
-
-	public String getProductImageUrl1() {
-		return productImageUrl1;
+	
+	public String getProductSmallImage() {
+		return productSmallImage;
 	}
 
-	public void setProductImageUrl1(String productImageUrl1) {
-		this.productImageUrl1 = productImageUrl1;
-	}
-
-	public String getProductImageUrl2() {
-		return productImageUrl2;
-	}
-
-	public void setProductImageUrl2(String productImageUrl2) {
-		this.productImageUrl2 = productImageUrl2;
-	}
-
-	public String getProductImageUrl3() {
-		return productImageUrl3;
-	}
-
-	public void setProductImageUrl3(String productImageUrl3) {
-		this.productImageUrl3 = productImageUrl3;
-	}
-
-	public String getProductImageUrl4() {
-		return productImageUrl4;
-	}
-
-	public void setProductImageUrl4(String productImageUrl4) {
-		this.productImageUrl4 = productImageUrl4;
-	}
-
-	public String getProductImageUrl5() {
-		return productImageUrl5;
-	}
-
-	public void setProductImageUrl5(String productImageUrl5) {
-		this.productImageUrl5 = productImageUrl5;
+	public void setProductSmallImage(String productSmallImage) {
+		this.productSmallImage = productSmallImage;
 	}
 
 	public String getProductMainVideoUrl() {
@@ -245,53 +181,14 @@ public class Product {
 		this.lastupdatedDateTime = lastupdatedDateTime;
 	}
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getSize() {
-		return size;
-	}
-
-	public void setSize(String size) {
-		this.size = size;
-	}
-
-
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public String getFeature1() {
-		return feature1;
-	}
-
-	public void setFeature1(String feature1) {
-		this.feature1 = feature1;
-	}
-
-	public String getFeature2() {
-		return feature2;
-	}
-
-	public void setFeature2(String feature2) {
-		this.feature2 = feature2;
-	}
-
-	public String getStockStatus() {
-		return stockStatus;
-	}
-
-	public void setStockStatus(String stockStatus) {
-		this.stockStatus = stockStatus;
+	@Override
+	public String toString() {
+		return "Product [productId=" + productId + ", productName=" + productName + ", brand=" + brand
+				+ ", productMainImageUrl=" + productMainImageUrl 
+				+ ", productMainVideoUrl=" + productMainVideoUrl + ", productCategory=" + productCategory
+				+ ", productWeight=" + productWeight + ", createdBy=" + createdBy + ", createdDateTime="
+				+ createdDateTime + ", createdSrc=" + createdSrc + ", comments=" + comments + ", status=" + status
+				+ ", updatedBy=" + updatedBy + ", lastupdatedDateTime=" + lastupdatedDateTime + "]";
 	}
 
 }
