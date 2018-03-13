@@ -42,7 +42,8 @@ private static final Logger logger = LoggerFactory.getLogger(ProductController.c
 		logger.debug("entered uploadLogisticPackageOrder.");
 		return productService.createProduct(req);
 	}
-	
+
+	@RequestMapping(value = "/testimage", method = RequestMethod.GET)
 	public String testImage(@RequestPart(required = true) MultipartFile smallImage,
 			                @RequestParam int height, @RequestParam int width)
 	{
