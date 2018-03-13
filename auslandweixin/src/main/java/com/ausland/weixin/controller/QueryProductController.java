@@ -4,28 +4,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.reqres.QueryProductRes;
-import com.ausland.weixin.model.reqres.UploadProductReq;
-import com.ausland.weixin.model.reqres.UploadProductRes;
-import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
 import com.ausland.weixin.service.QueryProductService;
-import com.ausland.weixin.service.ProductService;
 
 @RestController
 @RequestMapping(value = "/query/product")
@@ -83,6 +75,20 @@ private static final Logger logger = LoggerFactory.getLogger(QueryProductControl
 	{
 		logger.debug("entered queryAll with pageNo:"+pageNo+";pageSize="+pageSize); 
 		return queryProductService.queryAll(pageNo, pageSize);
+	}
+	
+	@RequestMapping(value = "/getallbrand", method = RequestMethod.GET)
+	public List<String> getAllBrand(HttpServletRequest httpServletRequest) throws IOException 
+	{
+		logger.debug("entered getAllBrand "); 
+		return queryProductService.getAllBrand();
+	}
+	
+	@RequestMapping(value = "/getallcategory", method = RequestMethod.GET)
+	public List<String> getAllCategory(HttpServletRequest httpServletRequest) throws IOException 
+	{
+		logger.debug("entered getAllCategory "); 
+		return queryProductService.getAllCategory();
 	}
 	
 }

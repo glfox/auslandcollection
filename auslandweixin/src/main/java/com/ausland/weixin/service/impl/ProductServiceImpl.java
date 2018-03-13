@@ -1,23 +1,12 @@
 package com.ausland.weixin.service.impl;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +15,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
-import com.ausland.weixin.config.AuslandweixinConfig;
-import com.ausland.weixin.dao.LogisticPackageRepository;
+import com.ausland.weixin.dao.BrandRepository;
+import com.ausland.weixin.dao.CategoryRepository;
 import com.ausland.weixin.dao.ProductRepository;
 import com.ausland.weixin.dao.ProductStockRepository;
-import com.ausland.weixin.model.db.LogisticPackage;
+import com.ausland.weixin.model.db.Brand;
+import com.ausland.weixin.model.db.Category;
 import com.ausland.weixin.model.db.Product;
+import com.ausland.weixin.model.db.ProductStock;
 import com.ausland.weixin.model.reqres.CreateProductReq;
 import com.ausland.weixin.model.reqres.CreateProductRes;
-import com.ausland.weixin.model.reqres.UploadProductReq;
-import com.ausland.weixin.model.reqres.UploadProductRes;
-import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
+import com.ausland.weixin.model.reqres.GlobalRes;
+import com.ausland.weixin.model.reqres.ProductRes;
+import com.ausland.weixin.model.reqres.StockInfo;
+import com.ausland.weixin.model.reqres.UpdateProductStockReq;
+
 import com.ausland.weixin.service.ProductService;
 import com.ausland.weixin.util.ValidationUtil;
 
@@ -51,6 +44,12 @@ public class ProductServiceImpl implements ProductService{
 	
 	@Autowired
 	private ProductStockRepository productStockRepository;
+	
+	@Autowired
+	private BrandRepository brandRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
     
@@ -68,7 +67,69 @@ public class ProductServiceImpl implements ProductService{
 			return res;
 		}
 		Product product = new Product();
+		product.setBrand(req.getBrand());
+		product.setComments(req.getComments());
+		product.setCreatedDateTime(new Date());
+		product.setProductCategory(req.getCategory());
+		product.setProductId(req.getProductId());
+		product.setProductSmallImage(req.getSmallImageBase64EncodeString());
+		product.setProductWeight(req.getProductWeight());
+		product.setStatus(req.getStatus());
+		productRepository.saveAndFlush(product);
+		
+		String[] sizeArray = req.getSizes().split(",");
+		String[] colorArray = req.getColors().split(",");
+		List<ProductStock> psList = new ArrayList<ProductStock>();
+		for(String color : colorArray)
+		{
+			if(StringUtils.isEmpty(color))
+				continue;
+			for(String size : sizeArray)
+			{
+				if(StringUtils.isEmpty(size))
+					continue;
+				ProductStock ps = new ProductStock();
+				ps.setColor(color);
+				ps.setSize(size);
+				ps.setProductId(req.getProductId());
+				ps.setStockStatus(AuslandApplicationConstants.STOCKTATUS_INSTOCK);
+				psList.add(ps);
+			}
+		}
+		productStockRepository.save(psList);
+		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		
+		logger.debug("successfully created  the product:"+req.getProductId());
 		return res;
+	}
+	
+	private String validateUpdateProductReq(CreateProductReq req)
+	{
+		if(req == null || StringUtils.isEmpty(req.getProductId()))
+		{
+			return "没有商品Id";
+		} 
+		if(StringUtils.isEmpty(req.getCategory()))
+			return "没有商品类型";
+		
+		if(StringUtils.isEmpty(req.getCategory()))
+			return "没有商品品牌";
+				
+		Product p = productRepository.findByProductId(req.getProductId());
+		if(p == null)
+		{
+			return "商品Id不存在";
+		}
+		
+		Category c = categoryRepository.findByCategoryName(req.getCategory());
+		if(c == null || c.getCategoryName() == null)
+		    return "没有商品类型";
+		
+		Brand b = brandRepository.findByBrandName(req.getBrand());
+		if(b == null || b.getBrandName() == null)
+			return "没有商品品牌";
+		
+		return null;
 	}
 	
 	private String validateCreateProductReq(CreateProductReq req)
@@ -77,14 +138,290 @@ public class ProductServiceImpl implements ProductService{
 		{
 			return "没有商品Id";
 		}
+		if(StringUtils.isEmpty(req.getSizes()) || StringUtils.isEmpty(req.getColors()))
+		{
+			return "没有商品尺码和颜色";
+		}
+		if(StringUtils.isEmpty(req.getCategory()))
+			return "没有商品类型";
+		
+		if(StringUtils.isEmpty(req.getCategory()))
+			return "没有商品品牌";
+				
 		Product p = productRepository.findByProductId(req.getProductId());
 		if(p != null)
 		{
 			return "商品Id已经存在";
 		}
+		
+		Category c = categoryRepository.findByCategoryName(req.getCategory());
+		if(c == null || c.getCategoryName() == null)
+		    return "没有商品类型";
+		
+		Brand b = brandRepository.findByBrandName(req.getBrand());
+		if(b == null || b.getBrandName() == null)
+			return "没有商品品牌";
+		
 		return null;
 	}
 
+	@Override
+	public GlobalRes createBrand(String brandName) {
+		GlobalRes res = new GlobalRes();
+		Brand b = brandRepository.findByBrandName(brandName);
+		if(b != null)
+		{
+			res.setErrorDetails("品牌已经存在");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		b = new Brand();
+		b.setBrandName(brandName);
+		brandRepository.save(b);
+		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		return res;
+	}
+
+	@Override
+	public GlobalRes createCategory(String category) {
+		GlobalRes res = new GlobalRes();
+		Category c = categoryRepository.findByCategoryName(category);
+		if(c != null)
+		{
+			res.setErrorDetails("类型已经存在");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		c  = new Category();
+		c.setCategoryName(category);
+		categoryRepository.save(c);
+		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		return res;
+	}
+
+	@Override
+	public GlobalRes deleteBrand(String brand) {
+		GlobalRes res = new GlobalRes();
+		Brand b = brandRepository.findByBrandName(brand);
+		if(b == null)
+		{
+			res.setErrorDetails("品牌不存在");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		 
+		brandRepository.delete(b);
+		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		return res;
+	}
+
+	@Override
+	public GlobalRes deletedCategory(String category) {
+		GlobalRes res = new GlobalRes();
+		Category c = categoryRepository.findByCategoryName(category);
+		if(c == null)
+		{
+			res.setErrorDetails("类型不存在");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		 
+		categoryRepository.delete(c);
+		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		return res;
+	}
+
+	@Override
+	public GlobalRes deleteProduct(String productId) {
+		GlobalRes res = new GlobalRes();
+		Product p = productRepository.findByProductId(productId);
+		if(p == null)
+		{
+			res.setErrorDetails("商品不存在");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		 
+		productRepository.delete(p);
+		List<ProductStock> psList = productStockRepository.findByProductId(productId);
+		if(psList != null && psList.size() > 0)
+		{
+			productStockRepository.delete(psList);
+		}
+		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		return res;
+	}
+
+	@Override
+	public GlobalRes updateProductStock(UpdateProductStockReq req) {
+		GlobalRes res = new GlobalRes();
+		if(req == null || StringUtils.isEmpty(req.getProductId()) || req.getStock() == null || req.getStock().size() < 0)
+		{
+			res.setErrorDetails("没有库存需要修改");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		Product p = productRepository.findByProductId(req.getProductId());
+		if(p == null)
+		{
+			res.setErrorDetails("数据库中没有找到该商品");
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		productStockRepository.deleteByProductId(req.getProductId());
+		List<ProductStock> list = new ArrayList<ProductStock>();
+		for(StockInfo s: req.getStock())
+		{
+			ProductStock ps = new ProductStock();
+			ps.setColor(s.getColor());
+			ps.setProductId(req.getProductId()); 
+			ps.setSize(s.getSize());
+		    ps.setStockStatus(s.getStockStatus());
+			list.add(ps);
+		}
+		productStockRepository.save(list);
+		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		return res;
+	}
+
+	@Override
+	public GlobalRes updateProduct(CreateProductReq req) {
+		GlobalRes res = new GlobalRes();
+	
+		String str = validateUpdateProductReq(req);
+		if(!StringUtils.isEmpty(str))
+		{
+			res.setErrorDetails(str);
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+		}
+		Product p = new Product();
+	    p.setLastupdatedDateTime(new Date());
+	    p.setBrand(req.getBrand());
+	    p.setComments(req.getComments());
+	    p.setProductCategory(req.getCategory());
+	    p.setProductName(req.getProductName());
+	    p.setProductSmallImage(req.getSmallImageBase64EncodeString());
+	    p.setProductWeight(req.getProductWeight());
+	    p.setStatus(req.getStatus());
+	    productRepository.saveAndFlush(p);
+	    res.setStatus(AuslandApplicationConstants.STATUS_OK);
+	    return res;
+	}
+	
+	@Override
+	public GlobalRes uploadProductFromExcel(MultipartFile excelFile) 
+	{
+		GlobalRes res = new GlobalRes();
+        if(excelFile == null || excelFile.isEmpty() || excelFile.getOriginalFilename() == null)
+        {
+        	res.setErrorDetails("empty excel file");
+        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED);  
+        	return res;
+        }
+        String fileExtension = FilenameUtils.getExtension(excelFile.getOriginalFilename());
+        if(fileExtension == null || (!fileExtension.equalsIgnoreCase("xls") && !fileExtension.equalsIgnoreCase("xlsx")))
+        {
+        	res.setErrorDetails("chosen file extension is not correct:"+fileExtension);
+        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED); 
+        	return res;
+        }
+        String fileNamewithFullPath = excelDirectory+FilenameUtils.getBaseName(excelFile.getOriginalFilename())+"."+fileExtension;
+        if(isFileExists(fileNamewithFullPath) == true)
+        {
+        	res.setErrorDetails("same excel file already exists in "+fileNamewithFullPath);
+        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED); 
+        	return res;
+        }
+        List<ProductRes> records = new ArrayList<ProductRes>();
+        String errorMessage = validateExcelFile(excelFile, records);
+        if(!StringUtils.isEmpty(errorMessage))
+        {
+        	res.setErrorDetails(errorMessage);
+        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED); 
+        	return res;
+        }
+        if(records.size() <= 0)
+        {
+        	res.setErrorDetails("did not get any valid row from excel.");
+        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED); 
+        	return res;
+        }
+        String createdSrc = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+        List<Product> productList = new ArrayList<Product>();
+        for(ProductRes pres : records)
+        {
+        	Product p = new Product();
+        	p.setBrand(pres.getBrand());
+        	p.setCreatedDateTime(new Date());
+        	p.setCreatedSrc(createdSrc);
+        	p.setProductCategory(pres.getCategory());
+        	p.setProductId(pres.getProductId());
+        	p.setProductName(pres.getProductName());
+        	p.setProductWeight(pres.getProductWeight());
+        	productList.add(p);
+        	List<StockInfo> l = pres.getStock();
+        	if(l != null && l.size() > 0)
+        	{
+        		productStockRepository.deleteByProductId(pres.getProductId());
+        		List<ProductStock> psList = new ArrayList<ProductStock>();
+        		for(StockInfo si : l)
+        		{
+        			ProductStock ps = new ProductStock();
+        			ps.setProductId(pres.getProductId());
+        			ps.setStockStatus(AuslandApplicationConstants.STOCKTATUS_INSTOCK);
+        			ps.setColor(si.getColor());
+        			ps.setSize(si.getSize());
+        			psList.add(ps);
+        		}
+        		productStockRepository.save(psList);
+        	}
+        }
+        if(productList.size() <= AuslandApplicationConstants.DB_BATCH_SIZE)
+        {
+        	productRepository.save(productList);
+        	productRepository.flush();
+        }
+        else
+        {
+        	//split to batch size and loop 
+        	int i = 0;
+        	while(i < productList.size())
+        	{
+        		int endIndex = Math.min(i + AuslandApplicationConstants.DB_BATCH_SIZE, records.size());
+        		List<Product> sublist = productList.subList(i, endIndex);
+        		productRepository.save(sublist);
+        		productRepository.flush();
+        		i = i + AuslandApplicationConstants.DB_BATCH_SIZE;
+        	}
+        }
+        res.setStatus(AuslandApplicationConstants.STATUS_OK);
+        return res;
+	}
+	
+	private String validateExcelFile(MultipartFile excelFile, List<ProductRes> products)
+	{
+		return "";
+	}
+	
+	
+	private boolean isFileExists(String fileNamewithFullPath)
+	{
+		if(fileNamewithFullPath == null)
+		{
+			return false;
+		}
+		try
+		{
+			File f = new File(fileNamewithFullPath); 
+			return f.exists();
+		}
+		catch(Exception e)
+		{
+			logger.error("file:"+fileNamewithFullPath +" already exists.");
+			return false;
+		}
+		
+	}
 	/*@Override
 	public UploadZhonghanCourierExcelRes uploadProductFromExcel(MultipartFile excelFile) {
 		UploadZhonghanCourierExcelRes res = new UploadZhonghanCourierExcelRes();

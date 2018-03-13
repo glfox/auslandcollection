@@ -16,11 +16,18 @@ public class CreateProductReq implements Serializable
 	String brand;
 	String category;
 	String productWeight;
+	String smallImageBase64EncodeString;
 	String status;
 	String comments;
 	String sizes;
 	String colors;
 	
+	public String getSmallImageBase64EncodeString() {
+		return smallImageBase64EncodeString;
+	}
+	public void setSmallImageBase64EncodeString(String smallImageBase64EncodeString) {
+		this.smallImageBase64EncodeString = smallImageBase64EncodeString;
+	}
 	public String getProductId() {
 		return productId;
 	}

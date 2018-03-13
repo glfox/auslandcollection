@@ -2,7 +2,7 @@ package com.ausland.weixin.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
+import com.ausland.weixin.dao.BrandRepository;
+import com.ausland.weixin.dao.CategoryRepository;
 import com.ausland.weixin.dao.ProductRepository;
 import com.ausland.weixin.dao.ProductStockRepository;
+import com.ausland.weixin.model.db.Brand;
+import com.ausland.weixin.model.db.Category;
 import com.ausland.weixin.model.db.Product;
 import com.ausland.weixin.model.db.ProductStock;
 import com.ausland.weixin.model.reqres.ProductRes;
@@ -32,6 +36,12 @@ public class QueryProductServiceImpl implements QueryProductService{
 	
 	@Autowired
 	private ProductStockRepository productStockRepository;
+	
+	@Autowired
+	private BrandRepository brandRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 	
     private static final Logger logger = LoggerFactory.getLogger(QueryProductServiceImpl.class);
 
@@ -158,6 +168,34 @@ public class QueryProductServiceImpl implements QueryProductService{
 			res.setStock(stockList);
 		}
 		return res;
+	}
+
+	@Override
+	public List<String> getAllBrand() {
+		List<Brand> list = brandRepository.findAll();
+		List<String> brandList = new ArrayList<String>();
+		for(Brand b : list)
+		{
+			if(b != null && !StringUtils.isEmpty(b.getBrandName()))
+			{
+				brandList.add(b.getBrandName());
+			}
+		}
+		return brandList;   
+	}
+
+	@Override
+	public List<String> getAllCategory() {
+		 List<Category> list = categoryRepository.findAll();
+		 List<String> categoryList = new ArrayList<String>();
+			for(Category b : list)
+			{
+				if(b != null && !StringUtils.isEmpty(b.getCategoryName()))
+				{
+					categoryList.add(b.getCategoryName());
+				}
+			}
+			return categoryList;   
 	}
 
 }

@@ -15,4 +15,8 @@ public interface QueryProductService {
 	QueryProductRes queryByProductIdOrProductNameMatchingLike(String matchingString);
 	
 	QueryProductRes queryAll(Integer pageNo, Integer pageSize);
+	
+	List<String> getAllBrand();
+	
+	List<String> getAllCategory();
 }

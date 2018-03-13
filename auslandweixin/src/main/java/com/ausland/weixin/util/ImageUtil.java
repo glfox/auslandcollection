@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -31,16 +32,17 @@ public class ImageUtil {
 		BufferedImage bufferedImage = null;
 		BufferedImage newImage = null;
 		ByteArrayOutputStream output = null;
+	    
 		try {
 			String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 	        if(fileExtension == null)
 	        { return null;}
 	        String imgType = "";
-	        if(fileExtension.equalsIgnoreCase(".png"))
+	        if(fileExtension.equalsIgnoreCase("png"))
 	        {
 	        	imgType = "PNG";
 	        }
-	        else if(fileExtension.equalsIgnoreCase(".jpg"))
+	        else if(fileExtension.equalsIgnoreCase("jpg"))
 	        {
 	        	imgType = "JPEG";
 	        }
@@ -54,7 +56,9 @@ public class ImageUtil {
             g.dispose();
             output = new ByteArrayOutputStream(); 
 	        ImageIO.write(newImage, imgType, output);
+	       
 	        String imageStr = output.toString("utf-8");
+	        logger.debug("got the length of image "+imageStr.length());
 	        return AuslandApplicationConstants.IMAGE_HEADER+imageStr;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -62,6 +66,7 @@ public class ImageUtil {
 		}
 		finally
 		{
+ 
 			if(output != null)
 			{
 				try {

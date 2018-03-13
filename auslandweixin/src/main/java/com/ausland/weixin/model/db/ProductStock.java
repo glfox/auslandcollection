@@ -18,10 +18,6 @@ public class ProductStock {
     @Column(length = 128)	
     String productId;
     
-    @Column(length = 128)	
-    String productName;
-
-    
     @Column(length = 64)
     String size;
         
@@ -30,10 +26,7 @@ public class ProductStock {
     
     @Column(length = 64)
     String stockStatus;
-        
-    @Column(length = 64)	
-    String stockDetails;
-
+   
 	public Integer getId() {
 		return id;
 	}
@@ -48,14 +41,6 @@ public class ProductStock {
 
 	public void setProductId(String productId) {
 		this.productId = productId;
-	}
-
-	public String getProductName() {
-		return productName;
-	}
-
-	public void setProductName(String productName) {
-		this.productName = productName;
 	}
 
 	public String getSize() {
@@ -81,19 +66,12 @@ public class ProductStock {
 	public void setStockStatus(String stockStatus) {
 		this.stockStatus = stockStatus;
 	}
-
-	public String getStockDetails() {
-		return stockDetails;
-	}
-
-	public void setStockDetails(String stockDetails) {
-		this.stockDetails = stockDetails;
-	}
+ 
 
 	@Override
 	public String toString() {
-		return "ProductStock [id=" + id + ", productId=" + productId + ", productName=" + productName + ", size=" + size
-				+ ", color=" + color + ", stockStatus=" + stockStatus + ", stockDetails=" + stockDetails + "]";
+		return "ProductStock [id=" + id + ", productId=" + productId + ", size=" + size
+				+ ", color=" + color + ", stockStatus=" + stockStatus +  "]";
 	}
    
 

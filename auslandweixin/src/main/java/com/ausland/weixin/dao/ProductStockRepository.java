@@ -11,4 +11,6 @@ import com.ausland.weixin.model.db.ProductStock;
 public interface ProductStockRepository extends JpaRepository<ProductStock, Integer>{
 
 	 List<ProductStock> findByProductId(String productId);
+	 
+	 void deleteByProductId(String productId);
 }

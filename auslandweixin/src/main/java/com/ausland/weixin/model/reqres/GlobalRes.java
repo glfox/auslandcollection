@@ -6,7 +6,7 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class CreateProductRes  implements Serializable{
+public class GlobalRes  implements Serializable{
 
 	/**
 	 * 
@@ -30,7 +30,7 @@ public class CreateProductRes  implements Serializable{
 	 
 	@Override
 	public String toString() {
-		return "CreateProductRes [errorDetails=" + errorDetails + ", status=" + status + "]";
+		return "GolbalRes [errorDetails=" + errorDetails + ", status=" + status + "]";
 	}
 
 }
