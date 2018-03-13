@@ -68,7 +68,7 @@ public class ProductServiceImpl implements ProductService{
 			return res;
 		}
 		Product product = new Product();
-		
+		return res;
 	}
 	
 	private String validateCreateProductReq(CreateProductReq req)

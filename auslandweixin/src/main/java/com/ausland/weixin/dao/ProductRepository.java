@@ -22,7 +22,7 @@ public interface ProductRepository extends JpaRepository<Product, String>{
 	
 	List<Product> findByBrand(String brand);
 	
-	@Query(value="select * from Product p where p.productId like %:matchingStr% or p.productName like %:matchingStr%")
+	@Query(value="select p from Product p where p.productId like %:matchingStr% or p.productName like %:matchingStr%")
 	List<Product> findByMatchingString(@Param("matchingStr")String matchingStr);
 	
 	Page<Product> findAll(Pageable pageable);
