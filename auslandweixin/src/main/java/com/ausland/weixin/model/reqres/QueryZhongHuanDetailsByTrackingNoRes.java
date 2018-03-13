@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QueryZhongHuanDetailsByTrackingNoRes implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String errorDetails;
 	String status;
 	Back back;

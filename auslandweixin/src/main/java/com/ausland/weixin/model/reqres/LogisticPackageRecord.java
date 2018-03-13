@@ -11,7 +11,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class LogisticPackageRecord  implements Serializable{
 
     	
-    String logisticTrackingNo;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	String logisticTrackingNo;
  
     String packageWeight;
     	

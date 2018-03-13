@@ -3,8 +3,6 @@ package com.ausland.weixin.model.reqres;
  
 import java.io.Serializable;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
