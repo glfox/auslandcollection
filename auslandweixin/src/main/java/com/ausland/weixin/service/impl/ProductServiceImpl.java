@@ -45,9 +45,7 @@ import com.ausland.weixin.model.reqres.GlobalRes;
 import com.ausland.weixin.model.reqres.ProductRes;
 import com.ausland.weixin.model.reqres.StockInfo;
 import com.ausland.weixin.model.reqres.UpdateProductStockReq;
-
 import com.ausland.weixin.service.ProductService;
-import com.ausland.weixin.util.ValidationUtil;
 
 @Service
 public class ProductServiceImpl implements ProductService{

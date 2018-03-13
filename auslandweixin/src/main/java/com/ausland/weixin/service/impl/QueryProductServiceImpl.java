@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
@@ -25,7 +26,7 @@ import com.ausland.weixin.model.reqres.ProductRes;
 import com.ausland.weixin.model.reqres.QueryProductRes;
 import com.ausland.weixin.model.reqres.StockInfo;
 import com.ausland.weixin.service.QueryProductService;
- 
+
 
 @Service
 public class QueryProductServiceImpl implements QueryProductService{
@@ -123,11 +124,14 @@ public class QueryProductServiceImpl implements QueryProductService{
 	public QueryProductRes queryAll(Integer pageNo, Integer pageSize) {
 		logger.debug("entered queryAll with pageNo:"+pageNo+"; pageSize:"+pageSize);
 		QueryProductRes res = new QueryProductRes();
-		Pageable pagable = new PageRequest(pageNo, pageSize);
+		Pageable pagable = new PageRequest(pageNo, pageSize, Sort.Direction.ASC,"productId");
 		Page<Product> p = productRepository.findAll(pagable);
+		logger.debug("p.getTotalElements()="+p.getTotalElements());
+		logger.debug("p.getTotalPages()="+p.getTotalPages());
 		List<Product> prodList = p.getContent();
 		if(prodList != null && prodList.size() > 0)
 		{
+			logger.debug("got "+ prodList.size()+" product results in the pagable requst.");
 			List<ProductRes> products = new ArrayList<ProductRes>();
 			for(Product prod: prodList)
 			{
@@ -136,6 +140,15 @@ public class QueryProductServiceImpl implements QueryProductService{
 				products.add(pres);
 			}
 			res.setProducts(products);
+		}
+		else
+		{
+			if(prodList == null)
+			    logger.debug("got empty prodList.");
+			else
+            {
+				 logger.debug("got 0 number of product.");
+			}
 		}
 		res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		return res;
