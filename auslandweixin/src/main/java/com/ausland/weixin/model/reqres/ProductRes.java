@@ -4,6 +4,8 @@ package com.ausland.weixin.model.reqres;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -92,7 +94,7 @@ public class ProductRes implements Serializable
 		return "ProductRes [productId=" + productId + ", productName=" + productName + ", brand=" + brand
 				+ ", category=" + category + ", productMainImageUrl=" + productMainImageUrl
 				+ ", productMainVideoUrl=" + productMainVideoUrl + ", productWeight="
-				+ productWeight + ", status=" + status + ", comments=" + comments + ", stock=" + stock + "]";
+				+ productWeight + ", status=" + status + ", comments=" + comments + ", stock=" +  ToStringBuilder.reflectionToString(stock) + "]";
 	}
 	
 }

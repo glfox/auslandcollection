@@ -81,6 +81,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			productUploadExcelHeaders.add("产品编号");
 			productUploadExcelHeaders.add("产品图片");
 			productUploadExcelHeaders.add("产品品牌");
+			productUploadExcelHeaders.add("产品类型");
 			productUploadExcelHeaders.add("产品名称");		
 			productUploadExcelHeaders.add("产品颜色");
 			productUploadExcelHeaders.add("产品尺码");
@@ -95,16 +96,16 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
+		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.ausland.weixin.controller"))
 				.paths(PathSelectors.any()).build();
 	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-		registry.addResourceHandler("**/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
 
-		registry.addResourceHandler("**/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+	registry.addResourceHandler("webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 
 	}
 

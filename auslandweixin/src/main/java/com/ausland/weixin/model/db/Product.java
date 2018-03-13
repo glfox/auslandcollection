@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="product")
@@ -20,7 +21,8 @@ public class Product {
     @Column(length = 128)	
     String productName;
     
-    @Column(length = 64)	
+    @Column(length = 64)
+    @NotNull
     String brand;
     
     @Column(length = 256)
@@ -33,6 +35,7 @@ public class Product {
     String productMainVideoUrl;
     
     @Column(length = 64)	
+    @NotNull
     String productCategory;
     
 	@Column(length = 64)	

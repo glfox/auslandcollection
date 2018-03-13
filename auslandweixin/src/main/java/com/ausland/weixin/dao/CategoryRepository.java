@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.ausland.weixin.model.db.Category;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Integer>{
+public interface CategoryRepository extends JpaRepository<Category, String>{
 
 	 Category findByCategoryName(String categoryName);
 }

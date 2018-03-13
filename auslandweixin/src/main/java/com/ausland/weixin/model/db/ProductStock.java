@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="productstock")
@@ -16,12 +17,15 @@ public class ProductStock {
     Integer id;
     
     @Column(length = 128)	
+    @NotNull
     String productId;
     
     @Column(length = 64)
+    @NotNull
     String size;
         
-    @Column(length = 64)	
+    @Column(length = 64)
+    @NotNull
     String color;
     
     @Column(length = 64)
