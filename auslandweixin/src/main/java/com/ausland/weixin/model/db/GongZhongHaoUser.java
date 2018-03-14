@@ -12,12 +12,14 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name="gongzhonghaosubscriberuser")
 public class GongZhongHaoUser {
+
 	@Column 
 	private Integer subscribe; //0: not subscribed, 1: subscribed
 	
 	@Id
-	@Column(name="openid", length=256)
+	@Column(name="openid", length=64)
 	private String openid;
+	
 	@Column 
 	private int sex;   //0: unknown 1: man 2: woman
 	

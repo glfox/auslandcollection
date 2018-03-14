@@ -28,54 +28,27 @@ private static final Logger logger = LoggerFactory.getLogger(QueryProductControl
 	@Autowired
 	private QueryProductService queryProductService; 
 	
-	@RequestMapping(value = "/getbyproductIds", method = RequestMethod.GET)
-	public QueryProductRes queryByProductIds(@RequestParam(name="productIds", required = true) String productIds,
-			                                 HttpServletRequest httpServletRequest) throws IOException 
+	@RequestMapping(value = "/getproductby", method = RequestMethod.GET)
+	public QueryProductRes queryProductBy(@RequestParam(name="pageSize", required = true) Integer pageSize,
+									      @RequestParam(name="pageNo", required = true) Integer pageNo,
+									      @RequestParam(name="matchingstr", required = false) String mathingStr,
+			                              @RequestParam(name="brands", required = false) String brandNames,
+			                              @RequestParam(name="productIds", required = true) String productIds,
+			                              HttpServletRequest httpServletRequest) throws IOException 
 	{
-		logger.debug("entered queryByProductIds with proudctIds:"+productIds);
-		List<String> productIdList = new ArrayList<String>();
-		String[] productArray = productIds.split(",");
-		for(String s:productArray)
-		{
-			if(!StringUtils.isEmpty(s))
-				productIdList.add(s);
-		}
-		if(productIdList.size() < 1)
-		{
-			QueryProductRes res = new QueryProductRes();
-			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
-			res.setErrorDetails("没有有效的商品id。");
-			return res;
-		}
-		if(productIdList.size() == 1)
-			return queryProductService.queryByProductId(productIdList.get(0));
-		return queryProductService.queryByProductIds(productIdList);
-	}
-	 
-	@RequestMapping(value = "/getbybrandname", method = RequestMethod.GET)
-	public QueryProductRes queryByBrandName(@RequestParam(name="brand", required = true) String brandName,
-			                                 HttpServletRequest httpServletRequest) throws IOException 
-	{
-		logger.debug("entered queryByBrandName with brandName:"+brandName); 
-		return queryProductService.queryByBrandName(brandName);
+		logger.debug("entered queryByMatchingStr with mathingStr:"+mathingStr+";brandnames:"+brandNames+";productIds:"+productIds+";pageSize:"+pageSize+";pageNo:"+pageNo); 
+		
+		return queryProductService.queryProductBy(pageNo, pageSize, brandNames, mathingStr, productIds);
 	}
 	
-	@RequestMapping(value = "/getbymatchingstr", method = RequestMethod.GET)
-	public QueryProductRes queryByMatchingStr(@RequestParam(name="matching", required = true) String mathingStr,
-			                                  HttpServletRequest httpServletRequest) throws IOException 
+	@RequestMapping(value = "/getproductbyid", method = RequestMethod.GET)
+	public QueryProductRes queryProductByProductId(@RequestParam(name="productId", required = true) String productId,
+			                                   HttpServletRequest httpServletRequest) throws IOException 
 	{
-		logger.debug("entered queryByMatchingStr with mathingStr:"+mathingStr); 
-		return queryProductService.queryByProductIdOrProductNameMatchingLike(mathingStr);
+		logger.debug("entered queryProductByProductId "); 
+		return queryProductService.queryByProductId(productId);
 	}
 	
-	@RequestMapping(value = "/getAll", method = RequestMethod.GET)
-	public QueryProductRes queryAll(@RequestParam(name="pageSize", required = true) Integer pageSize,
-		                                	@RequestParam(name="pageNo", required = true) Integer pageNo,
-			                                HttpServletRequest httpServletRequest) throws IOException 
-	{
-		logger.debug("entered queryAll with pageNo:"+pageNo+";pageSize="+pageSize); 
-		return queryProductService.queryAll(pageNo, pageSize);
-	}
 	
 	@RequestMapping(value = "/getallbrand", method = RequestMethod.GET)
 	public List<String> getAllBrand(HttpServletRequest httpServletRequest) throws IOException 
@@ -91,4 +64,14 @@ private static final Logger logger = LoggerFactory.getLogger(QueryProductControl
 		return queryProductService.getAllCategory();
 	}
 	
+	@RequestMapping(value = "/getproductidlistby", method = RequestMethod.GET)
+	public List<String> getProductIdListBy(@RequestParam(name="brands", required = false) String brandNames,
+			                               @RequestParam(name="matchingstr", required = false) String matchingStr,
+	                                       HttpServletRequest httpServletRequest) throws IOException 
+	{
+		logger.debug("entered getAllCategory "); 
+		return queryProductService.getProductIdListBy(brandNames, matchingStr);
+	}
+	
+	 
 }

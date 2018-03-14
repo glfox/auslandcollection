@@ -6,17 +6,13 @@ import com.ausland.weixin.model.reqres.QueryProductRes;
 
 public interface QueryProductService {
 
-	QueryProductRes queryByProductIds(List<String> productIds);
-	
 	QueryProductRes queryByProductId(String productId);
 
-	QueryProductRes queryByBrandName(String brandName);
-	
-	QueryProductRes queryByProductIdOrProductNameMatchingLike(String matchingString);
-	
-	QueryProductRes queryAll(Integer pageNo, Integer pageSize);
+	QueryProductRes queryProductBy(Integer pageNo, Integer pageSize, String brandNames, String matchingString, String productIds);
 	
 	List<String> getAllBrand();
 	
 	List<String> getAllCategory();
+	
+	List<String> getProductIdListBy(String brandNames, String matchingString);
 }

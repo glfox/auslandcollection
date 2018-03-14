@@ -47,26 +47,6 @@ public class QueryProductServiceImpl implements QueryProductService{
     private static final Logger logger = LoggerFactory.getLogger(QueryProductServiceImpl.class);
 
 	@Override
-	public QueryProductRes queryByProductIds(List<String> productIds) {
-		logger.debug("entered queryByProductIds with productIds:" +  ToStringBuilder.reflectionToString(productIds));
-		QueryProductRes res = new QueryProductRes();
-		List<Product> prodList  = productRepository.findByProductIdIn(productIds);
-		if(prodList != null && prodList.size() > 0)
-		{
-			List<ProductRes> products = new ArrayList<ProductRes>();
-			for(Product prod: prodList)
-			{
-				List<ProductStock> productStockList = productStockRepository.findByProductId(prod.getProductId());
-				ProductRes pres = convertFromProdAndProdStockList(prod, productStockList);
-				products.add(pres);
-			}
-			res.setProducts(products);
-		}
-		res.setStatus(AuslandApplicationConstants.STATUS_OK);
-		return res;
-	}
-
-	@Override
 	public QueryProductRes queryByProductId(String productId) {
 		logger.debug("entered queryByProductIds with productId:" + productId);
 		QueryProductRes res = new QueryProductRes();
@@ -76,62 +56,23 @@ public class QueryProductServiceImpl implements QueryProductService{
 		List<ProductRes> proudcts = new ArrayList<ProductRes>();
 		proudcts.add(pres);
 		res.setProducts(proudcts);
+		res.setTotalElements(1);
+		res.setTotalPages(1);
 		res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		return res;
 	}
 
-	@Override
-	public QueryProductRes queryByBrandName(String brandName) {
-		logger.debug("entered queryByProductIds with brandName:" +  brandName);
+	private QueryProductRes genQueryProductRes(Page<Product> p)
+	{
 		QueryProductRes res = new QueryProductRes();
-		List<Product> prodList  = productRepository.findByBrand(brandName);
-		if(prodList != null && prodList.size() > 0)
-		{
-			List<ProductRes> products = new ArrayList<ProductRes>();
-			for(Product prod: prodList)
-			{
-				List<ProductStock> productStockList = productStockRepository.findByProductId(prod.getProductId());
-				ProductRes pres = convertFromProdAndProdStockList(prod, productStockList);
-				products.add(pres);
-			}
-			res.setProducts(products);
-		}
-		res.setStatus(AuslandApplicationConstants.STATUS_OK);
-		return res;
-	}
-
-	@Override
-	public QueryProductRes queryByProductIdOrProductNameMatchingLike(String matchingString) {
-		logger.debug("entered queryByProductIds with matchingString:" +  matchingString);
-		QueryProductRes res = new QueryProductRes();
-		List<Product> prodList  = productRepository.findByMatchingString(matchingString);
-		if(prodList != null && prodList.size() > 0)
-		{
-			List<ProductRes> products = new ArrayList<ProductRes>();
-			for(Product prod: prodList)
-			{
-				List<ProductStock> productStockList = productStockRepository.findByProductId(prod.getProductId());
-				ProductRes pres = convertFromProdAndProdStockList(prod, productStockList);
-				products.add(pres);
-			}
-			res.setProducts(products);
-		}
-		res.setStatus(AuslandApplicationConstants.STATUS_OK);
-		return res;
-	}
-
-	@Override
-	public QueryProductRes queryAll(Integer pageNo, Integer pageSize) {
-		logger.debug("entered queryAll with pageNo:"+pageNo+"; pageSize:"+pageSize);
-		QueryProductRes res = new QueryProductRes();
-		Pageable pagable = new PageRequest(pageNo, pageSize, Sort.Direction.ASC,"productId");
-		Page<Product> p = productRepository.findAll(pagable);
+	 
 		logger.debug("p.getTotalElements()="+p.getTotalElements());
 		logger.debug("p.getTotalPages()="+p.getTotalPages());
+		res.setTotalElements((int)p.getTotalElements());
+		res.setTotalPages(p.getTotalPages());
 		List<Product> prodList = p.getContent();
 		if(prodList != null && prodList.size() > 0)
 		{
-			logger.debug("got "+ prodList.size()+" product results in the pagable requst.");
 			List<ProductRes> products = new ArrayList<ProductRes>();
 			for(Product prod: prodList)
 			{
@@ -141,17 +82,45 @@ public class QueryProductServiceImpl implements QueryProductService{
 			}
 			res.setProducts(products);
 		}
-		else
-		{
-			if(prodList == null)
-			    logger.debug("got empty prodList.");
-			else
-            {
-				 logger.debug("got 0 number of product.");
-			}
-		}
 		res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		return res;
+	}
+	
+	@Override
+	public QueryProductRes queryProductBy(Integer pageNo, Integer pageSize, String brandNames, String matchingString, String productIds) {
+		logger.debug("entered queryProductBy with matchingString:" +  matchingString +" brandNames:"+brandNames+" productIds:"+productIds);
+		Pageable pagable = new PageRequest(pageNo, pageSize, Sort.Direction.ASC,"productId");
+		
+		if(!StringUtils.isEmpty(productIds))
+		{
+			List<String> productIdList = new ArrayList<String>();
+			String[] pids = productIds.split(",");
+			for(String pid : pids)
+			{
+				if(!StringUtils.isEmpty(pid))
+					productIdList.add(pid);
+			}
+			if(productIdList.size() > 0)
+			{
+			    logger.debug("there is productId detected so will only use user selected productIds to search.");
+				Page<Product> p  = productRepository.findByProductIdIn(pagable, productIdList);
+				return genQueryProductRes(p);
+			}
+		}
+		logger.debug("there is no productId detected, will use the brandnames and matchingstring to search.");
+		List<String> brandList = new ArrayList<String>();
+		if(!StringUtils.isEmpty(brandNames))
+		{
+			String[] brands = brandNames.split(",");
+			for(String b : brands)
+			{
+				if(!StringUtils.isEmpty(b))
+					brandList.add(b);
+			}
+		}
+		
+		Page<Product> p = productRepository.findByProductIdLikeOrProductNameLikeOrBrandIn(pagable, matchingString, matchingString, brandList);
+		return genQueryProductRes(p);
 	}
 
 	private ProductRes convertFromProdAndProdStockList(Product product, List<ProductStock> productStockList)
@@ -209,6 +178,30 @@ public class QueryProductServiceImpl implements QueryProductService{
 				}
 			}
 			return categoryList;   
+	}
+
+	@Override
+	public List<String> getProductIdListBy(String  brandNames, String matchingString) {
+		List<String> brandList = new ArrayList<String>();
+		if(!StringUtils.isEmpty(brandNames))
+		{
+			String[] brands = brandNames.split(",");
+			for(String b : brands)
+			{
+				if(!StringUtils.isEmpty(b))
+					brandList.add(b);
+			}
+		}
+		if(brandList.size() <= 0 && StringUtils.isEmpty(matchingString))
+		{
+			logger.debug("no valid input.");
+			return null;
+		}
+        if(brandList.size() <= 0)
+           return productRepository.findProductIdsByMatchingString(matchingString);
+        if(StringUtils.isEmpty(matchingString))
+        	return productRepository.findProductIdsByBrands(brandList);
+        return productRepository.findProductIdsByMatchingStringAndBrands(matchingString, brandList);  		
 	}
 
 }
