@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { getOrderDetails } from '../utils/services.js'
 import './searchorders.css';
+import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap'
 
 class SearchOrders extends Component {
 
@@ -18,7 +19,7 @@ class SearchOrders extends Component {
 
 	handleChange(event) {
 		this.setState({
-			trackingNo: event.target.value
+			trackingNo: event.target.value,
 		});
 	}
 	handleSubmit(event) {
@@ -67,25 +68,30 @@ class SearchOrders extends Component {
 	}
 
 	render() {
-		let loader = this.state.loaded? null : <div className="loader" position="center"/>
+		let loader = this.state.loaded? null : <div className="loader"/>
 		return (
 			<div>
-				<form onSubmit={this.handleSubmit}>
-			        <label>
-			          	订单号:
-			        	<input type="text" value={this.state.trackingNo} onChange={this.handleChange} />
-			        </label>
-			        <input type="submit" value="查询" />
-		      	</form>
+				<Form inline onSubmit={this.handleSubmit}>
+					<FormGroup controlId="formInlineName">
+						<ControlLabel>订单号: </ControlLabel>{' '}
+			          	<FormControl
+				            type="text"
+				            value={this.state.trackingNo}
+				            placeholder="输入订单号"
+				            onChange={this.handleChange}
+				        />
+			        </FormGroup>{' '}
+			        <Button bsStyle="primary" type="submit">查询</Button>
+			    </Form>
 		      	<br/>
 		      	<div>
-		      		{loader}
-			  		<table align="center">
+			  		<Table striped bordered condensed hover>
 			  			<tbody>
 			  				{this.state.details}
 			  			</tbody>
-			  		</table>
+			  		</Table>
 			  		{this.state.error}
+			  		{loader}
 			  	</div>
 			</div>
 		)
