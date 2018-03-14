@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import SearchOrders from './searchorders/searchorders.js';
+import AuslandNavBar from './layout/auslandbar.js';
 
 class App extends Component {
   render() {
@@ -9,7 +9,7 @@ class App extends Component {
         <header className="App-header">
           <h1 className="App-title">Ausland<br/>Collection</h1>
         </header>
-        <SearchOrders />
+        <AuslandNavBar />
       </div>
     );
   }

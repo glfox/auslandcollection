@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { getOrderDetails } from '../utils/services.js'
+import { getOrderDetails } from '../utils/services.js';
 import './searchorders.css';
-import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap'
+import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap';
 
 class SearchOrders extends Component {
 
