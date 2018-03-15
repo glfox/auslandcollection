@@ -19,7 +19,7 @@ class SearchOrders extends Component {
 
 	handleChange(event) {
 		this.setState({
-			trackingNo: event.target.value,
+			trackingNo: event.target.value
 		});
 	}
 	handleSubmit(event) {

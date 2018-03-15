@@ -1,102 +1,135 @@
 import React, { Component } from 'react';
+import { getProductListBy } from '../utils/services.js'
 import './searchstock.css';
+import { Form,FormGroup,Button,FormControl,ControlLabel,Table,BootstrapTable} from 'react-bootstrap'
 
-class SearchStock extends Component {
+class SearchStocks extends Component {
 
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	brand: "",
-	    	productId:"",
-	    	productName:"",
-	    	isChanged: false,
-	    	stockStatus: "",
-	    	error: ""
+	    	brands: "",
+	    	productIds: "",
+	    	matchingStr:"",
+	    	pageNo: 0,
+	    	details: null,
+	    	error: null,
+	    	loaded: true
 	    };
 	    this.handleChange = this.handleChange.bind(this);
 	    this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	handleChange(event) {
-		if (this.state.brand !== event.target.value) {
-			this.setState({
-				isChanged: true,
-				brand: event.target.value
-			});
-		} else {
-			this.setState({
-				isChanged: true,
-			});
-		}
+		this.setState({matchingStr: event.target.value});
 	}
+	
+	handleOnSelect(event){
+		this.setState({brands: event.target.value});
+	}
+	
 	handleSubmit(event) {
-		if (this.state.trackingNo > 0 && this.state.isChanged) {
-			this.getDetails(this.state.trackingNo);
+		if (this.state.brands || this.state.productIds || this.state.matchingStr) {
+			this.setState({ 
+	    		details: null,
+	    		error: null,
+				loaded: false
+			})
+			this.getProductListBy(this.state.brands,this.state.productIds, this.state.matchingStr, this.state.pageNo);
 		}
 		event.preventDefault();
 	}
 
-	getDetails(trackingNo) {
-		fetch("http://118.24.75.119/query/zhonghuan/detailsbytrackingno?trackingno=" + trackingNo)
-	      	.then(res => res.json())
-	      	.then(result => {
-	      		console.log(result);
-	      		if (result.back && result.back.logisticsback) {
-	      			let paklog = result.back.logisticsback;
+	getProductListBy(brands, productIds, matchingStr, pageNo) {
+		getProductListBy(this.state.brands, this.state.productIds, this.state.matchingStr, this.state.pageNo)
+			.then(result => {
+				console.log(result);
+				if (result.status === 'ok' && result.products) {
+	      			let paklog = result.products;
 					let rows = [];
 					if (paklog.length > 0) {
-						for (let i = 0; i < paklog.length; i++) {
+					for (let i = 0; i < paklog.length; i++) {
 							let log = paklog[i];
+							let rowNo = 1;
+							if(log.stock)
+							{
+							    rowNo = log.stock.length;
+							}
+							 
 							rows.push(
-								<tr key={log.ztai.toString()}>
-									<td>{log.time}</td>
-									<td>{log.ztai}</td>
+								<tr>
+								    <td rowspan={rowNo}>{log.brand}</td>
+								    <td rowspan={rowNo}>{log.productId}</td>
+								    <td rowspan={rowNo}>{log.productSmallImage}</td>  
+									<td >{log.stock[0].color}</td>
 								</tr>
 							);
+							if(rowNo > 1)
+							{
+							    for(let j = 1; j < log.stock.length; j ++)
+						    	{
+							    	rows.push(
+									    	<tr>
+												<td>{log.stock[j].color}</td>
+											</tr>	
+									    );
+						    	}
+							}
 						}
 						this.setState({
 							details: rows,
-							error: null
+							error: null,
+							loaded: true
 						});
 					}
 	      		} else {
 					this.setState({
 						details: null,
-						error: result.errorDetails
+						error: "没有找到任何商品",
+						loaded: true
 					});
 				}
-	        },
-	        // Note: it's important to handle errors here
-	        // instead of a catch() block so that we don't swallow
-	        // exceptions from actual bugs in components.
-	        (error) => {
-	     		console.log(error);
-	        })
+			}, err => console.log(err));
 	}
 
 	render() {
+		let loader = this.state.loaded? null : <div className="loader"/>
 		return (
 			<div>
-				<form onSubmit={this.handleSubmit}>
-			        <label>
-			          	产品名称:
-			        	<input type="text" value={this.state.trackingNo} onChange={this.handleChange} />
-			        </label>
-			        
-			        <input type="submit" value="查询" />
-		      	</form>
+				<Form inline onSubmit={this.handleSubmit}>
+					<FormGroup controlId="formInlineName">
+						<ControlLabel>商品型号: </ControlLabel>{' '}
+			          	<FormControl
+				            type="text"
+				            value={this.state.matchingStr}
+				            placeholder="输入商品型号"
+				            onChange={this.handleChange}
+				        />
+			        </FormGroup>{' '}
+			        <Button bsStyle="primary" type="submit">查询</Button>
+			    </Form>
 		      	<br/>
-		      	<div>
-		      		<table align="center">
-		      			<tbody>
-		      				{this.state.details}
-		      			</tbody>
-		      		</table>
-		      	</div>
-		      	<div>{this.state.error}</div>
+
+			  	<div>
+		  		<Table responsive striped bordered condensed hover>
+			  		<thead>
+			  	    <tr>
+			  	      <th>商品品牌</th>
+			  	      <th>商品型号</th>
+			  	      <th>商品图片</th>
+			  	      <th>商品颜色</th>
+			  	    </tr>
+			  	  </thead>
+		  			<tbody>
+		  				{this.state.details}
+		  			</tbody>
+		  		</Table>
+		  		{this.state.error}
+		  		{loader}
+		  	</div>
 			</div>
 		)
 	}
 }
 
-export default SearchOrders;
+export default SearchStocks;
