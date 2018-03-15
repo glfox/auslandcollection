@@ -16,16 +16,10 @@ class AuslandNavBar extends Component {
           <Navbar.Collapse>
             <Nav pullLeft>
               <NavItem eventKey={1} href="#">
-                Link 1
+                订单查询
               </NavItem>
               <NavItem eventKey={2} href="#">
-                Link 2
-              </NavItem>
-              <NavItem eventKey={3} href="#">
-                Link 3
-              </NavItem>
-              <NavItem eventKey={4} href="#">
-                Link 4
+                库存查询
               </NavItem>
             </Nav>
             <Nav pullRight>
