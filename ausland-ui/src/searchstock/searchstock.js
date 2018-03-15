@@ -99,4 +99,4 @@ class SearchStock extends Component {
 	}
 }
 
-export default SearchOrders;
+export default SearchStock;
