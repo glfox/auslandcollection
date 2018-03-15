@@ -60,9 +60,20 @@ public class Product {
     @Column(length = 64)	
     String updatedBy;
     
+    @Column(length = 32)
+    String sizeCategory;
+   
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     Date   lastupdatedDateTime;
+
+	public String getSizeCategory() {
+		return sizeCategory;
+	}
+
+	public void setSizeCategory(String sizeCategory) {
+		this.sizeCategory = sizeCategory;
+	}
 
 	public String getProductId() {
 		return productId;
@@ -187,11 +198,14 @@ public class Product {
 	@Override
 	public String toString() {
 		return "Product [productId=" + productId + ", productName=" + productName + ", brand=" + brand
-				+ ", productMainImageUrl=" + productMainImageUrl 
+				+ ", productMainImageUrl=" + productMainImageUrl + ", productSmallImage=" + productSmallImage
 				+ ", productMainVideoUrl=" + productMainVideoUrl + ", productCategory=" + productCategory
 				+ ", productWeight=" + productWeight + ", createdBy=" + createdBy + ", createdDateTime="
 				+ createdDateTime + ", createdSrc=" + createdSrc + ", comments=" + comments + ", status=" + status
-				+ ", updatedBy=" + updatedBy + ", lastupdatedDateTime=" + lastupdatedDateTime + "]";
+				+ ", updatedBy=" + updatedBy + ", sizeCategory=" + sizeCategory + ", lastupdatedDateTime="
+				+ lastupdatedDateTime + "]";
 	}
+
+ 
 
 }
