@@ -2,6 +2,7 @@ package com.ausland.weixin.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -55,12 +56,63 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 
 	@Value("${resttemplate.http.timeout}")
 	private int resttemplate_http_timeout;
+	
+	@Value("#{'${supported.size.baby}'.split(',')}")
+	public static List<String> supportedBabySizeList;
+	
+	@Value("#{'${supported.size.children}'.split(',')}")
+	public static List<String> supportedChilrenSizeList;
+	
+	@Value("#{'${supported.size.women}'.split(',')}")
+	public static List<String> supportedWomenSizeList;
+	
+	@Value("#{'${supported.size.men}'.split(',')}")
+	public static List<String> supportedMenSizeList;
+	
+	@Value("#{'${supported.size.clothes}'.split(',')}")
+	public static List<String> supportedClothesSizeList;
+	
+	@Value("#{'${supported.size.other}'.split(',')}")
+	public static List<String> supportedOtherSizeList;
+	
+	@Value("#{'${supported.size.category.list}'.split(',')}")
+	public static List<String> supportedSizeCategoryList;
 
 	public static List<String> logisticPackageHeaders = null;
 	
 	public static List<String> productUploadExcelHeaders = null;
-
+	
+	public static HashMap<String, List<String>> supportedSizeCategoryMap = null;
+	 
 	static {
+		supportedSizeCategoryMap = new HashMap<String, List<String>>();
+		for(String sizeCategory : supportedSizeCategoryList)
+		{
+			if(sizeCategory.equalsIgnoreCase("baby"))
+			{
+				supportedSizeCategoryMap.put(sizeCategory, supportedBabySizeList);
+			}
+			else if(sizeCategory.equalsIgnoreCase("children"))
+			{
+				supportedSizeCategoryMap.put(sizeCategory, supportedChilrenSizeList);
+			}
+			else if(sizeCategory.equalsIgnoreCase("women"))
+			{
+				supportedSizeCategoryMap.put(sizeCategory, supportedWomenSizeList);
+			}
+			else if(sizeCategory.equalsIgnoreCase("men"))
+			{
+				supportedSizeCategoryMap.put(sizeCategory, supportedMenSizeList);
+			}
+			else if(sizeCategory.equalsIgnoreCase("clothes"))
+			{
+				supportedSizeCategoryMap.put(sizeCategory, supportedClothesSizeList);
+			}
+			else if(sizeCategory.equalsIgnoreCase("other"))
+			{
+				supportedSizeCategoryMap.put(sizeCategory, supportedOtherSizeList);
+			}
+		}
 		logisticPackageHeaders = new ArrayList<String>();
 		try {
 			logisticPackageHeaders.add("包裹重量");
@@ -90,10 +142,10 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-	}
 
+	}
+ 
+	
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.ausland.weixin.controller"))

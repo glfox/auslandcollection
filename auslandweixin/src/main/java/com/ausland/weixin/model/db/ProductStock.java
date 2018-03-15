@@ -20,7 +20,11 @@ public class ProductStock {
     @NotNull
     String productId;
     
-    @Column(length = 64)
+    @Column(length = 32)	
+    @NotNull
+    String sizeCategory;
+    
+    @Column(length = 128)
     @NotNull
     String size;
         
@@ -28,7 +32,7 @@ public class ProductStock {
     @NotNull
     String color;
     
-    @Column(length = 64)
+    @Column(length = 128)
     String stockStatus;
    
 	public Integer getId() {

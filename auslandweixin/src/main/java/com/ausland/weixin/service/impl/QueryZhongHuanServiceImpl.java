@@ -188,7 +188,19 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 				}
 			}
 			details.setCourierNumber(fydh.getChrfydh());
-			details.setCustomStatus(fydh.getChrshzt());
+			if("true".equalsIgnoreCase(fydh.getChrshzt()))
+			{
+				details.setCustomStatus("已寄出");
+			}
+			else if("false".equalsIgnoreCase(fydh.getChrshzt()))
+			{
+				details.setCustomStatus("未寄出");
+			}
+			else
+			{
+				details.setCustomStatus("状态未知");
+			}
+			
 			details.setReceiverAddress(fydh.getChrsjrdz());
 			if(!StringUtils.isEmpty(fydh.getChrsjr()))
 			{

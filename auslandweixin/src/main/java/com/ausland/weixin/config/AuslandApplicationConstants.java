@@ -14,8 +14,9 @@ public class AuslandApplicationConstants {
 	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_NOCOURIERINFO="没有找到重庆中环对应单号的物流信息";
 	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR="服务器异常请稍后再试";
 	public static final Integer DB_BATCH_SIZE=20;
-	public static final String STOCKTATUS_INSTOCK = "INSTOCK";
-	public static final String STOCKTATUS_OUTOFSTOCK = "OUTOFSTOCK";
+	public static final String STOCKTATUS_INSTOCK = "Y";
+	public static final String STOCKTATUS_NA = "N/A";
+	public static final String STOCKTATUS_OUTOFSTOCK = "N";
 	public static final String DATETIME_STRING_FORMAT = "yyyy-MM-dd HHmmss";
 	public static final String DATE_STRING_FORMAT = "yyyy-MM-dd";
 	public static final String IMAGE_HEADER = "data:image/jpeg:base64,";

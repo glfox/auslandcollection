@@ -86,26 +86,29 @@ public class ProductServiceImpl implements ProductService{
 		product.setProductSmallImage(req.getSmallImageBase64EncodeString());
 		product.setProductWeight(req.getProductWeight());
 		product.setStatus(req.getStatus());
+		product.setSizeCategory(req.getSizeCategory());
 		productRepository.saveAndFlush(product);
 		
 		String[] sizeArray = req.getSizes().split(",");
 		String[] colorArray = req.getColors().split(",");
+		String[] stockStatusArray = new String[sizeArray.length];
+		for(int i = 0; i < sizeArray.length; i ++)
+		{
+			stockStatusArray[i] = AuslandApplicationConstants.STOCKTATUS_INSTOCK;
+		}
+		String stockStatusStr = String.join(",", stockStatusArray);
 		List<ProductStock> psList = new ArrayList<ProductStock>();
 		for(String color : colorArray)
 		{
 			if(StringUtils.isEmpty(color))
 				continue;
-			for(String size : sizeArray)
-			{
-				if(StringUtils.isEmpty(size))
-					continue;
-				ProductStock ps = new ProductStock();
-				ps.setColor(color);
-				ps.setSize(size);
-				ps.setProductId(req.getProductId());
-				ps.setStockStatus(AuslandApplicationConstants.STOCKTATUS_INSTOCK);
-				psList.add(ps);
-			}
+			ProductStock ps = new ProductStock();
+			ps.setColor(color);
+			ps.setSize(req.getSizes());
+			ps.setProductId(req.getProductId());
+			ps.setStockStatus(stockStatusStr);
+			psList.add(ps);
+			 
 		}
 		productStockRepository.save(psList);
 		res.setStatus(AuslandApplicationConstants.STATUS_OK);
@@ -125,7 +128,18 @@ public class ProductServiceImpl implements ProductService{
 		
 		if(StringUtils.isEmpty(req.getCategory()))
 			return "没有商品品牌";
-				
+		if(StringUtils.isEmpty(req.getSizeCategory()) || !AuslandweixinConfig.supportedSizeCategoryList.contains(req.getSizeCategory()))
+		{
+			return "没有商品尺码类型";
+		}
+		String[] sizes = req.getSizes().split(",");
+		for(String size : sizes)
+		{
+	        if(!AuslandweixinConfig.supportedSizeCategoryMap.get(req.getSizeCategory()).contains(size))
+	        {
+	        	return "尺码"+size+" 不属于尺码类型："+req.getSizeCategory();
+	        }
+		}		
 		Product p = productRepository.findByProductId(req.getProductId());
 		if(p == null)
 		{
@@ -152,6 +166,18 @@ public class ProductServiceImpl implements ProductService{
 		if(StringUtils.isEmpty(req.getSizes()) || StringUtils.isEmpty(req.getColors()))
 		{
 			return "没有商品尺码和颜色";
+		}
+		if(StringUtils.isEmpty(req.getSizeCategory()) || !AuslandweixinConfig.supportedSizeCategoryList.contains(req.getSizeCategory()))
+		{
+			return "没有商品尺码类型";
+		}
+		String[] sizes = req.getSizes().split(",");
+		for(String size : sizes)
+		{
+	        if(!AuslandweixinConfig.supportedSizeCategoryMap.get(req.getSizeCategory()).contains(size))
+	        {
+	        	return "尺码"+size+" 不属于尺码类型："+req.getSizeCategory();
+	        }
 		}
 		if(StringUtils.isEmpty(req.getCategory()))
 			return "没有商品类型";

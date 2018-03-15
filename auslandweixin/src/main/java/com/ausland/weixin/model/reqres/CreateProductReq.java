@@ -17,9 +17,16 @@ public class CreateProductReq implements Serializable
 	String smallImageBase64EncodeString;
 	String status;
 	String comments;
+	String sizeCategory;
 	String sizes;
 	String colors;
 	
+	public String getSizeCategory() {
+		return sizeCategory;
+	}
+	public void setSizeCategory(String sizeCategory) {
+		this.sizeCategory = sizeCategory;
+	}
 	public String getSmallImageBase64EncodeString() {
 		return smallImageBase64EncodeString;
 	}
@@ -81,13 +88,12 @@ public class CreateProductReq implements Serializable
 	public void setColors(String colors) {
 		this.colors = colors;
 	}
-
 	@Override
 	public String toString() {
 		return "CreateProductReq [productId=" + productId + ", productName=" + productName + ", brand=" + brand
-				+ ", category=" + category + ", productWeight=" + productWeight + ", status=" + status + ", comments="
-				+ comments + ", sizes=" + sizes + ", colors=" + colors + "]";
-	}
-	
+				+ ", category=" + category + ", productWeight=" + productWeight + ", smallImageBase64EncodeString="
+				+ smallImageBase64EncodeString + ", status=" + status + ", comments=" + comments + ", sizeCategory="
+				+ sizeCategory + ", sizes=" + sizes + ", colors=" + colors + "]";
+	}	
   
 }

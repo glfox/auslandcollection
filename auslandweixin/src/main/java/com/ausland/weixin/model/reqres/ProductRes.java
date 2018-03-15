@@ -22,7 +22,15 @@ public class ProductRes implements Serializable
 	String productWeight;
 	String status;
 	String comments;
+	String sizeCategory;
 	List<StockInfo> stock;
+	
+	public String getSizeCategory() {
+		return sizeCategory;
+	}
+	public void setSizeCategory(String sizeCategory) {
+		this.sizeCategory = sizeCategory;
+	}
 	public String getProductId() {
 		return productId;
 	}
