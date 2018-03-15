@@ -18,14 +18,11 @@ public interface ProductRepository extends JpaRepository<Product, String>{
 	
 	Page<Product> findByProductIdIn(Pageable pageable, List<String> productIds);
 	
-	/*List<Product> findByProductIdLike(String productId);
+	Page<Product> findByProductIdLikeOrProductNameLike(Pageable pageable,String productId, String productName);
 	
-	List<Product> findByBrand(String brand);*/
+	Page<Product> findByBrandIn(Pageable pageable, List<String> brands);
 	
-	/*@Query(value="select p from Product p where p.productId like %:matchingStr% or p.productName like %:matchingStr%")
-	Page<Product> findByMatchingString(Pageable pageable, @Param("matchingStr")String matchingStr);*/
-	
-	Page<Product> findByProductIdLikeOrProductNameLikeOrBrandIn(Pageable pageable, String productId, String productName, List<String> brands);
+	Page<Product> findByProductIdLikeOrProductNameLikeAndBrandIn(Pageable pageable, String productId,  String productName, List<String> brands);
 	
 	@Query(value="select p.productId from Product p where p.productId like %:matchingStr% or p.productName like %:matchingStr%")
 	List<String> findProductIdsByMatchingString(@Param("matchingStr")String matchingStr);
@@ -36,7 +33,8 @@ public interface ProductRepository extends JpaRepository<Product, String>{
 	@Query(value="select p.productId from Product p where p.productId like %:matchingStr% or p.productName like %:matchingStr% and p.brand in :brands")
 	List<String> findProductIdsByMatchingStringAndBrands(@Param("matchingStr")String matchingStr, @Param("brands")List<String> brands);
 	
-	
-	
 	Page<Product> findAll(Pageable pageable);
+	
+	@Query(value="select p.productId from Product p")
+	List<String> findProductIdsAll();
 }

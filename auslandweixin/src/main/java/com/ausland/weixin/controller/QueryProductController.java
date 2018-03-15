@@ -33,7 +33,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryProductControl
 									      @RequestParam(name="pageNo", required = true) Integer pageNo,
 									      @RequestParam(name="matchingstr", required = false) String mathingStr,
 			                              @RequestParam(name="brands", required = false) String brandNames,
-			                              @RequestParam(name="productIds", required = true) String productIds,
+			                              @RequestParam(name="productIds", required = false) String productIds,
 			                              HttpServletRequest httpServletRequest) throws IOException 
 	{
 		logger.debug("entered queryByMatchingStr with mathingStr:"+mathingStr+";brandnames:"+brandNames+";productIds:"+productIds+";pageSize:"+pageSize+";pageNo:"+pageNo); 

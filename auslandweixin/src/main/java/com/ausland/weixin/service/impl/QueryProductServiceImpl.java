@@ -119,7 +119,25 @@ public class QueryProductServiceImpl implements QueryProductService{
 			}
 		}
 		
-		Page<Product> p = productRepository.findByProductIdLikeOrProductNameLikeOrBrandIn(pagable, matchingString, matchingString, brandList);
+		if(brandList.size() <= 0 && StringUtils.isEmpty(matchingString))
+		{
+			Page<Product> p = productRepository.findAll(pagable);
+			return genQueryProductRes(p);
+		}
+		
+		if(brandList.size() <= 0)
+		{
+			Page<Product> p = productRepository.findByProductIdLikeOrProductNameLike(pagable, "%"+matchingString+"%", "%"+matchingString+"%");
+			return genQueryProductRes(p);
+		}
+		
+		if(StringUtils.isEmpty(matchingString))
+		{
+			Page<Product> p = productRepository.findByBrandIn(pagable, brandList);
+			return genQueryProductRes(p);
+		}
+		
+		Page<Product> p = productRepository.findByProductIdLikeOrProductNameLikeAndBrandIn(pagable, "%"+matchingString+"%", "%"+matchingString+"%", brandList);
 		return genQueryProductRes(p);
 	}
 
@@ -194,8 +212,7 @@ public class QueryProductServiceImpl implements QueryProductService{
 		}
 		if(brandList.size() <= 0 && StringUtils.isEmpty(matchingString))
 		{
-			logger.debug("no valid input.");
-			return null;
+			return productRepository.findProductIdsAll();
 		}
         if(brandList.size() <= 0)
            return productRepository.findProductIdsByMatchingString(matchingString);
