@@ -14,8 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -62,6 +64,9 @@ public class ProductServiceImpl implements ProductService{
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
+	@Autowired
+	private AuslandweixinConfig config;
+		
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
     
 	@Value("${upload.product.excel.server.directory}")
@@ -128,14 +133,14 @@ public class ProductServiceImpl implements ProductService{
 		
 		if(StringUtils.isEmpty(req.getCategory()))
 			return "没有商品品牌";
-		if(StringUtils.isEmpty(req.getSizeCategory()) || !AuslandweixinConfig.supportedSizeCategoryList.contains(req.getSizeCategory()))
+		if(StringUtils.isEmpty(req.getSizeCategory()) || !config.supportedSizeCategoryList.contains(req.getSizeCategory()))
 		{
 			return "没有商品尺码类型";
 		}
 		String[] sizes = req.getSizes().split(",");
 		for(String size : sizes)
 		{
-	        if(!AuslandweixinConfig.supportedSizeCategoryMap.get(req.getSizeCategory()).contains(size))
+	        if(!config.getSupportedSizeCategoryMap().get(req.getSizeCategory()).contains(size))
 	        {
 	        	return "尺码"+size+" 不属于尺码类型："+req.getSizeCategory();
 	        }
@@ -167,14 +172,14 @@ public class ProductServiceImpl implements ProductService{
 		{
 			return "没有商品尺码和颜色";
 		}
-		if(StringUtils.isEmpty(req.getSizeCategory()) || !AuslandweixinConfig.supportedSizeCategoryList.contains(req.getSizeCategory()))
+		if(StringUtils.isEmpty(req.getSizeCategory()) || !config.supportedSizeCategoryList.contains(req.getSizeCategory()))
 		{
 			return "没有商品尺码类型";
 		}
 		String[] sizes = req.getSizes().split(",");
 		for(String size : sizes)
 		{
-	        if(!AuslandweixinConfig.supportedSizeCategoryMap.get(req.getSizeCategory()).contains(size))
+	        if(!config.getSupportedSizeCategoryMap().get(req.getSizeCategory()).contains(size))
 	        {
 	        	return "尺码"+size+" 不属于尺码类型："+req.getSizeCategory();
 	        }
@@ -384,98 +389,111 @@ public class ProductServiceImpl implements ProductService{
         	return res;
         }
         
-        logger.debug("precheck completed start to save the excel file");
-        errorMessage = saveExcelFileInServerDirectory(fileNamewithFullPath, excelFile);
-        if(!StringUtils.isEmpty(errorMessage))
+        try
         {
-        	res.setErrorDetails(errorMessage);
-        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED); 
-        	return res;
+        	String createdSrc = FilenameUtils.getBaseName(excelFile.getOriginalFilename())+"."+FilenameUtils.getExtension(excelFile.getOriginalFilename());
+            List<Product> productList = new ArrayList<Product>();
+            logger.debug("start to save in db.");
+            Set<String> brandSet = new HashSet<String>();
+            Set<String> categorySet = new HashSet<String>();
+            for(ProductRes pres : records)
+            {
+            	logger.debug("productRes: "+pres.toString());
+            	Product p = new Product();
+            	p.setBrand(pres.getBrand());
+            	brandSet.add(pres.getBrand());
+            	categorySet.add(pres.getCategory());
+            	p.setCreatedDateTime(new Date());
+            	p.setCreatedSrc(createdSrc);
+            	p.setSizeCategory(pres.getSizeCategory());
+            	p.setProductCategory(pres.getCategory());
+            	p.setProductId(pres.getProductId());
+            	p.setProductName(pres.getProductName());
+            	p.setProductWeight(pres.getProductWeight());
+            	productList.add(p);
+            	List<StockInfo> l = pres.getStock();
+            	if(l != null && l.size() > 0)
+            	{
+            		productStockRepository.deleteByProductId(pres.getProductId());
+            		List<ProductStock> psList = new ArrayList<ProductStock>();
+            		for(StockInfo si : l)
+            		{
+            			ProductStock ps = new ProductStock();
+            			ps.setProductId(pres.getProductId());
+            			ps.setStockStatus(si.getStockStatus());
+            			ps.setColor(si.getColor());
+            			ps.setSize(si.getSize());
+            			ps.setSizeCategory(pres.getSizeCategory());
+            			psList.add(ps);
+            			logger.debug(ps.toString());
+            		}
+            		productStockRepository.save(psList);
+            		productStockRepository.flush();
+            	}
+            }
+            if(productList.size() <= AuslandApplicationConstants.DB_BATCH_SIZE)
+            {
+            	productRepository.save(productList);
+            	productRepository.flush();
+            }
+            else
+            {
+            	//split to batch size and loop 
+            	int i = 0;
+            	while(i < productList.size())
+            	{
+            		int endIndex = Math.min(i + AuslandApplicationConstants.DB_BATCH_SIZE, records.size());
+            		List<Product> sublist = productList.subList(i, endIndex);
+            		productRepository.save(sublist);
+            		productRepository.flush();
+            		i = i + AuslandApplicationConstants.DB_BATCH_SIZE;
+            	}
+            }
+            
+            List<Brand> bList = new ArrayList<Brand>();
+            for(String brandName : brandSet)
+            {
+            	Brand b = brandRepository.findByBrandName(brandName);
+            	if(b != null)
+            		continue;
+            	b = new Brand();
+            	b.setBrandName(brandName);
+            	bList.add(b);
+            }
+            if(bList.size() > 0)
+               brandRepository.save(bList);
+            
+            List<Category> cList = new ArrayList<Category>();
+            for(String categoryName : categorySet)
+            {
+            	Category c = categoryRepository.findByCategoryName(categoryName);
+            	if(c != null)
+            		continue;
+            	c = new Category();
+            	c.setCategoryName(categoryName);
+            	cList.add(c);
+            }
+            if(cList.size() > 0)
+            	categoryRepository.save(cList);
+            
+            logger.debug("save in db completed, start to save the excel file....");
+
+            errorMessage = saveExcelFileInServerDirectory(fileNamewithFullPath, excelFile);
+            if(!StringUtils.isEmpty(errorMessage))
+            {
+            	res.setErrorDetails(errorMessage);
+            	res.setStatus(AuslandApplicationConstants.STATUS_FAILED); 
+            	return res;
+            }
+            
+            res.setStatus(AuslandApplicationConstants.STATUS_OK);
+            return res;
         }
-        
-        String createdSrc = FilenameUtils.getBaseName(excelFile.getOriginalFilename())+"."+FilenameUtils.getExtension(excelFile.getOriginalFilename());
-        List<Product> productList = new ArrayList<Product>();
-        logger.debug("start to save in db.");
-        Set<String> brandSet = new HashSet<String>();
-        Set<String> categorySet = new HashSet<String>();
-        for(ProductRes pres : records)
+        catch(Exception e)
         {
-        	logger.debug("productRes: "+pres.toString());
-        	Product p = new Product();
-        	p.setBrand(pres.getBrand());
-        	brandSet.add(pres.getBrand());
-        	categorySet.add(pres.getCategory());
-        	p.setCreatedDateTime(new Date());
-        	p.setCreatedSrc(createdSrc);
-        	p.setProductCategory(pres.getCategory());
-        	p.setProductId(pres.getProductId());
-        	p.setProductName(pres.getProductName());
-        	p.setProductWeight(pres.getProductWeight());
-        	productList.add(p);
-        	List<StockInfo> l = pres.getStock();
-        	if(l != null && l.size() > 0)
-        	{
-        		productStockRepository.deleteByProductId(pres.getProductId());
-        		List<ProductStock> psList = new ArrayList<ProductStock>();
-        		for(StockInfo si : l)
-        		{
-        			ProductStock ps = new ProductStock();
-        			ps.setProductId(pres.getProductId());
-        			ps.setStockStatus(AuslandApplicationConstants.STOCKTATUS_INSTOCK);
-        			ps.setColor(si.getColor());
-        			ps.setSize(si.getSize());
-        			psList.add(ps);
-        		}
-        		productStockRepository.save(psList);
-        		productStockRepository.flush();
-        	}
+        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+        	res.setErrorDetails("got exception during save excel file in db:"+e.getMessage());
         }
-        if(productList.size() <= AuslandApplicationConstants.DB_BATCH_SIZE)
-        {
-        	productRepository.save(productList);
-        	productRepository.flush();
-        }
-        else
-        {
-        	//split to batch size and loop 
-        	int i = 0;
-        	while(i < productList.size())
-        	{
-        		int endIndex = Math.min(i + AuslandApplicationConstants.DB_BATCH_SIZE, records.size());
-        		List<Product> sublist = productList.subList(i, endIndex);
-        		productRepository.save(sublist);
-        		productRepository.flush();
-        		i = i + AuslandApplicationConstants.DB_BATCH_SIZE;
-        	}
-        }
-        
-        List<Brand> bList = new ArrayList<Brand>();
-        for(String brandName : brandSet)
-        {
-        	Brand b = brandRepository.findByBrandName(brandName);
-        	if(b != null)
-        		continue;
-        	b = new Brand();
-        	b.setBrandName(brandName);
-        	bList.add(b);
-        }
-        if(bList.size() > 0)
-           brandRepository.save(bList);
-        
-        List<Category> cList = new ArrayList<Category>();
-        for(String categoryName : categorySet)
-        {
-        	Category c = categoryRepository.findByCategoryName(categoryName);
-        	if(c != null)
-        		continue;
-        	c = new Category();
-        	c.setCategoryName(categoryName);
-        	cList.add(c);
-        }
-        if(cList.size() > 0)
-        	categoryRepository.save(cList);
-        logger.debug("completed ....");
-        res.setStatus(AuslandApplicationConstants.STATUS_OK);
         return res;
 	}
 	
@@ -525,7 +543,13 @@ public class ProductServiceImpl implements ProductService{
         		}
         		i ++;
         	}
-        	
+        	Set<String> productSet = map.keySet();
+        	List<String> proList = productRepository.findProductIdByProductIdIn(productSet);
+        	if(proList != null && proList.size() > 0)
+        	{
+        		logger.debug("found already existing productId in the db:"+ ToStringBuilder.reflectionToString(proList));
+        		errorMessage.append("found already existing productId in the db:"+ ToStringBuilder.reflectionToString(proList));
+        	}
         	records.addAll(map.values());
         	logger.debug("added "+ records.size()+" products to the result list.");
         }
@@ -641,19 +665,22 @@ public class ProductServiceImpl implements ProductService{
 	        	String[] sizes = cell.trim().split("/");
 	        	if(sizes.length <= 0)
 	        		return "Does not contain size field.";
-	        	
+	        	String[] stockStatusArray = new String[sizes.length];
+	        	p.setSizeCategory(config.getFromSizeToSizeCategoryMap().get(sizes[0]));
+	        	for(int j = 0; j < sizes.length; j ++)
+	        	{
+	        		stockStatusArray[j] = AuslandApplicationConstants.STOCKTATUS_INSTOCK;
+	        	}
 	        	if(p.getStock() == null)
         		{
         			List<StockInfo> stockInfoList = new ArrayList<StockInfo>();
         			p.setStock(stockInfoList);
         		}
-	        	for(String size : sizes)
-	        	{
-	        		StockInfo stockInfo = new StockInfo();
-		        	stockInfo.setColor(color);
-		        	stockInfo.setSize(size);
-		        	p.getStock().add(stockInfo);  
-	        	}
+	        	StockInfo stockInfo = new StockInfo();
+	        	stockInfo.setColor(color);
+	        	stockInfo.setSize(String.join(",", sizes));
+	        	stockInfo.setStockStatus(String.join(",", stockStatusArray));
+	        	p.getStock().add(stockInfo);
 	        }
 	        else if(i == 8)
 	        {

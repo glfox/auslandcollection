@@ -97,12 +97,15 @@ public class ProductRes implements Serializable
 	public void setStock(List<StockInfo> stock) {
 		this.stock = stock;
 	}
+	
 	@Override
 	public String toString() {
 		return "ProductRes [productId=" + productId + ", productName=" + productName + ", brand=" + brand
-				+ ", category=" + category + ", productMainImageUrl=" + productMainImageUrl
-				+ ", productMainVideoUrl=" + productMainVideoUrl + ", productWeight="
-				+ productWeight + ", status=" + status + ", comments=" + comments + ", stock=" +  ToStringBuilder.reflectionToString(stock) + "]";
+				+ ", category=" + category + ", productMainImageUrl=" + productMainImageUrl + ", productSmallImage="
+				+ productSmallImage + ", productMainVideoUrl=" + productMainVideoUrl + ", productWeight="
+				+ productWeight + ", status=" + status + ", comments=" + comments + ", sizeCategory=" + sizeCategory
+				+ ", stock=" + ToStringBuilder.reflectionToString(stock) + "]";
 	}
+ 
 	
 }

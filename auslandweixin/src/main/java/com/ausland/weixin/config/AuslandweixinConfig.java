@@ -5,23 +5,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -43,6 +53,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @ComponentScan({ "com.ausland.weixin" })
 @EnableAsync
+/*@EnableJpaRepositories("com.ausland.weixin.dao")
+@EnableTransactionManagement*/
 public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 
 	@Autowired
@@ -58,61 +70,91 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	private int resttemplate_http_timeout;
 	
 	@Value("#{'${supported.size.baby}'.split(',')}")
-	public static List<String> supportedBabySizeList;
+	public List<String> supportedBabySizeList;
 	
 	@Value("#{'${supported.size.children}'.split(',')}")
-	public static List<String> supportedChilrenSizeList;
+	public List<String> supportedChilrenSizeList;
 	
-	@Value("#{'${supported.size.women}'.split(',')}")
-	public static List<String> supportedWomenSizeList;
-	
-	@Value("#{'${supported.size.men}'.split(',')}")
-	public static List<String> supportedMenSizeList;
-	
-	@Value("#{'${supported.size.clothes}'.split(',')}")
-	public static List<String> supportedClothesSizeList;
+	@Value("#{'${supported.size.adults}'.split(',')}")
+	public List<String> supportedAdultsSizeList;
+		
+	@Value("#{'${supported.size.xml}'.split(',')}")
+	public List<String> supportedXmlSizeList;
 	
 	@Value("#{'${supported.size.other}'.split(',')}")
-	public static List<String> supportedOtherSizeList;
+	public List<String> supportedOtherSizeList;
 	
 	@Value("#{'${supported.size.category.list}'.split(',')}")
-	public static List<String> supportedSizeCategoryList;
+	public List<String> supportedSizeCategoryList;
 
 	public static List<String> logisticPackageHeaders = null;
 	
 	public static List<String> productUploadExcelHeaders = null;
 	
-	public static HashMap<String, List<String>> supportedSizeCategoryMap = null;
+	public HashMap<String, List<String>> supportedSizeCategoryMap = null;
+	
+	public HashMap<String, String> fromSizeToSizeCategoryMap = null;
 	 
-	static {
+	public HashMap<String, String> getFromSizeToSizeCategoryMap()
+	{
+		return fromSizeToSizeCategoryMap;
+	}
+	
+	@PostConstruct
+	public void init(){
 		supportedSizeCategoryMap = new HashMap<String, List<String>>();
+		fromSizeToSizeCategoryMap = new HashMap<String, String>();
 		for(String sizeCategory : supportedSizeCategoryList)
 		{
 			if(sizeCategory.equalsIgnoreCase("baby"))
 			{
 				supportedSizeCategoryMap.put(sizeCategory, supportedBabySizeList);
+				for(String s : supportedBabySizeList)
+				{
+					fromSizeToSizeCategoryMap.put(s, sizeCategory);
+				}
 			}
 			else if(sizeCategory.equalsIgnoreCase("children"))
 			{
 				supportedSizeCategoryMap.put(sizeCategory, supportedChilrenSizeList);
+				for(String s : supportedChilrenSizeList)
+				{
+					fromSizeToSizeCategoryMap.put(s, sizeCategory);
+				}
 			}
-			else if(sizeCategory.equalsIgnoreCase("women"))
+			else if(sizeCategory.equalsIgnoreCase("adults"))
 			{
-				supportedSizeCategoryMap.put(sizeCategory, supportedWomenSizeList);
+				supportedSizeCategoryMap.put(sizeCategory, supportedAdultsSizeList);
+				for(String s : supportedAdultsSizeList)
+				{
+					fromSizeToSizeCategoryMap.put(s, sizeCategory);
+				}
 			}
-			else if(sizeCategory.equalsIgnoreCase("men"))
+			else if(sizeCategory.equalsIgnoreCase("xml"))
 			{
-				supportedSizeCategoryMap.put(sizeCategory, supportedMenSizeList);
-			}
-			else if(sizeCategory.equalsIgnoreCase("clothes"))
-			{
-				supportedSizeCategoryMap.put(sizeCategory, supportedClothesSizeList);
+				supportedSizeCategoryMap.put(sizeCategory, supportedXmlSizeList);
+				for(String s : supportedXmlSizeList)
+				{
+					fromSizeToSizeCategoryMap.put(s, sizeCategory);
+				}
 			}
 			else if(sizeCategory.equalsIgnoreCase("other"))
 			{
 				supportedSizeCategoryMap.put(sizeCategory, supportedOtherSizeList);
+				for(String s : supportedOtherSizeList)
+				{
+					fromSizeToSizeCategoryMap.put(s, sizeCategory);
+				}
 			}
 		}
+	}
+	public HashMap<String, List<String>> getSupportedSizeCategoryMap()
+	{
+		return supportedSizeCategoryMap;
+	}
+	
+	static {
+		
 		logisticPackageHeaders = new ArrayList<String>();
 		try {
 			logisticPackageHeaders.add("包裹重量");
@@ -224,11 +266,71 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 
 		return dataSource;
 	}
-/*
+	
+	 /* @Bean
+	  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+
+	    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+	    vendorAdapter.setGenerateDdl(true);
+
+	    LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+	    factory.setJpaVendorAdapter(vendorAdapter);
+	    factory.setPackagesToScan("com.ausland.weixin.model.db");
+	    factory.setDataSource(dataSource());
+	    return factory;
+	  }
+
+	  @Bean
+	  public PlatformTransactionManager transactionManager() {
+
+	    JpaTransactionManager txManager = new JpaTransactionManager();
+	    txManager.setEntityManagerFactory((EntityManagerFactory) entityManagerFactory());
+	    return txManager;
+	  }*/
+	
+	/*@Bean
+	public LocalContainerEntityManagerFactoryBean customerEntityManagerFactory(
+			EntityManagerFactoryBuilder builder) {
+		return builder
+				.dataSource(dataSource()).packages("com.ausland.weixin.model.db")
+				.build();
+	}
+
+
 	@Bean
-	public PlatformTransactionManager txManager() {
+	public PlatformTransactionManager transactionManager() {
 		return new DataSourceTransactionManager(dataSource());
 	}*/
+	
+	/*    @Bean
+	    public LocalContainerEntityManagerFactoryBean userEntityManager() {
+	        LocalContainerEntityManagerFactoryBean em
+	          = new LocalContainerEntityManagerFactoryBean();
+	        em.setDataSource(dataSource());
+	        em.setPackagesToScan(
+	          new String[] { "com.ausland.weixin.model.db" });
+	 
+	        HibernateJpaVendorAdapter vendorAdapter
+	          = new HibernateJpaVendorAdapter();
+	        em.setJpaVendorAdapter(vendorAdapter);
+	        HashMap<String, Object> properties = new HashMap<>();
+	        properties.put("hibernate.hbm2ddl.auto",
+	          env.getProperty("hibernate.hbm2ddl.auto"));
+	        properties.put("hibernate.dialect",
+	          env.getProperty("hibernate.dialect"));
+	        em.setJpaPropertyMap(properties);
+	 
+	        return em;
+	    }
+	    
+	   @Bean
+	   public PlatformTransactionManager transactionManager(){
+	      JpaTransactionManager transactionManager
+	        = new JpaTransactionManager();
+	      transactionManager.setEntityManagerFactory(
+	    		  userEntityManager().getObject() );
+	      return transactionManager;
+	   }*/
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {

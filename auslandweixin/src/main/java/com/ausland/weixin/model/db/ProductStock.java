@@ -75,12 +75,18 @@ public class ProductStock {
 		this.stockStatus = stockStatus;
 	}
  
+	public String getSizeCategory() {
+		return sizeCategory;
+	}
+
+	public void setSizeCategory(String sizeCategory) {
+		this.sizeCategory = sizeCategory;
+	}
 
 	@Override
 	public String toString() {
-		return "ProductStock [id=" + id + ", productId=" + productId + ", size=" + size
-				+ ", color=" + color + ", stockStatus=" + stockStatus +  "]";
+		return "ProductStock [id=" + id + ", productId=" + productId + ", sizeCategory=" + sizeCategory + ", size="
+				+ size + ", color=" + color + ", stockStatus=" + stockStatus + "]";
 	}
-   
 
 }

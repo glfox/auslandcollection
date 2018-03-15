@@ -1,6 +1,7 @@
 package com.ausland.weixin.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,9 @@ public interface ProductRepository extends JpaRepository<Product, String>{
 	Page<Product> findByProductIdLikeOrProductNameLike(Pageable pageable,String productId, String productName);
 	
 	Page<Product> findByBrandIn(Pageable pageable, List<String> brands);
+	
+	@Query(value="select p.productId from Product p where p.productId in :productIdSet")
+	List<String> findProductIdByProductIdIn( @Param("productIdSet")Set<String> productIdSet);
 	
 	Page<Product> findByProductIdLikeOrProductNameLikeAndBrandIn(Pageable pageable, String productId,  String productName, List<String> brands);
 	
