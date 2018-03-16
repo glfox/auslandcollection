@@ -64,7 +64,14 @@ class SearchOrders extends Component {
 						loaded: true
 					});
 				}
-			}, err => console.log(err));
+			}, err => {
+				this.setState({
+					details: null,
+					error: "请求错误",
+					loaded: true
+				});
+				console.log(err)
+			});
 	}
 
 	render() {
@@ -72,7 +79,7 @@ class SearchOrders extends Component {
 		return (
 			<div>
 				<Form inline onSubmit={this.handleSubmit}>
-					<FormGroup controlId="formInlineName">
+					<FormGroup controlId="orderForm">
 						<ControlLabel>订单号: </ControlLabel>{' '}
 			          	<FormControl
 				            type="text"
