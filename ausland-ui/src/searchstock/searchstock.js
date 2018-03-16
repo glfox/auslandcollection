@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './searchstock.css';
+import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap';
 
 class SearchStock extends Component {
 
@@ -11,7 +12,9 @@ class SearchStock extends Component {
 	    	productName:"",
 	    	isChanged: false,
 	    	stockStatus: "",
-	    	error: ""
+	    	error: null,
+	    	details: null,
+	    	loaded: true
 	    };
 	    this.handleChange = this.handleChange.bind(this);
 	    this.handleSubmit = this.handleSubmit.bind(this);
@@ -31,6 +34,11 @@ class SearchStock extends Component {
 	}
 	handleSubmit(event) {
 		if (this.state.trackingNo > 0 && this.state.isChanged) {
+			this.setState({
+				error: null,
+				details: null,
+				loaded: false
+			})
 			this.getDetails(this.state.trackingNo);
 		}
 		event.preventDefault();
@@ -56,13 +64,15 @@ class SearchStock extends Component {
 						}
 						this.setState({
 							details: rows,
-							error: null
+							error: null,
+							loaded: true
 						});
 					}
 	      		} else {
 					this.setState({
 						details: null,
-						error: result.errorDetails
+						error: result.errorDetails,
+						loaded: true
 					});
 				}
 	        },
@@ -71,29 +81,40 @@ class SearchStock extends Component {
 	        // exceptions from actual bugs in components.
 	        (error) => {
 	     		console.log(error);
+	     		this.setState({
+					details: null,
+					error: error,
+					loaded: true
+				});	
 	        })
 	}
 
 	render() {
+		let loader = this.state.loaded? null : <div className="loader"/>
 		return (
 			<div>
-				<form onSubmit={this.handleSubmit}>
-			        <label>
-			          	产品名称:
-			        	<input type="text" value={this.state.trackingNo} onChange={this.handleChange} />
-			        </label>
-			        
-			        <input type="submit" value="查询" />
-		      	</form>
+				<Form inline onSubmit={this.handleSubmit}>
+					<FormGroup controlId="orderForm">
+			        	<ControlLabel>产品名称: </ControlLabel>{' '}
+			        	<FormControl
+				            type="text"
+				            value={this.state.trackingNo}
+				            placeholder="输入商品信息"
+				            onChange={this.handleChange}
+				        />
+			        	<Button bsStyle="primary" type="submit">查询</Button>
+			        </FormGroup>
+		      	</Form>
 		      	<br/>
 		      	<div>
-		      		<table align="center">
+		      		<Table striped bordered condensed hover>
 		      			<tbody>
 		      				{this.state.details}
 		      			</tbody>
-		      		</table>
+		      		</Table>
+		      		{this.state.error}
+			  		{loader}
 		      	</div>
-		      	<div>{this.state.error}</div>
 			</div>
 		)
 	}
