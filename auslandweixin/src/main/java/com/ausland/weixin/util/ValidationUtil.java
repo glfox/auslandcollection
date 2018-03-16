@@ -131,7 +131,7 @@ public class ValidationUtil {
     	
 	}
 	
-	public String getCurrentDateString()
+	public String getCurrentDateTimeString()
 	{
 		Date date = new Date();
 		return simpleDateTimeFormat.format(date);

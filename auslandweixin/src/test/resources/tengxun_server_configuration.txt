@@ -14,11 +14,17 @@ tengxun cloud server:
   mysql_secure_installation
   
   open 3306 port for outside access:
+  CREATE USER 'root'@'%' IDENTIFIED BY 'Pa55w@rd';
+  GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
   
-  sudo -i
-  cd /var/lib/mysql/
- 
-  mysql -h localhost -u root -p
+  2.1>mysql directory:
+        sudo -i
+        cd /var/lib/mysql/
+  
+  
+  2.3>connect to mysql: 
+       mysql -h localhost -u root -p       Lucent123
+       mysql -h 118.24.75.119 -u root -p   pa55w@rd
   
 3>install apache and configure request forward
   sudo apt-get install apache2

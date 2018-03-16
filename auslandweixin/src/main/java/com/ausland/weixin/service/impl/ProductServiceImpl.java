@@ -1,6 +1,5 @@
 package com.ausland.weixin.service.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -13,7 +12,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +46,7 @@ import com.ausland.weixin.model.reqres.ProductRes;
 import com.ausland.weixin.model.reqres.StockInfo;
 import com.ausland.weixin.model.reqres.UpdateProductStockReq;
 import com.ausland.weixin.service.ProductService;
+import com.ausland.weixin.util.ValidationUtil;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -66,6 +65,9 @@ public class ProductServiceImpl implements ProductService{
 	
 	@Autowired
 	private AuslandweixinConfig config;
+	
+	@Autowired
+	private ValidationUtil validationUtil;
 		
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
     
@@ -368,12 +370,7 @@ public class ProductServiceImpl implements ProductService{
         	return res;
         }
         String fileNamewithFullPath = excelDirectory+FilenameUtils.getBaseName(excelFile.getOriginalFilename())+"."+fileExtension;
-        if(isFileExists(fileNamewithFullPath) == true)
-        {
-        	res.setErrorDetails("same excel file already exists in "+fileNamewithFullPath);
-        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED); 
-        	return res;
-        }
+
         List<ProductRes> records = new ArrayList<ProductRes>();
         String errorMessage = validateExcelFile(excelFile, records);
         if(!StringUtils.isEmpty(errorMessage))
@@ -477,14 +474,7 @@ public class ProductServiceImpl implements ProductService{
             	categoryRepository.save(cList);
             
             logger.debug("save in db completed, start to save the excel file....");
-
-            errorMessage = saveExcelFileInServerDirectory(fileNamewithFullPath, excelFile);
-            if(!StringUtils.isEmpty(errorMessage))
-            {
-            	res.setErrorDetails(errorMessage);
-            	res.setStatus(AuslandApplicationConstants.STATUS_FAILED); 
-            	return res;
-            }
+            saveExcelFileInServerDirectory(fileNamewithFullPath+validationUtil.getCurrentDateTimeString(), excelFile);
             
             res.setStatus(AuslandApplicationConstants.STATUS_OK);
             return res;
@@ -741,23 +731,5 @@ public class ProductServiceImpl implements ProductService{
 			return "save file:"+ csvFile.getOriginalFilename()+" to " + fileName + " got exception:"+e.getMessage();
 		}
 	} 
-	
-	private boolean isFileExists(String fileNamewithFullPath)
-	{
-		if(fileNamewithFullPath == null)
-		{
-			return false;
-		}
-		try
-		{
-			File f = new File(fileNamewithFullPath); 
-			return f.exists();
-		}
-		catch(Exception e)
-		{
-			logger.error("file:"+fileNamewithFullPath +" already exists.");
-			return false;
-		}
-	}
-	
+
 }
