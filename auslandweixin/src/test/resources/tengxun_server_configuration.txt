@@ -15,6 +15,10 @@ tengxun cloud server:
   
   open 3306 port for outside access:
   
+  sudo -i
+  cd /var/lib/mysql/
+ 
+  mysql -h localhost -u root -p
   
 3>install apache and configure request forward
   sudo apt-get install apache2
