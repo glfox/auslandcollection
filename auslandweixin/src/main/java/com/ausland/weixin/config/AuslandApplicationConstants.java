@@ -2,8 +2,9 @@ package com.ausland.weixin.config;
 
 public class AuslandApplicationConstants {
 
-	public static final String COOKIE_SESSION_ID= "AuslandCookieSessionId";
+	public static final String COOKIE_NAME= "AuslandCookieSessionId";
 	public static final String STATUS_OK = "ok";
+	public static final String COOKIE_ENCRYPTION_KEY = "ausland";
 	public static final String STATUS_FAILED = "failed";
 	public static final String STATUS_PARTIAL = "partial";
 	public static final String WEIXIN_MSG_TYPE_TEXT="text";

@@ -52,8 +52,9 @@ public class UserController {
 	
 	public GlobalRes login(HttpServletRequest httpServletRequest,
          	HttpServletResponse httpServletResponse,
-            @RequestParam(value="username", required = true)String userName,
-            @RequestParam(value="password", required = true)String password)
+         	 @CookieValue(value=AuslandApplicationConstants.coo, required=false) String guibSessionId
+            @RequestParam(value="username", required = false)String userName,
+            @RequestParam(value="password", required = false)String password)
 	{
 		GlobalRes res = new GlobalRes();
 		if(!userService.userNameExists(userName))

@@ -12,8 +12,36 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.ausland.weixin.config.AuslandApplicationConstants;
 
 public class DataEncryptionDecryptionUtil {
+	
+	public static void main(String[] args) {
+		CustomCookie cc = new CustomCookie();
+		cc.setUserId(11);
+		cc.setUserName("lanluo");
+		cc.setRole("admin");
+		String encryptedCookieValue = "";
+		try {
+			encryptedCookieValue = encryptCookieValueFromCookieObject(cc);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(encryptedCookieValue);
+		CustomCookie cc1;
+		try {
+			cc1 = getCustomCookieObjectFromCookieValue(encryptedCookieValue);
+			System.out.println(cc1.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public static SecretKey getSecretEncryptionKey() throws Exception {
 		KeyGenerator generator = KeyGenerator.getInstance("AES");
 		generator.init(256); // The AES key size in number of bits
@@ -81,5 +109,26 @@ public class DataEncryptionDecryptionUtil {
 		byte[] iv = createIV(randomStr);
 		byte[] cipher = encryptText(data, iv, key);
 		return finalEncryptedData(iv, cipher);
+	}
+	
+	public static CustomCookie getCustomCookieObjectFromCookieValue(String cookieValue) throws Exception
+	{
+		String decryptedString = decryption(cookieValue,AuslandApplicationConstants.COOKIE_ENCRYPTION_KEY);
+		if(StringUtils.isEmpty(decryptedString))
+			return null;
+		String[] inputs = decryptedString.split(",");
+		if(inputs.length < 3)
+			return null;
+		CustomCookie cc = new CustomCookie();
+		cc.setUserId(Integer.parseInt(inputs[0]));
+		cc.setUserName(inputs[1]);
+		cc.setRole(inputs[2]);
+		return cc;
+	}
+	
+	public static String encryptCookieValueFromCookieObject(CustomCookie customCookie)  throws Exception
+	{
+		if(customCookie == null) return null;
+		return encryption(customCookie.toString(), AuslandApplicationConstants.COOKIE_ENCRYPTION_KEY, customCookie.getUserName()); 
 	}
 }
