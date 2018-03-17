@@ -25,34 +25,34 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Integer id;
 	
-	@Column(name="username", unique = true, nullable = false, length = 128)	
+	@Column(name="username", unique = true, nullable = false, length = 64)	
 	String username;
 	
 	@Column(name="password", nullable = false, length = 64)
 	String password;
 	
-	@Column(name="phoneno", length = 64)	
+	@Column(length = 16)	
 	String phoneNumber;
 	
-	@Column(name="createdsrc")	
+	@Column(length = 32)
 	String createdSrc;
 	
-	@Column(name="role",length = 32)
+	@Column(length = 32)
 	String role;
 	
-	@Column(name="email", length = 64)
+	@Column(length = 64)
 	String email;
 	
-	@Column(name="status",length = 32)
+	@Column(length = 32)
 	String status;
 	
-	@Column(name="wechatid",length = 256)
+	@Column(length = 256)
 	String wechatId;
 	
-	@Column(name="wechatopenid",length = 256)
+	@Column(length = 256)
 	String wechatOpenId;
 	
-	@Column(name="createdtime")
+	@Column()
 	@Temporal(TemporalType.TIMESTAMP)
 	Date createdDateTime;
 	
@@ -64,6 +64,12 @@ public class User {
     @JoinColumn(name = "user_id")
 	List<ContactInfo> contactInfo;
     	
+	public List<ContactInfo> getContactInfo() {
+		return contactInfo;
+	}
+	public void setContactInfo(List<ContactInfo> contactInfo) {
+		this.contactInfo = contactInfo;
+	}
 	public Integer getId() {
 		return id;
 	}
