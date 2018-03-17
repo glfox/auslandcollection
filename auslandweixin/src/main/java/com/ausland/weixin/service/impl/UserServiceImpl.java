@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ausland.weixin.model.db.User;
 import com.ausland.weixin.model.reqres.CreateUserReq;
+import com.ausland.weixin.model.reqres.GlobalRes;
 import com.ausland.weixin.model.reqres.UserRes;
 import com.ausland.weixin.service.UserService;
 
@@ -20,17 +21,23 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserRes createUser(HttpServletRequest httpServletRequest, CreateUserReq createUserRequest) {
+	public boolean userNameExists(String userName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public GlobalRes createUser(HttpServletRequest httpServletRequest, CreateUserReq createUserRequest) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public UserRes queryUserByName(HttpServletRequest httpServletRequest, String name) {
+	public UserRes queryUserBy(String userName, String userId, String email, String phoneNo) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	 
+
 
 }

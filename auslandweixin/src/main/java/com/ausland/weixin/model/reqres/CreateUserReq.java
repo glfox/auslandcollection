@@ -1,26 +1,37 @@
 package com.ausland.weixin.model.reqres;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class CreateUserReq {
+public class CreateUserReq  implements Serializable {
     
-    @JsonProperty("username")	
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@JsonProperty("username")	
 	String userName;
+    
     @JsonProperty("password")
 	String password;
+    
     @JsonProperty("phone")
 	String phoneNumber;
-    @JsonProperty("src") 
-	String createdSrc;
-	String role;	 
+
+	String role;	
+	
 	String email; 
-	String status;
+
 	@JsonProperty("wechatid")
 	String wechatId;
+	
 	@JsonProperty("wechatopenid")
 	String wechatOpenId;
+	
 	public String getUserName() {
 		return userName;
 	}
@@ -39,12 +50,7 @@ public class CreateUserReq {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public String getCreatedSrc() {
-		return createdSrc;
-	}
-	public void setCreatedSrc(String createdSrc) {
-		this.createdSrc = createdSrc;
-	}
+
 	public String getRole() {
 		return role;
 	}
@@ -57,21 +63,19 @@ public class CreateUserReq {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
+
 	public String getWechatId() {
 		return wechatId;
 	}
+	
 	public void setWechatId(String wechatId) {
 		this.wechatId = wechatId;
 	}
+	
 	public String getWechatOpenId() {
 		return wechatOpenId;
 	}
+	
 	public void setWechatOpenId(String wechatOpenId) {
 		this.wechatOpenId = wechatOpenId;
 	}

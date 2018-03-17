@@ -25,22 +25,30 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Integer id;
 	
-	@Column(name="username", nullable = false, length = 128)	
+	@Column(name="username", unique = true, nullable = false, length = 128)	
 	String username;
-	@Column(name="password", nullable = false, unique = true, length = 64)
+	
+	@Column(name="password", nullable = false, length = 64)
 	String password;
-	@Column(name="phoneno", nullable = false, unique = true, length = 64)	
+	
+	@Column(name="phoneno", length = 64)	
 	String phoneNumber;
+	
 	@Column(name="createdsrc")	
 	String createdSrc;
+	
 	@Column(name="role",length = 32)
 	String role;
+	
 	@Column(name="email", length = 64)
 	String email;
+	
 	@Column(name="status",length = 32)
 	String status;
+	
 	@Column(name="wechatid",length = 256)
 	String wechatId;
+	
 	@Column(name="wechatopenid",length = 256)
 	String wechatOpenId;
 	

@@ -1,11 +1,15 @@
 package com.ausland.weixin.model.db;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="contact")
@@ -16,17 +20,27 @@ public class ContactInfo {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Integer contactInfoId;
   	
-	@Column(name="address",length = 1024)	
+	@Column(name="address",nullable = false, length = 1024)	
 	String address;
 	
-	@Column(length = 64)
+	@Column(nullable = false, length = 64)
     String name;
     
-	@Column(name="phoneno",length = 64)	
+	@Column(nullable = false, name="phoneno",length = 64)	
 	String phoneNumber;
 	
 	@Column(name="backupphoneno",length = 64)	
 	String backupPhoneNumber;
+	
+	@Column(name="createdtime")
+	@Temporal(TemporalType.TIMESTAMP)
+	Date createdDateTime;
+	
+	@Column(length = 1024)	
+	String comments;
+	
+	@Column
+	Boolean defaultAddress;
  
 	public Integer getContactInfoId() {
 		return contactInfoId;
