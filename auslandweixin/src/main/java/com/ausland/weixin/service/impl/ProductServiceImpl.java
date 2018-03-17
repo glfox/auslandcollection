@@ -84,6 +84,7 @@ public class ProductServiceImpl implements ProductService{
 			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 			return res;
 		}
+		
 		Product product = new Product();
 		product.setBrand(req.getBrand());
 		product.setComments(req.getComments());
@@ -112,10 +113,10 @@ public class ProductServiceImpl implements ProductService{
 			ProductStock ps = new ProductStock();
 			ps.setColor(color);
 			ps.setSize(req.getSizes());
+			ps.setSizeCategory(req.getSizeCategory());
 			ps.setProductId(req.getProductId());
 			ps.setStockStatus(stockStatusStr);
-			psList.add(ps);
-			 
+			psList.add(ps); 
 		}
 		productStockRepository.save(psList);
 		res.setStatus(AuslandApplicationConstants.STATUS_OK);
@@ -123,45 +124,21 @@ public class ProductServiceImpl implements ProductService{
 		logger.debug("successfully created  the product:"+req.getProductId());
 		return res;
 	}
-	
+		
 	private String validateUpdateProductReq(CreateProductReq req)
 	{
 		if(req == null || StringUtils.isEmpty(req.getProductId()))
 		{
 			return "没有商品Id";
 		} 
-		if(StringUtils.isEmpty(req.getCategory()))
-			return "没有商品类型";
-		
-		if(StringUtils.isEmpty(req.getCategory()))
-			return "没有商品品牌";
-		if(StringUtils.isEmpty(req.getSizeCategory()) || !config.supportedSizeCategoryList.contains(req.getSizeCategory()))
+		if( !StringUtils.isEmpty(req.getSizeCategory()) || !StringUtils.isEmpty(req.getColors()) || !StringUtils.isEmpty(req.getSizes()))
 		{
-			return "没有商品尺码类型";
+			if(!StringUtils.isEmpty(req.getColors()) && !StringUtils.isEmpty(req.getSizes()))
+			{
+				return null;
+			}
 		}
-		String[] sizes = req.getSizes().split(",");
-		for(String size : sizes)
-		{
-	        if(!config.getSupportedSizeCategoryMap().get(req.getSizeCategory()).contains(size))
-	        {
-	        	return "尺码"+size+" 不属于尺码类型："+req.getSizeCategory();
-	        }
-		}		
-		Product p = productRepository.findByProductId(req.getProductId());
-		if(p == null)
-		{
-			return "商品Id不存在";
-		}
-		
-		Category c = categoryRepository.findByCategoryName(req.getCategory());
-		if(c == null || c.getCategoryName() == null)
-		    return "没有商品类型";
-		
-		Brand b = brandRepository.findByBrandName(req.getBrand());
-		if(b == null || b.getBrandName() == null)
-			return "没有商品品牌";
-		
-		return null;
+		return "商品尺码或者颜色变化必须给出尺码和颜色";
 	}
 	
 	private String validateCreateProductReq(CreateProductReq req)
@@ -337,17 +314,66 @@ public class ProductServiceImpl implements ProductService{
 		{
 			res.setErrorDetails(str);
 			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
 		}
-		Product p = new Product();
+		Product p = productRepository.findByProductId(req.getProductId());
+		if(p == null)
+		{
+			res.setErrorDetails("没有在数据库中找到商品型号"+req.getProductId());
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
 	    p.setLastupdatedDateTime(new Date());
-	    p.setBrand(req.getBrand());
-	    p.setComments(req.getComments());
-	    p.setProductCategory(req.getCategory());
-	    p.setProductName(req.getProductName());
-	    p.setProductSmallImage(req.getSmallImageBase64EncodeString());
-	    p.setProductWeight(req.getProductWeight());
-	    p.setStatus(req.getStatus());
+	    if(!StringUtils.isEmpty(req.getBrand()))
+	        p.setBrand(req.getBrand());
+	    if(!StringUtils.isEmpty(req.getComments()))
+	        p.setComments(req.getComments());
+	    if(!StringUtils.isEmpty(req.getCategory()))
+	        p.setProductCategory(req.getCategory());
+	    if(!StringUtils.isEmpty(req.getProductName()))
+	        p.setProductName(req.getProductName());
+	    if(!StringUtils.isEmpty(req.getSmallImageBase64EncodeString()))
+	        p.setProductSmallImage(req.getSmallImageBase64EncodeString());
+	    if(!StringUtils.isEmpty(req.getProductWeight()))
+	        p.setProductWeight(req.getProductWeight());
+	    if(!StringUtils.isEmpty(req.getStatus()))
+	        p.setStatus(req.getStatus());
+	    boolean deleteProductStockFlag = false;
+	    if(!StringUtils.isEmpty(req.getSizeCategory()) || !StringUtils.isEmpty(req.getColors()) || !StringUtils.isEmpty(req.getSizes()))
+	    {
+	    	p.setSizeCategory(req.getSizeCategory());
+		    deleteProductStockFlag = true;
+	    }
 	    productRepository.saveAndFlush(p);
+	    //List<ProductStock> existingProductStockList = productStockRepository.findByProductId(req.getProductId());
+	    //productStockRepository.deleteByProductId(req.getProductId());
+	    if(deleteProductStockFlag == true)
+	    {
+	        productStockRepository.deleteByProductId(req.getProductId());
+	    	String[] sizeArray = req.getSizes().split(",");
+	    	String[] colorArray = req.getColors().split(",");
+			String[] stockStatusArray = new String[sizeArray.length];
+			for(int i = 0; i < sizeArray.length; i ++)
+			{
+				stockStatusArray[i] = AuslandApplicationConstants.STOCKTATUS_INSTOCK;
+			}
+			String stockStatusStr = String.join(",", stockStatusArray);
+			List<ProductStock> psList = new ArrayList<ProductStock>();
+			for(String color : colorArray)
+			{
+				if(StringUtils.isEmpty(color))
+					continue;
+				ProductStock ps = new ProductStock();
+				ps.setColor(color);
+				ps.setSize(req.getSizes());
+				ps.setProductId(req.getProductId());
+				ps.setSizeCategory(req.getSizeCategory());
+				ps.setStockStatus(stockStatusStr);
+				psList.add(ps);
+				 
+			}
+			productStockRepository.save(psList);
+	    }
 	    res.setStatus(AuslandApplicationConstants.STATUS_OK);
 	    return res;
 	}

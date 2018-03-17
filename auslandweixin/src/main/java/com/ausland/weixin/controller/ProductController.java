@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +35,12 @@ private static final Logger logger = LoggerFactory.getLogger(ProductController.c
     
 	@Autowired
 	private ProductService productService; 
+	
+	@Value("${smallImage.height}")
+	private Integer smallImageHeight;
+	
+	@Value("${smallImage.width}")
+	private Integer smallImageWidth;
 	
 	@Autowired
 	private ImageUtil imageUtil;
@@ -69,10 +76,21 @@ private static final Logger logger = LoggerFactory.getLogger(ProductController.c
 	}
 	
 	@RequestMapping(value = "/updateproduct", method = RequestMethod.POST)
-	public GlobalRes updateProduct(@RequestBody(required = true) CreateProductReq req)
+	public GlobalRes updateProduct(@RequestBody(required = true) CreateProductReq req, @RequestPart(required = false)MultipartFile smallImage)
 	{
-		logger.debug("entered updateProduct with CreateProductReq:"+req.toString());
-	
+		logger.debug("entered updateProduct with CreateProductReq:"+req.toString()); 
+		if(smallImage != null)
+		{ 
+			String str = imageUtil.getResizedImage(smallImage, smallImageHeight, smallImageWidth);
+			if(StringUtils.isEmpty(str) || !str.startsWith(AuslandApplicationConstants.IMAGE_HEADER))
+			{
+				CreateProductRes res = new CreateProductRes();
+				res.setErrorDetails("产品缩略图生成失败");
+				res.setStatus(AuslandApplicationConstants.STATUS_OK);
+			}
+			req.setSmallImageBase64EncodeString(str);
+		}
+
 		return productService.updateProduct(req);
 	}
 	
@@ -87,13 +105,10 @@ private static final Logger logger = LoggerFactory.getLogger(ProductController.c
 	@RequestMapping(value = "/createproduct", method = RequestMethod.POST)
 	public CreateProductRes createProduct(@RequestBody(required = true) CreateProductReq req,
 			@RequestPart(required = true)MultipartFile smallImage,
-			@RequestParam(required = true) int height, @RequestParam(required = true) int width,
 			HttpServletRequest httpServletRequest) throws IOException 
 	{
 		logger.debug("entered createProduct with CreateProductReq:"+req.toString());
-		height = Math.min(200, height);
-		width = Math.min(200, width);
-		String str = imageUtil.getResizedImage(smallImage, height, width);
+		String str = imageUtil.getResizedImage(smallImage, smallImageHeight, smallImageWidth);
 		if(StringUtils.isEmpty(str) || !str.startsWith(AuslandApplicationConstants.IMAGE_HEADER))
 		{
 			CreateProductRes res = new CreateProductRes();
@@ -118,4 +133,5 @@ private static final Logger logger = LoggerFactory.getLogger(ProductController.c
 		logger.debug("entered uploadLogisticPackageOrder.");
 		return productService.uploadProductFromExcel(excelFile);
 	} 
+
 }

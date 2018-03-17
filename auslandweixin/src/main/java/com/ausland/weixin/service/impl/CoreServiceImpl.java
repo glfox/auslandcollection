@@ -92,7 +92,7 @@ public class CoreServiceImpl implements CoreService {
 		{
 			// this is the user subscribe event
 			logger.debug("got a event message:"+message.getContent());
-			GongZhongHaoUserInfoRes res = gongZhongHaoSubscriberUserService.getWeChatUserInfo(message.getFromUserName());
+			//GongZhongHaoUserInfoRes res = gongZhongHaoSubscriberUserService.getWeChatUserInfo(message.getFromUserName());
 			return;
 		}
 		newMsg.setToUserName(message.getFromUserName());
