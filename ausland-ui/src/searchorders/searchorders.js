@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { getOrderDetails } from '../utils/services.js';
-import './searchorders.css';
 import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap';
 
 class SearchOrders extends Component {
@@ -92,7 +91,7 @@ class SearchOrders extends Component {
 			    </Form>
 		      	<br/>
 		      	<div>
-			  		<Table striped bordered condensed hover>
+			  		<Table striped bordered condensed hover responsive>
 			  			<tbody>
 			  				{this.state.details}
 			  			</tbody>

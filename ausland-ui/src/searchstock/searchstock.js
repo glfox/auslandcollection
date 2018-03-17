@@ -4,8 +4,8 @@ import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-boot
 
 class SearchStock extends Component {
 
-	constructor(props) {
-	    super(props);
+	constructor() {
+	    super();
 	    this.state = {
 	    	brand: "",
 	    	productId:"",
@@ -101,7 +101,7 @@ class SearchStock extends Component {
 				            value={this.state.trackingNo}
 				            placeholder="输入商品信息"
 				            onChange={this.handleChange}
-				        />
+				        />{' '}
 			        	<Button bsStyle="primary" type="submit">查询</Button>
 			        </FormGroup>
 		      	</Form>
