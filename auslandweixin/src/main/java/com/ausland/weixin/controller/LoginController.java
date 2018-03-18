@@ -78,7 +78,7 @@ public class LoginController {
 
         userService.autologin(userForm.getUsername(), userForm.getPasswordConfirm());
 
-        return "redirect:/welcome";
+        return "redirect:/";
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)

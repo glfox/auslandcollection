@@ -31,13 +31,14 @@
 <div class="container">
 
     <form method="POST" action="${contextPath}/login" class="form-signin">
-        <h2 align="center" class="form-heading">登陆</h2>
-
+        <h2 align="center" class="form-heading"> </h2>
+        <br/>
+        <br/>
         <div class="form-group ${error != null ? 'has-error' : ''}">
             <span>${message}</span>
-            <input name="username" type="text" class="form-control" placeholder="Username"
+            <input name="username" type="text" class="form-control" placeholder="用户名"
                    autofocus="true"/>
-            <input name="password" type="password" class="form-control" placeholder="Password"/>
+            <input name="password" type="password" class="form-control" placeholder="密码"/>
             <span>${error}</span>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 

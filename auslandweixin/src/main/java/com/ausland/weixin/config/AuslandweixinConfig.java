@@ -199,7 +199,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	  
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
+		registry.addResourceHandler("/index.html").addResourceLocations("/index.html");
 		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	    registry.addResourceHandler("webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
