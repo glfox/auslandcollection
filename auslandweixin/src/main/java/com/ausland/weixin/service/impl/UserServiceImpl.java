@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
 			user.setRole(AuslandApplicationConstants.STANDARD_USER_ROLE);
 			user.setCreatedDateTime(new Date());
 			user.setEmail(createUserRequest.getEmail());
-			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+			user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 			user.setPhoneNumber(createUserRequest.getPhoneNumber());
 			user.setStatus(AuslandApplicationConstants.ACTIVE_USER_STATUS);
 			user.setUsername(createUserRequest.getUserName());

@@ -74,11 +74,15 @@ public class LoginController {
         CreateUserReq req = new CreateUserReq();
         req.setUserName(userForm.getUsername());
         req.setPassword(userForm.getPassword());
-        userService.createUser(req);
-
+        GlobalRes res = userService.createUser(req);
+        if(res == null || AuslandApplicationConstants.STATUS_FAILED.equalsIgnoreCase(res.getStatus()))
+        {
+        	bindingResult.rejectValue("username", "创建用户失败请联系客服","创建用户失败请联系客服");
+        	return "registration";
+        }
         userService.autologin(userForm.getUsername(), userForm.getPasswordConfirm());
 
-        return "redirect:/";
+        return "redirect:/welcome";
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)

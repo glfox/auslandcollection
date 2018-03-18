@@ -270,71 +270,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		return dataSource;
 	}
 	
-	 /* @Bean
-	  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-	    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-	    vendorAdapter.setGenerateDdl(true);
-
-	    LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-	    factory.setJpaVendorAdapter(vendorAdapter);
-	    factory.setPackagesToScan("com.ausland.weixin.model.db");
-	    factory.setDataSource(dataSource());
-	    return factory;
-	  }
-
-	  @Bean
-	  public PlatformTransactionManager transactionManager() {
-
-	    JpaTransactionManager txManager = new JpaTransactionManager();
-	    txManager.setEntityManagerFactory((EntityManagerFactory) entityManagerFactory());
-	    return txManager;
-	  }*/
-	
-	/*@Bean
-	public LocalContainerEntityManagerFactoryBean customerEntityManagerFactory(
-			EntityManagerFactoryBuilder builder) {
-		return builder
-				.dataSource(dataSource()).packages("com.ausland.weixin.model.db")
-				.build();
-	}
-
-
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-		return new DataSourceTransactionManager(dataSource());
-	}*/
-	
-	/*    @Bean
-	    public LocalContainerEntityManagerFactoryBean userEntityManager() {
-	        LocalContainerEntityManagerFactoryBean em
-	          = new LocalContainerEntityManagerFactoryBean();
-	        em.setDataSource(dataSource());
-	        em.setPackagesToScan(
-	          new String[] { "com.ausland.weixin.model.db" });
 	 
-	        HibernateJpaVendorAdapter vendorAdapter
-	          = new HibernateJpaVendorAdapter();
-	        em.setJpaVendorAdapter(vendorAdapter);
-	        HashMap<String, Object> properties = new HashMap<>();
-	        properties.put("hibernate.hbm2ddl.auto",
-	          env.getProperty("hibernate.hbm2ddl.auto"));
-	        properties.put("hibernate.dialect",
-	          env.getProperty("hibernate.dialect"));
-	        em.setJpaPropertyMap(properties);
-	 
-	        return em;
-	    }
-	    
-	   @Bean
-	   public PlatformTransactionManager transactionManager(){
-	      JpaTransactionManager transactionManager
-	        = new JpaTransactionManager();
-	      transactionManager.setEntityManagerFactory(
-	    		  userEntityManager().getObject() );
-	      return transactionManager;
-	   }*/
-
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**").allowedHeaders("*").allowedMethods("*").allowCredentials(true).allowedOrigins("*");
