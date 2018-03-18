@@ -46,3 +46,13 @@ body {
 .has-error {
     color: red
 }
+
+.App-header {
+  background-color: #4d4d4d;
+  margin-top: 0px;
+  margin-bottom: 30px;
+  height: 80px;
+  color: white;
+  font-family: arial;
+  line-height: 80px;
+}
