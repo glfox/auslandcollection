@@ -1,19 +1,18 @@
 package com.ausland.weixin.model.db;
 
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.ausland.weixin.config.AuslandApplicationConstants;
 
 
 @Entity
@@ -28,7 +27,7 @@ public class User {
 	@Column(name="username", unique = true, nullable = false, length = 64)	
 	String username;
 	
-	@Column(name="password", nullable = false, length = 64)
+	@Column(name="password", nullable = false, length = 256)
 	String password;
 	
 	@Column(length = 16)	
@@ -38,7 +37,7 @@ public class User {
 	String createdSrc;
 	
 	@Column(length = 32)
-	String role;
+	String role = AuslandApplicationConstants.STANDARD_USER_ROLE;
 	
 	@Column(length = 64)
 	String email;
@@ -60,15 +59,41 @@ public class User {
 	@Temporal(TemporalType.TIMESTAMP)
 	Date lastUpdatedDateTime;
 	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-	List<ContactInfo> contactInfo;
-    	
-	public List<ContactInfo> getContactInfo() {
-		return contactInfo;
+	@Column(length = 256)
+	String defaultReceiverAddress;
+	
+	@Column(length = 64)
+	String defaultReceiverName;
+	
+	@Column(length = 16)
+	String deafaultReceiverPhone;
+	
+	@Column(precision=7, scale=2)
+	BigDecimal accountBalance = new BigDecimal(0.0);
+  
+	public String getDefaultReceiverAddress() {
+		return defaultReceiverAddress;
 	}
-	public void setContactInfo(List<ContactInfo> contactInfo) {
-		this.contactInfo = contactInfo;
+	public void setDefaultReceiverAddress(String defaultReceiverAddress) {
+		this.defaultReceiverAddress = defaultReceiverAddress;
+	}
+	public String getDefaultReceiverName() {
+		return defaultReceiverName;
+	}
+	public void setDefaultReceiverName(String defaultReceiverName) {
+		this.defaultReceiverName = defaultReceiverName;
+	}
+	public String getDeafaultReceiverPhone() {
+		return deafaultReceiverPhone;
+	}
+	public void setDeafaultReceiverPhone(String deafaultReceiverPhone) {
+		this.deafaultReceiverPhone = deafaultReceiverPhone;
+	}
+	public BigDecimal getAccountBalance() {
+		return accountBalance;
+	}
+	public void setAccountBalance(BigDecimal accountBalance) {
+		this.accountBalance = accountBalance;
 	}
 	public Integer getId() {
 		return id;
