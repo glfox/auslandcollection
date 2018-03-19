@@ -31,12 +31,14 @@ function getAllCategory() {
 
 function login(username, password){
 	let url = BASE_URL + CONTEXT_PATH + "/user/validateuser?username=" + username + "&password=" + password;
-	return fetch(url).then(res => res.json());
+	return fetch(url,{method: 'POST'}).then(res => res.json());
 }
 
 function createuser(username, password){
 	let url = BASE_URL + CONTEXT_PATH + "/user/createuser";
-	return fetch(url, {method: 'post',
-	                   body: JSON.stringify({"username": username, "password": password})}).then(res => res.json());
+	return fetch(url, {method: 'POST',
+	                   body: JSON.stringify({"username": username, "password": password}),
+	                   headers:  {'Content-Type': 'application/json; charset=utf-8'}
+                      }).then(res => res.json());
 }
 

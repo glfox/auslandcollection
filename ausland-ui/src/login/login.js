@@ -2,63 +2,75 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { login } from '../utils/services.js';
 import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap';
-
+import classNames from 'classnames';
 import CreateUser from '../login/createuser.js';
+
 class Login extends Component {
 
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	username: "",
-	    	password: "",
-	    	details: null,
-	    	error: null,
-	    	loaded: true
+	    	username: {value: '', isValid: true, message: ''},
+		    password: {value: '', isValid: true, message: ''},
 	    };
-	    this.handleUserNameChange = this.handleUserNameChange.bind(this);
-	    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-	    this.handleSubmit = this.handleSubmit.bind(this);
+	     
 	}
+	onChange = (e) => {
+        var state = this.state;
+        state[e.target.name].value = e.target.value;
 
-	handleUserNameChange(event) {
-		this.setState({
-			username: event.target.value
-		});
-	}
+        this.setState(state);
+      }
+	formIsValid = () => {
+		var state = this.state;
+		  if(state.username.value.length < 4 || state.username.value.length > 20)
+		  {
+			  state.username.isValid = false;
+			  state.username.message = "用户名长度必须在4和20之间";
+			  this.setState(state);
+			  return false;
+		  }
+	      if(state.password.value.length < 4 || state.password.value.length > 20)
+	      {
+			  state.password.isValid = false;
+			  state.password.message = "密码长度必须在4和20之间";
+			  this.setState(state);
+			  return false;
+		  }
+	      return true;
+	    }
+	 
+	resetValidationStates = () => {
+        var state = this.state;
+
+        Object.keys(state).map(key => {
+          if (state[key].hasOwnProperty('isValid')) {
+            state[key].isValid = true;
+            state[key].message = '';
+          }
+        });
+        this.setState(state);
+      }
 	
-	handlePasswordChange(event) {
-		this.setState({
-			password: event.target.value
-		});
-	}
-	handleSubmit(event) {
-		if (this.state.username && this.state.password) {
-			this.setState({
-				details: null,
-	    		error: null,
-				loaded: false
-			})
-			this.login(this.state.username, this.state.password);
+	onSubmit = (e) => {
+		e.preventDefault();
+		this.resetValidationStates();
+		if (this.formIsValid()) {
+			this.login(this.state.username.value, this.state.password.value);
 		}
-		event.preventDefault();
+
 	}
 
 	login(username, password) {
-		login(this.state.username, this.state.password)
+		login(this.state.username.value, this.state.password.value)
 			.then(result => {
-				console.log(result);
+				 
 				if (result.status === 'ok' ) {
-	      			this.setState({
-						details: "successfully loged in",
-						error: null,
-						loaded: true
-					});
-	      		} else {
-					this.setState({
-						details: null,
-						error: result.errorDetails,
-						loaded: true
-					});
+					this.props.history.push('/SearchOrders');
+	      		}  
+				else
+				{
+				    this.setState({password:{value: '', isValid: 'false', message:result.errorDetails}})
 				}
 			}, err => {
 				this.setState({
@@ -71,50 +83,33 @@ class Login extends Component {
 	}
 
 	render() {
-		let loader = this.state.loaded? null : <div className="loader"/>
-		return (
-		  <Router>
-			<div>
-				<Form inline onSubmit={this.handleSubmit}>
-					<FormGroup controlId="orderForm">
-						<ControlLabel>username: </ControlLabel>{' '}
-			          	<FormControl
-				            type="text"
-				            value={this.state.username}
-				            placeholder="username"
-				            onChange={this.handleUserNameChange}
-				        />
-			        </FormGroup>{' '}
-			        <FormGroup controlId="orderForm">
-					<ControlLabel>password: </ControlLabel>{' '}
-		          	<FormControl
-			            type="text"
-			            value={this.state.password}
-			            placeholder="password"
-			            onChange={this.handlePasswordChange}
-			        />
-		        </FormGroup>{' '}
-			        <Button bsStyle="primary" type="submit">submit</Button>
-			    </Form>
-		      	<br/>
-		      	<div>
-			  		<Table striped bordered condensed hover responsive>
-			  			<tbody>
-			  				{this.state.details}
-			  			</tbody>
-			  		</Table>
-			  		{this.state.error}
-			  		{loader}
-			  	</div>
-			  	<ul>
-	                <li><Link to={'/CreateUser'}>创建新的用户</Link></li>
-	            </ul>
-			  	<Switch>
-                  <Route exact path='/CreateUser' component={CreateUser} />   
-                </Switch>
-			</div>
-		  </Router>
-		)
+		var {username, password} = this.state;
+		  var usernameGroupClass = classNames('form-group', {'has-error': !username.isValid});
+	      var passwordGroupClass = classNames('form-group', {'has-error': !password.isValid});
+	    
+	        return (
+	        		<div className="container">
+	                <form className="form-signin" onSubmit={this.onSubmit}>
+	                  <h2 className="form-signin-heading">登陆</h2>
+
+	                  <div className={usernameGroupClass}>
+	                    <input type="text" name="username" className="form-control"
+	                      placeholder="username" value={username.value} onChange={this.onChange} autoFocus />
+	                    <span className="help-block">{username.message}</span>
+	                  </div>
+
+	                  <div className={passwordGroupClass}>
+	                    <input type="password" name="password" className="form-control"
+	                      placeholder="Password" value={password.value} onChange={this.onChange} />
+	                    <span className="help-block">{password.message}</span>
+	                  </div>
+
+	                  <button className="btn btn-lg btn-primary btn-block" type="submit">登陆</button>
+	                </form>
+	                <Link to='/CreateUser'>注册</Link>
+	              </div>
+	               
+	        );
 	}
 }
 
