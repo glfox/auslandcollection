@@ -76,7 +76,7 @@ class CreateUser extends Component {
 				console.log(result);
 				if(result.status === 'ok')
 				{
-					this.props.history.push('/SearchOrders');
+					/*this.props.history.push('/SearchOrders');*/
 				}
 			}, err => {
 				this.setState({

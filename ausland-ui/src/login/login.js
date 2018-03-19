@@ -4,6 +4,7 @@ import { login } from '../utils/services.js';
 import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap';
 import classNames from 'classnames';
 import CreateUser from '../login/createuser.js';
+import { withCookies, Cookies, cookie} from 'react-cookies';
 
 class Login extends Component {
 
@@ -64,9 +65,10 @@ class Login extends Component {
 	login(username, password) {
 		login(this.state.username.value, this.state.password.value)
 			.then(result => {
-				 
+				 console.log(result.status);
 				if (result.status === 'ok' ) {
-					this.props.history.push('/SearchOrders');
+					/*this.props.history.push('/SearchOrders');*/
+					 
 	      		}  
 				else
 				{

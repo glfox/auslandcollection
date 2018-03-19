@@ -30,7 +30,7 @@ public class CookieUtil {
 			if(AuslandApplicationConstants.COOKIE_NAME.equalsIgnoreCase(cookie.getName()))
 			{
 				cookie.setMaxAge(0);
-				cookie.setSecure(true);
+				cookie.setSecure(false);
 				cookie.setPath(request.getContextPath()+"/");
 				resp.addCookie(cookie);
 				return;
@@ -71,7 +71,7 @@ public class CookieUtil {
 			aulandCookie.setValue(encryptedString);
 		aulandCookie.setMaxAge(expiry);
 		aulandCookie.setPath(request.getContextPath()+"/");
-		aulandCookie.setSecure(true);
+		aulandCookie.setSecure(false);
 		resp.addCookie(aulandCookie);
 		return;
 	}

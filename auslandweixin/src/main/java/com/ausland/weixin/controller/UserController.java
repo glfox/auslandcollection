@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import com.ausland.weixin.model.reqres.GlobalRes;
 import com.ausland.weixin.service.UserService;
 import com.ausland.weixin.util.CookieUtil;
 import com.ausland.weixin.util.CustomCookie;
+import com.ausland.weixin.util.DataEncryptionDecryptionUtil;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -48,16 +50,26 @@ public class UserController {
 		GlobalRes res = new GlobalRes();
 		try
 		{
-			res = userService.createUser(createUserReq);
-			if(res == null || AuslandApplicationConstants.STATUS_FAILED.equalsIgnoreCase(res.getStatus()))
+			GlobalRes cres = userService.createUser(createUserReq);
+			if(cres == null || AuslandApplicationConstants.STATUS_FAILED.equalsIgnoreCase(cres.getStatus()))
 			{
-				return res;
+				return cres;
 			}
 			UserDetails userDetails = userService.autologin(createUserReq.getUserName(), createUserReq.getPassword());
 			if(userDetails != null)
 			{
 				CustomCookie cookie = new CustomCookie();
-				cookie.setRole(createUserReq.getRole());
+				String role = null;
+				if(userDetails.getAuthorities() != null)
+				{
+					Set<GrantedAuthority> set = (Set<GrantedAuthority>) userDetails.getAuthorities();
+					for(GrantedAuthority ga : set)
+					{
+						role = ga.getAuthority();
+						break;
+					}
+				}
+				cookie.setRole(role);
 				cookie.setPassword(userDetails.getPassword());
 				cookie.setUserName(createUserReq.getUserName());
 				cookieUtil.addOrUpdateCookie(cookie, httpServletRequest, AuslandApplicationConstants.COOKIE_EXPIRATION_INSECONDS, httpServletResponse);
@@ -70,6 +82,7 @@ public class UserController {
 		{
 			res.setErrorDetails("创建过程中验证用户失败："+e.getMessage());
 		}
+		res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 		return res;
 	}
 	
@@ -85,9 +98,25 @@ public class UserController {
 	public GlobalRes validateUserNameAndPassword(HttpServletRequest httpServletRequest,
 		                     	HttpServletResponse httpServletResponse,
 			                    @RequestParam(value="username", required = true)String userName,
-			                    @RequestParam(value="password", required = true)String password)
+			                    @RequestParam(value="password", required = true)String password,
+			                    @CookieValue(value=AuslandApplicationConstants.COOKIE_NAME, required=false) String cookieValue)
 	{
 		GlobalRes res = new GlobalRes();
+		if(cookieValue != null)
+		{
+			logger.debug("got the cookie:"+cookieValue);
+			try {
+				CustomCookie cc = DataEncryptionDecryptionUtil.getCustomCookieObjectFromCookieValue(cookieValue);
+				logger.debug("parsed cookie to the string:"+cc.toString());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			logger.debug("no cookie detected.");
+		}
 		String ret = userService.validateUserNamePassword(userName,password);
 		if(StringUtils.isEmpty(ret))
 		{
