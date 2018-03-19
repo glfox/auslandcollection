@@ -28,7 +28,7 @@ import com.ausland.weixin.util.UserValidator;
 @Controller
 public class LoginController {
 
-	@Autowired
+	/*@Autowired
 	UserService userService;
 	
 	@Autowired
@@ -80,16 +80,21 @@ public class LoginController {
         	bindingResult.rejectValue("username", "创建用户失败请联系客服","创建用户失败请联系客服");
         	return "registration";
         }
-        userService.autologin(userForm.getUsername(), userForm.getPasswordConfirm());
+        try {
+			userService.autologin(userForm.getUsername(), userForm.getPasswordConfirm());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         return "redirect:/welcome";
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)
 	public void logout(HttpServletRequest httpServletRequest,
-         	           HttpServletResponse httpServletResponse/*,
-         	          @CookieValue(value=AuslandApplicationConstants.COOKIE_NAME, required=false) String cookieValue*/)
+         	           HttpServletResponse httpServletResponse,
+         	          @CookieValue(value=AuslandApplicationConstants.COOKIE_NAME, required=false) String cookieValue)
 	{
 		cookieUtil.deleteCookie(httpServletRequest, httpServletResponse);
-	}
+	}*/
 }

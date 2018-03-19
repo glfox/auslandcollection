@@ -19,26 +19,7 @@ import com.ausland.weixin.config.AuslandApplicationConstants;
 public class DataEncryptionDecryptionUtil {
 	
 	public static void main(String[] args) {
-		CustomCookie cc = new CustomCookie();
-		cc.setUserId(11);
-		cc.setUserName("lanluo");
-		cc.setRole("admin");
-		String encryptedCookieValue = "";
-		try {
-			encryptedCookieValue = encryptCookieValueFromCookieObject(cc);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(encryptedCookieValue);
-		CustomCookie cc1;
-		try {
-			cc1 = getCustomCookieObjectFromCookieValue(encryptedCookieValue);
-			System.out.println(cc1.toString());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		
 	}
 	
@@ -120,7 +101,8 @@ public class DataEncryptionDecryptionUtil {
 		if(inputs.length < 3)
 			return null;
 		CustomCookie cc = new CustomCookie();
-		cc.setUserId(Integer.parseInt(inputs[0]));
+		cc.setPassword(inputs[0]);
+		//cc.setUserId(Integer.parseInt(inputs[0]));
 		cc.setUserName(inputs[1]);
 		cc.setRole(inputs[2]);
 		return cc;

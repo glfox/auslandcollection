@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void autologin(String username, String password) {
+    public UserDetails autologin(String username, String password) throws Exception {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
 
@@ -62,7 +62,9 @@ public class UserServiceImpl implements UserService {
         if (usernamePasswordAuthenticationToken.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             logger.debug(String.format("Auto login %s successfully!", username));
+            return userDetails;
         }
+        return null;
     }
 	
 	@Override
@@ -217,7 +219,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public GlobalRes resetUserPassword(String userName, String userPassword) {
 		// TODO Auto-generated method stub
-		return null;
+		GlobalRes res = new GlobalRes();
+		
+		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		return res;
 	}
 
 

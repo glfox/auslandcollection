@@ -187,7 +187,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.ausland.weixin.controller"))
 				.paths(PathSelectors.any()).build();
 	}
-
+/*
 	@Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
@@ -195,13 +195,13 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
         resolver.setSuffix(".jsp");
         resolver.setViewClass(JstlView.class);
         registry.viewResolver(resolver);
-    }
+    }*/
 	  
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/index.html").addResourceLocations("/index.html");
+		//registry.addResourceHandler("/index.html").addResourceLocations("/index.html");
 		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+		//registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	    registry.addResourceHandler("webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 
 	}

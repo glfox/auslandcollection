@@ -8,14 +8,15 @@ public class CustomCookie implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Integer userId;
+	String password;  //here is the encrypted password
 	String userName;
 	String role;
-	public Integer getUserId() {
-		return userId;
+	 
+	public String getPassword() {
+		return password;
 	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	public String getUserName() {
 		return userName;
@@ -33,7 +34,7 @@ public class CustomCookie implements Serializable{
 	public String toString()
 	{
 		String[] inputs=new String[3];
-		inputs[0] = this.userId.toString();
+		inputs[0] = this.password;
 		inputs[1] = this.userName;
 		inputs[2] = this.role;
 		return String.join(",", inputs);

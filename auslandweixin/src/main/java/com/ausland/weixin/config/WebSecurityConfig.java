@@ -25,22 +25,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter  {
 	
 	 @Override
 	    public void configure(WebSecurity web) throws Exception {
-	        web.ignoring().antMatchers("/resources/**");
+	        web.ignoring().antMatchers("/");
 	    }
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-	    http
-	            .authorizeRequests()
-	                .antMatchers("/resources/**", "/registration").permitAll()
-	                .anyRequest().authenticated()
-	                .and()
-	            .formLogin()
-	                .loginPage("/login")
-	                .permitAll()
-	                .and()
-	            .logout()
-	                .permitAll();
+		http.csrf().disable();
+		http.anonymous().authorities("ROLE_ANONYMOUS").and().authorizeRequests().antMatchers("/").permitAll();
 	}
 	
 	@Autowired

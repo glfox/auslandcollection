@@ -1,8 +1,8 @@
-const BASE_URL = 'http://118.24.75.119';
-//const BASE_URL = 'http://localhost:8081';
+//const BASE_URL = 'http://118.24.75.119';
+const BASE_URL = 'http://localhost:8081';
 const CONTEXT_PATH = '/auslandtest';
 const page_size = 30;
-export { getOrderDetails, getHistoryOrders, getProductListBy, getAllBrands, getAllCategory };
+export { getOrderDetails, getHistoryOrders, getProductListBy, getAllBrands, getAllCategory, login, createuser };
 
 function getOrderDetails(trackingNo) {
 	let url = BASE_URL + CONTEXT_PATH + '/query/zhonghuan/detailsbytrackingno?trackingno=' + trackingNo;
@@ -28,3 +28,15 @@ function getAllCategory() {
 	let url = BASE_URL + CONTEXT_PATH + '/query/product/getallcategory';
 	return fetch(url).then(res => res.json());
 }
+
+function login(username, password){
+	let url = BASE_URL + CONTEXT_PATH + "/user/validateuser?username=" + username + "&password=" + password;
+	return fetch(url).then(res => res.json());
+}
+
+function createuser(username, password){
+	let url = BASE_URL + CONTEXT_PATH + "/user/createuser";
+	return fetch(url, {method: 'post',
+	                   body: JSON.stringify({"username": username, "password": password})}).then(res => res.json());
+}
+

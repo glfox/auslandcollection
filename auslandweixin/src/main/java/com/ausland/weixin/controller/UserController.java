@@ -1,5 +1,7 @@
 package com.ausland.weixin.controller;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -7,10 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,10 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.reqres.CreateUserReq;
 import com.ausland.weixin.model.reqres.GlobalRes;
-import com.ausland.weixin.model.reqres.UserForm;
 import com.ausland.weixin.service.UserService;
 import com.ausland.weixin.util.CookieUtil;
-import com.ausland.weixin.util.UserValidator;
+import com.ausland.weixin.util.CustomCookie;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -35,19 +34,44 @@ public class UserController {
 	@Autowired
 	CookieUtil cookieUtil;
 	
-	@Autowired
+	/*@Autowired
 	private UserValidator userValidator;
-	
+	*/
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	  
-	/*@RequestMapping(value = "/createuser", method = RequestMethod.POST)
+	@RequestMapping(value = "/createuser", method = RequestMethod.POST)
 	public GlobalRes createUser(HttpServletRequest httpServletRequest,
 		                     	HttpServletResponse httpServletResponse,
 			                    @RequestBody(required = true)CreateUserReq createUserReq)
 	{
-		return userService.createUser(createUserReq);
-	}*/
+		GlobalRes res = new GlobalRes();
+		try
+		{
+			res = userService.createUser(createUserReq);
+			if(res == null || AuslandApplicationConstants.STATUS_FAILED.equalsIgnoreCase(res.getStatus()))
+			{
+				return res;
+			}
+			UserDetails userDetails = userService.autologin(createUserReq.getUserName(), createUserReq.getPassword());
+			if(userDetails != null)
+			{
+				CustomCookie cookie = new CustomCookie();
+				cookie.setRole(createUserReq.getRole());
+				cookie.setPassword(userDetails.getPassword());
+				cookie.setUserName(createUserReq.getUserName());
+				cookieUtil.addOrUpdateCookie(cookie, httpServletRequest, AuslandApplicationConstants.COOKIE_EXPIRATION_INSECONDS, httpServletResponse);
+				res.setStatus(AuslandApplicationConstants.STATUS_OK);
+				return res;
+			}
+			res.setErrorDetails("创建过程中验证用户失败");
+		}
+		catch(Exception e)
+		{
+			res.setErrorDetails("创建过程中验证用户失败："+e.getMessage());
+		}
+		return res;
+	}
 	
 	/*@RequestMapping(value = "/checkusernameexists", method = RequestMethod.GET)
 	public Boolean userNameExists(HttpServletRequest httpServletRequest,
@@ -67,13 +91,41 @@ public class UserController {
 		String ret = userService.validateUserNamePassword(userName,password);
 		if(StringUtils.isEmpty(ret))
 		{
-			res.setStatus(AuslandApplicationConstants.STATUS_OK);
+			try
+			{
+				UserDetails userDetails = userService.autologin(userName, password);
+				if(userDetails != null)
+				{
+					CustomCookie cookie = new CustomCookie();
+					String role = null;
+					if(userDetails != null || userDetails.getAuthorities() != null)
+					{
+						Set<GrantedAuthority> set = (Set<GrantedAuthority>) userDetails.getAuthorities();
+						for(GrantedAuthority ga : set)
+						{
+							role = ga.getAuthority();
+							break;
+						}
+					}
+					cookie.setRole(role);
+					cookie.setUserName(userName);
+					cookie.setPassword(userDetails.getPassword());
+					cookieUtil.addOrUpdateCookie(cookie, httpServletRequest, AuslandApplicationConstants.COOKIE_EXPIRATION_INSECONDS, httpServletResponse);
+					res.setStatus(AuslandApplicationConstants.STATUS_OK);
+					return res;
+				}
+				res.setErrorDetails("验证用户失败");
+			}
+			catch(Exception e)
+			{
+				res.setErrorDetails("验证用户失败："+e.getMessage());
+			}
 		}
 		else
 		{
-			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 			res.setErrorDetails(ret);
 		}
+		res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 		return res;
 	}
 	
@@ -93,6 +145,13 @@ public class UserController {
                            @RequestParam(value="password", required = true)String password)
 	{
 		return userService.resetUserPassword(userName, password);
+	}
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.POST)
+	public void logout(HttpServletRequest httpServletRequest,
+         	           HttpServletResponse httpServletResponse)
+	{
+		cookieUtil.deleteCookie(httpServletRequest, httpServletResponse);
 	}
 
 }

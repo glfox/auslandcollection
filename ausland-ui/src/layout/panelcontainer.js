@@ -3,7 +3,8 @@ import { Grid, Row, Col, Tab, NavItem, Nav } from 'react-bootstrap';
 import SearchOrders from '../searchorders/searchorders.js';
 import SearchStock from '../searchstock/searchstock.js';
 import HistoryOrder from '../searchorders/historyorders.js';
-
+import Login from '../login/login.js';
+import CreateUser from '../login/createuser.js';
 class PanelContainer extends React.Component {
 
 	render() {
@@ -20,6 +21,7 @@ class PanelContainer extends React.Component {
 						      		<NavItem eventKey="order">单号查询</NavItem>
 							        <NavItem eventKey="history">手机查询</NavItem>
 							        <NavItem eventKey="stock">商品查询</NavItem>
+							        <NavItem eventKey="login">登陆/注册</NavItem>
 						      	</Nav>
 						    </Col>
 						    <Col sm={10}>
@@ -27,6 +29,8 @@ class PanelContainer extends React.Component {
 						        	<Tab.Pane eventKey="order"><SearchOrders /></Tab.Pane>
 						        	<Tab.Pane eventKey="history"><HistoryOrder /></Tab.Pane>
 						        	<Tab.Pane eventKey="stock"><SearchStock /></Tab.Pane>
+						        	<Tab.Pane eventKey="login"><Login /></Tab.Pane>
+						        	
 						      	</Tab.Content>
 						    </Col>
 						</Row>
