@@ -30,6 +30,10 @@
   white-space: nowrap;
 }
 
+.nav-content {
+  margin-top: 80px;
+}
+
 .loader {
   position: relative;
   left: 50%;

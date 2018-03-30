@@ -16,15 +16,15 @@ class HistoryOrderContent extends React.Component {
 		this.attrMap.set('customStatus', '快递状态');
 		this.attrMap.set('courierCompany', '承运公司');
 		this.attrMap.set('receiverName', '收件人');
-		this.attrMap.set('receiverAddress', '收件地址');
-		this.attrMap.set('receiverPhone', '收件人手机号码');
+		//this.attrMap.set('receiverAddress', '收件地址');
+		//this.attrMap.set('receiverPhone', '收件人手机号码');
 		this.attrMap.set('productItems', '商品')
 	}
 
 	render() {
 		let content = [];
 		for (let attr in this.state.order) {
-		  	if (this.state.order[attr] !== "null") {
+		  	if (this.state.order[attr] !== "null" && this.attrMap.get(attr)) {
 		  		content.push(
 		  			<tr key={attr.toString()}>
 						<td>{this.attrMap.get(attr)}</td>
@@ -35,7 +35,7 @@ class HistoryOrderContent extends React.Component {
 		}
 
 		return (
-			<Panel id="{this.order.courierNumber}" bsStyle="info">
+			<Panel id="{this.order.courierNumber}">
 	          	<Panel.Heading>
 		            <Panel.Title toggle>
 		            	<p>

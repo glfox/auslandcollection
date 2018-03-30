@@ -69,7 +69,7 @@ class HistoryOrder extends React.Component {
 			}, err => {
 				this.setState({
 					details: null,
-					error: "请求错误",
+					error: "请求错误，请联系客服",
 					loaded: true
 				});
 				console.log(err)

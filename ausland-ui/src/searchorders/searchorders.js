@@ -36,15 +36,14 @@ class SearchOrders extends Component {
 	getOrderDetails(trackingNo) {
 		getOrderDetails(this.state.trackingNo)
 			.then(result => {
-				console.log(result);
-				if (result.back && result.back.logisticsback) {
+				if (result.back && result.back.logisticsback && result.back.logisticsback.length > 0) {
 	      			let paklog = result.back.logisticsback;
 					let rows = [];
 					if (paklog.length > 0) {
 						for (let i = 0; i < paklog.length; i++) {
 							let log = paklog[i];
 							rows.push(
-								<tr key={log.ztai.toString()}>
+								<tr key={i}>
 									<td>{log.time}</td>
 									<td>{log.ztai}</td>
 								</tr>
@@ -56,6 +55,12 @@ class SearchOrders extends Component {
 							loaded: true
 						});
 					}
+	      		} else if (result.back && (!result.back.logisticsback || result.back.logisticsback.length === 0)) {
+	      			this.setState({
+						details: null,
+						error: "没有相关快递信息",
+						loaded: true
+					});
 	      		} else {
 					this.setState({
 						details: null,
@@ -91,7 +96,7 @@ class SearchOrders extends Component {
 			    </Form>
 		      	<br/>
 		      	<div>
-			  		<Table striped bordered condensed hover responsive>
+			  		<Table striped bordered>
 			  			<tbody>
 			  				{this.state.details}
 			  			</tbody>

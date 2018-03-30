@@ -15,8 +15,16 @@ function getHistoryOrders(phone) {
 }
 
 function getProductListBy(brands, productIds, matchingStr, pageNo) {	
-	let url = BASE_URL + CONTEXT_PATH + '/query/product/getproductby?pageSize=' + page_size + "&pageNo="+pageNo+"&matchingstr="+matchingStr+"&brands="+brands+"&productIds="+productIds;
-	return fetch(url).then(res => res.json());
+	let url = BASE_URL + CONTEXT_PATH
+		 + '/query/product/getproductby?pageSize=' + page_size
+		 + "&pageNo=" + pageNo 
+		 + "&matchingstr=" + matchingStr 
+		 + "&brands=" + brands;
+	return fetch(url, 
+		{
+			method: 'POST',
+			credentials: 'include',
+		}).then(res => res.json());
 }
 
 function getAllBrands() {
