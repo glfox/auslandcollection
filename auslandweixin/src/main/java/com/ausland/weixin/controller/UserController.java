@@ -1,5 +1,7 @@
 package com.ausland.weixin.controller;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -7,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.reqres.CreateUserReq;
 import com.ausland.weixin.model.reqres.GlobalRes;
-import com.ausland.weixin.model.reqres.UserRes;
 import com.ausland.weixin.service.UserService;
 import com.ausland.weixin.util.CookieUtil;
 import com.ausland.weixin.util.CustomCookie;
 import com.ausland.weixin.util.DataEncryptionDecryptionUtil;
- 
 
 @RestController
 @RequestMapping(value = "/user")
@@ -34,6 +36,9 @@ public class UserController {
 	@Autowired
 	CookieUtil cookieUtil;
 	
+	/*@Autowired
+	private UserValidator userValidator;
+	*/
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	  
@@ -42,105 +47,140 @@ public class UserController {
 		                     	HttpServletResponse httpServletResponse,
 			                    @RequestBody(required = true)CreateUserReq createUserReq)
 	{
-		return userService.createUser(createUserReq);
+		GlobalRes res = new GlobalRes();
+		try
+		{
+			GlobalRes cres = userService.createUser(createUserReq);
+			if(cres == null || AuslandApplicationConstants.STATUS_FAILED.equalsIgnoreCase(cres.getStatus()))
+			{
+				return cres;
+			}
+			UserDetails userDetails = userService.autologin(createUserReq.getUserName(), createUserReq.getPassword());
+			if(userDetails != null)
+			{
+				CustomCookie cookie = new CustomCookie();
+				String role = null;
+				if(userDetails.getAuthorities() != null)
+				{
+					Set<GrantedAuthority> set = (Set<GrantedAuthority>) userDetails.getAuthorities();
+					for(GrantedAuthority ga : set)
+					{
+						role = ga.getAuthority();
+						break;
+					}
+				}
+				cookie.setRole(role);
+				cookie.setPassword(userDetails.getPassword());
+				cookie.setUserName(createUserReq.getUserName());
+				cookieUtil.addOrUpdateCookie(cookie, httpServletRequest, AuslandApplicationConstants.COOKIE_EXPIRATION_INSECONDS, httpServletResponse);
+				res.setStatus(AuslandApplicationConstants.STATUS_OK);
+				return res;
+			}
+			res.setErrorDetails("创建过程中验证用户失败");
+		}
+		catch(Exception e)
+		{
+			res.setErrorDetails("创建过程中验证用户失败："+e.getMessage());
+		}
+		res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+		return res;
 	}
 	
-	@RequestMapping(value = "/checkusernameexists", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/checkusernameexists", method = RequestMethod.GET)
 	public Boolean userNameExists(HttpServletRequest httpServletRequest,
 		                     	HttpServletResponse httpServletResponse,
 			                    @RequestParam(value="username", required = true)String userName)
 	{
 		return userService.userNameExists(userName);
 	}
-	
+	*/
 	@RequestMapping(value = "/validateuser", method = RequestMethod.POST)
 	public GlobalRes validateUserNameAndPassword(HttpServletRequest httpServletRequest,
 		                     	HttpServletResponse httpServletResponse,
 			                    @RequestParam(value="username", required = true)String userName,
-			                    @RequestParam(value="password", required = true)String password)
+			                    @RequestParam(value="password", required = true)String password,
+			                    @CookieValue(value=AuslandApplicationConstants.COOKIE_NAME, required=false) String cookieValue)
 	{
 		GlobalRes res = new GlobalRes();
+		if(cookieValue != null)
+		{
+			logger.debug("got the cookie:"+cookieValue);
+			try {
+				CustomCookie cc = DataEncryptionDecryptionUtil.getCustomCookieObjectFromCookieValue(cookieValue);
+				logger.debug("parsed cookie to the string:"+cc.toString());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			logger.debug("no cookie detected.");
+		}
 		String ret = userService.validateUserNamePassword(userName,password);
 		if(StringUtils.isEmpty(ret))
 		{
-			res.setStatus(AuslandApplicationConstants.STATUS_OK);
-		}
-		else
-		{
-			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
-			res.setErrorDetails(ret);
-		}
-		return res;
-	}
-	
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public GlobalRes login(HttpServletRequest httpServletRequest,
-                           HttpServletResponse httpServletResponse,
-         	               @CookieValue(value=AuslandApplicationConstants.COOKIE_NAME, required=false) String cookieValue,
-                           @RequestParam(value="username", required = false)String userName,
-                           @RequestParam(value="password", required = false)String password)
-	{
-		GlobalRes res = new GlobalRes();
-		if(StringUtils.isEmpty(cookieValue))
-		{
-			if(StringUtils.isEmpty(userName) || StringUtils.isEmpty(password))
+			try
 			{
-				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
-				res.setErrorDetails("没有输入用户名密码");
-				return res;
-			}
-			if(!userService.userNameExists(userName))
-			{
-				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
-				res.setErrorDetails("用户名不存在");
-				return res;
-			}
-			String ret = userService.validateUserNamePassword(userName, password);
-			if(StringUtils.isEmpty(ret))
-			{
-				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
-				res.setErrorDetails(ret);
-				return res;
-			}
-			
-			UserRes userRes = userService.queryUserByUserName(userName);
-			if(userRes == null || userRes.getUserName() == null)
-			{
-				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
-				res.setErrorDetails("数据库里没有找到该用户："+userName);
-				return res;
-			}
-			CustomCookie cc = new CustomCookie();
-			cc.setRole(userRes.getRole());
-			cc.setUserId(userRes.getUserId());
-			cc.setUserName(userRes.getUserName());
-			cookieUtil.addOrUpdateCookie(cc, httpServletRequest, AuslandApplicationConstants.COOKIE_EXPIRATION_INSECONDS, httpServletResponse);	
-			res.setStatus(AuslandApplicationConstants.STATUS_OK);
-			return res;
-		}
-		else
-		{
-			try {
-				CustomCookie cc = DataEncryptionDecryptionUtil.getCustomCookieObjectFromCookieValue(cookieValue);
-				if(cc != null && cc.getUserName() != null)
+				UserDetails userDetails = userService.autologin(userName, password);
+				if(userDetails != null)
 				{
+					CustomCookie cookie = new CustomCookie();
+					String role = null;
+					if(userDetails != null || userDetails.getAuthorities() != null)
+					{
+						Set<GrantedAuthority> set = (Set<GrantedAuthority>) userDetails.getAuthorities();
+						for(GrantedAuthority ga : set)
+						{
+							role = ga.getAuthority();
+							break;
+						}
+					}
+					cookie.setRole(role);
+					cookie.setUserName(userName);
+					cookie.setPassword(userDetails.getPassword());
+					cookieUtil.addOrUpdateCookie(cookie, httpServletRequest, AuslandApplicationConstants.COOKIE_EXPIRATION_INSECONDS, httpServletResponse);
 					res.setStatus(AuslandApplicationConstants.STATUS_OK);
 					return res;
 				}
-			} catch (Exception e) {
-			    logger.debug("got exception:"+e.toString());	
+				res.setErrorDetails("验证用户失败");
 			}
-			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
-			res.setErrorDetails("无法解析cookie，请重新登陆。");
-			return res;
+			catch(Exception e)
+			{
+				res.setErrorDetails("验证用户失败："+e.getMessage());
+			}
 		}
+		else
+		{
+			res.setErrorDetails(ret);
+		}
+		res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+		return res;
+	}
+	
+	@RequestMapping(value = "/resetuserstatus", method = RequestMethod.POST)
+	public GlobalRes resetUserStatus(HttpServletRequest httpServletRequest,
+                           HttpServletResponse httpServletResponse, 
+                           @RequestParam(value="username", required = true)String userName,
+                           @RequestParam(value="newstatus", required = true)String userStatus)
+	{
+		return userService.resetUserStatus(userName, userStatus);
+	}
+	
+	@RequestMapping(value = "/resetuserpassword", method = RequestMethod.POST)
+	public GlobalRes resetUserPassword(HttpServletRequest httpServletRequest,
+                           HttpServletResponse httpServletResponse, 
+                           @RequestParam(value="username", required = true)String userName,
+                           @RequestParam(value="password", required = true)String password)
+	{
+		return userService.resetUserPassword(userName, password);
 	}
 	
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)
 	public void logout(HttpServletRequest httpServletRequest,
-         	           HttpServletResponse httpServletResponse/*,
-         	          @CookieValue(value=AuslandApplicationConstants.COOKIE_NAME, required=false) String cookieValue*/)
+         	           HttpServletResponse httpServletResponse)
 	{
 		cookieUtil.deleteCookie(httpServletRequest, httpServletResponse);
 	}
+
 }

@@ -28,7 +28,10 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -184,13 +187,22 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.ausland.weixin.controller"))
 				.paths(PathSelectors.any()).build();
 	}
-
+/*
+	@Override
+    public void configureViewResolvers(ViewResolverRegistry registry) {
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setPrefix("/");
+        resolver.setSuffix(".jsp");
+        resolver.setViewClass(JstlView.class);
+        registry.viewResolver(resolver);
+    }*/
+	  
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
+		//registry.addResourceHandler("/index.html").addResourceLocations("/index.html");
 		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-
-	registry.addResourceHandler("webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+		//registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+	    registry.addResourceHandler("webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 
 	}
 
@@ -258,71 +270,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		return dataSource;
 	}
 	
-	 /* @Bean
-	  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-	    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-	    vendorAdapter.setGenerateDdl(true);
-
-	    LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-	    factory.setJpaVendorAdapter(vendorAdapter);
-	    factory.setPackagesToScan("com.ausland.weixin.model.db");
-	    factory.setDataSource(dataSource());
-	    return factory;
-	  }
-
-	  @Bean
-	  public PlatformTransactionManager transactionManager() {
-
-	    JpaTransactionManager txManager = new JpaTransactionManager();
-	    txManager.setEntityManagerFactory((EntityManagerFactory) entityManagerFactory());
-	    return txManager;
-	  }*/
-	
-	/*@Bean
-	public LocalContainerEntityManagerFactoryBean customerEntityManagerFactory(
-			EntityManagerFactoryBuilder builder) {
-		return builder
-				.dataSource(dataSource()).packages("com.ausland.weixin.model.db")
-				.build();
-	}
-
-
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-		return new DataSourceTransactionManager(dataSource());
-	}*/
-	
-	/*    @Bean
-	    public LocalContainerEntityManagerFactoryBean userEntityManager() {
-	        LocalContainerEntityManagerFactoryBean em
-	          = new LocalContainerEntityManagerFactoryBean();
-	        em.setDataSource(dataSource());
-	        em.setPackagesToScan(
-	          new String[] { "com.ausland.weixin.model.db" });
 	 
-	        HibernateJpaVendorAdapter vendorAdapter
-	          = new HibernateJpaVendorAdapter();
-	        em.setJpaVendorAdapter(vendorAdapter);
-	        HashMap<String, Object> properties = new HashMap<>();
-	        properties.put("hibernate.hbm2ddl.auto",
-	          env.getProperty("hibernate.hbm2ddl.auto"));
-	        properties.put("hibernate.dialect",
-	          env.getProperty("hibernate.dialect"));
-	        em.setJpaPropertyMap(properties);
-	 
-	        return em;
-	    }
-	    
-	   @Bean
-	   public PlatformTransactionManager transactionManager(){
-	      JpaTransactionManager transactionManager
-	        = new JpaTransactionManager();
-	      transactionManager.setEntityManagerFactory(
-	    		  userEntityManager().getObject() );
-	      return transactionManager;
-	   }*/
-
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**").allowedHeaders("*").allowedMethods("*").allowCredentials(true).allowedOrigins("*");

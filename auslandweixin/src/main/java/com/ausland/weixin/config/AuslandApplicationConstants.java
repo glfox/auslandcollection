@@ -3,9 +3,12 @@ package com.ausland.weixin.config;
 public class AuslandApplicationConstants {
 
 	public static final String COOKIE_NAME= "AuslandCookieSessionId";
-	public static final String ACTIVE_USER_STATUS = "active";
-	public static final String LOCKED_USER_STATUS = "locked";
-	public static final String PENDING_USER_STATUS = "pending";
+	public static final String ACTIVE_USER_STATUS = "活跃";
+	public static final String LOCKED_USER_STATUS = "被锁";
+	public static final String PENDING_USER_STATUS = "僵尸";
+	public static final String STANDARD_USER_ROLE = "standard";
+	public static final String ADMIN_USER_ROLE = "admin";
+	public static final String SUPER_ADMIN_USER_ROLE = "superadmin";
 	public static Integer COOKIE_EXPIRATION_INSECONDS = 1440;
 	public static final String STATUS_OK = "ok";
 	public static final String COOKIE_ENCRYPTION_KEY = "ausland";

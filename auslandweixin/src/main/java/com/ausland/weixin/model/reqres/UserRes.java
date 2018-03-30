@@ -1,9 +1,7 @@
 package com.ausland.weixin.model.reqres;
 
 import java.io.Serializable;
-import java.util.List;
 
-import com.ausland.weixin.model.db.ContactInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,7 +27,17 @@ public class UserRes  implements Serializable{
 	
 	String status;
 
-    List<ContactInfo> contacts;
+    Address defaultAddress;
+    
+    String accountBalance;
+
+	public String getAccountBalance() {
+		return accountBalance;
+	}
+
+	public void setAccountBalance(String accountBalance) {
+		this.accountBalance = accountBalance;
+	}
 
 	public Integer getUserId() {
 		return userId;
@@ -79,18 +87,20 @@ public class UserRes  implements Serializable{
 		this.status = status;
 	}
 
-	public List<ContactInfo> getContacts() {
-		return contacts;
+	public Address getDefaultAddress() {
+		return defaultAddress;
 	}
 
-	public void setContacts(List<ContactInfo> contacts) {
-		this.contacts = contacts;
+	public void setDefaultAddress(Address defaultAddress) {
+		this.defaultAddress = defaultAddress;
 	}
 
 	@Override
 	public String toString() {
 		return "UserRes [userId=" + userId + ", userName=" + userName + ", phoneNumber=" + phoneNumber + ", role="
-				+ role + ", email=" + email + ", status=" + status + ", contacts=" + contacts + "]";
+				+ role + ", email=" + email + ", status=" + status + ", defaultAddress=" + defaultAddress
+				+ ", accountBalance=" + accountBalance + "]";
 	}
+
     
 }

@@ -3,11 +3,14 @@ import { NavItem, Nav, Navbar, Grid, Row } from 'react-bootstrap';
 import SearchOrders from '../searchorders/searchorders.js';
 import SearchStock from '../searchstock/searchstock.js';
 import HistoryOrder from '../searchorders/historyorders.js';
+import Login from '../login/login.js';
+import CreateUser from '../login/createuser.js';
 
 const contents = {
 	"order": <SearchOrders />,
 	"history": <HistoryOrder />,
-	"stock": <SearchStock />
+	"stock": <SearchStock />,
+	"login": <Login />
 }
 
 class PanelContainer extends React.Component {
@@ -44,7 +47,7 @@ class PanelContainer extends React.Component {
 					    </Nav>
 					    <Nav pullRight onSelect={this.handleSelect}>
 					      	<NavItem eventKey="login">
-					        	登陆
+					        	登陆/注册
 					      	</NavItem>
 					    </Nav>
 				  	</Navbar.Collapse>
