@@ -91,30 +91,5 @@ public class DataEncryptionDecryptionUtil {
 		byte[] cipher = encryptText(data, iv, key);
 		return finalEncryptedData(iv, cipher);
 	}
-	
-	public static CustomCookie getCustomCookieObjectFromCookieValue(String cookieValue) throws Exception
-	{
-		byte[] bytes = Base64.getDecoder().decode(cookieValue);
-		String decryptedString =  new String(bytes, "utf-8");
-				//decryption(cookieValue,AuslandApplicationConstants.COOKIE_ENCRYPTION_KEY);
-		if(StringUtils.isEmpty(decryptedString))
-			return null;
-		String[] inputs = decryptedString.split(",");
-		if(inputs.length < 3)
-			return null;
-		CustomCookie cc = new CustomCookie();
-		cc.setPassword(inputs[0]);
-		//cc.setUserId(Integer.parseInt(inputs[0]));
-		cc.setUserName(inputs[1]);
-		cc.setRole(inputs[2]);
-		return cc;
-	}
-	
-	public static String encryptCookieValueFromCookieObject(CustomCookie customCookie)  throws Exception
-	{
-		if(customCookie == null) return null;
-		return Base64.getEncoder().encodeToString(customCookie.toString().getBytes("utf-8"));
-		
-		//return encryption(customCookie.toString(), AuslandApplicationConstants.COOKIE_ENCRYPTION_KEY, customCookie.getUserName()); 
-	}
+
 }

@@ -22,6 +22,7 @@ import com.ausland.weixin.model.db.Brand;
 import com.ausland.weixin.model.db.Category;
 import com.ausland.weixin.model.db.Product;
 import com.ausland.weixin.model.db.ProductStock;
+import com.ausland.weixin.model.reqres.ProductIdsReq;
 import com.ausland.weixin.model.reqres.ProductRes;
 import com.ausland.weixin.model.reqres.QueryProductRes;
 import com.ausland.weixin.model.reqres.StockInfo;
@@ -50,15 +51,37 @@ public class QueryProductServiceImpl implements QueryProductService{
 	public QueryProductRes queryByProductId(String productId) {
 		logger.debug("entered queryByProductIds with productId:" + productId);
 		QueryProductRes res = new QueryProductRes();
-		Product prod   = productRepository.findByProductId(productId);
-		List<ProductStock> productStockList = productStockRepository.findByProductId(prod.getProductId());
-		ProductRes pres = convertFromProdAndProdStockList(prod, productStockList);
-		List<ProductRes> proudcts = new ArrayList<ProductRes>();
-		proudcts.add(pres);
-		res.setProducts(proudcts);
-		res.setTotalElements(1);
-		res.setTotalPages(1);
-		res.setStatus(AuslandApplicationConstants.STATUS_OK);
+		try
+		{
+			Product prod   = productRepository.findByProductId(productId);
+			if(prod == null)
+			{
+				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+				res.setErrorDetails("在数据库中没有找到该商品型号。");
+				return res;
+			}
+			List<ProductStock> productStockList = productStockRepository.findByProductId(prod.getProductId());
+			if(productStockList == null || productStockList.size() <= 0)
+			{
+				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+				res.setErrorDetails("在数据库中没有找到该商品的颜色尺码等库存信息。");
+				return res;
+			}
+			ProductRes pres = convertFromProdAndProdStockList(prod, productStockList);
+			List<ProductRes> proudcts = new ArrayList<ProductRes>();
+			proudcts.add(pres);
+			res.setProducts(proudcts);
+			res.setTotalElements(1);
+			res.setTotalPages(1);
+			res.setStatus(AuslandApplicationConstants.STATUS_OK);
+			return res;
+		}
+		catch(Exception e)
+		{
+			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+			res.setErrorDetails("在数据库中查找商品型号失败："+e.getMessage());
+		}
+		
 		return res;
 	}
 
@@ -87,22 +110,21 @@ public class QueryProductServiceImpl implements QueryProductService{
 	}
 	
 	@Override
-	public QueryProductRes queryProductBy(Integer pageNo, Integer pageSize, String brandNames, String matchingString, String productIds) {
+	public QueryProductRes queryProductBy(Integer pageNo, Integer pageSize, String brandNames, String matchingString, ProductIdsReq productIds) {
 		logger.debug("entered queryProductBy with matchingString:" +  matchingString +" brandNames:"+brandNames+" productIds:"+productIds);
-		Pageable pagable = new PageRequest(pageNo, pageSize, Sort.Direction.ASC,"productId");
+		Pageable pagable = new PageRequest(pageNo, pageSize);
 		
-		if(!StringUtils.isEmpty(productIds))
+		if(productIds != null && productIds.getProductIds() != null && productIds.getProductIds().size() > 0)
 		{
-			List<String> productIdList = new ArrayList<String>();
-			String[] pids = productIds.split(",");
-			for(String pid : pids)
+			List<String> productIdList = productIds.getProductIds();
+			if(productIdList.size() == 1)
 			{
-				if(!StringUtils.isEmpty(pid))
-					productIdList.add(pid);
+			    logger.debug("there is only 1 productId detected.");
+				return queryByProductId(productIdList.get(0));
 			}
-			if(productIdList.size() > 0)
+			else
 			{
-			    logger.debug("there is productId detected so will only use user selected productIds to search.");
+			    logger.debug("there is multiple productIds detected so will only use user selected productIds to search.");
 				Page<Product> p  = productRepository.findByProductIdIn(pagable, productIdList);
 				return genQueryProductRes(p);
 			}

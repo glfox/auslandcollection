@@ -13,4 +13,6 @@ public interface ProductStockRepository extends JpaRepository<ProductStock, Inte
 	 List<ProductStock> findByProductId(String productId);
 	 
 	 void deleteByProductId(String productId);
+
+	 ProductStock findByProductIdAndColor(String productId, String color);
 }

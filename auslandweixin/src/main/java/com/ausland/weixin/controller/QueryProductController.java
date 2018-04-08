@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.reqres.GlobalListRes;
+import com.ausland.weixin.model.reqres.ProductIdsReq;
 import com.ausland.weixin.model.reqres.QueryProductRes;
 import com.ausland.weixin.service.QueryProductService;
 
@@ -33,7 +34,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryProductControl
 									      @RequestParam(name="pageNo", required = true) Integer pageNo,
 									      @RequestParam(name="matchingstr", required = false) String mathingStr,
 			                              @RequestParam(name="brands", required = false) String brandNames,
-			                              @RequestBody(required = false)String productIds,
+			                              @RequestBody(required = false)ProductIdsReq productIds,
 			                              HttpServletRequest httpServletRequest) throws IOException 
 	{
 		logger.debug("entered queryByMatchingStr with mathingStr:"+mathingStr+";brandnames:"+brandNames+";productIds:"+productIds+";pageSize:"+pageSize+";pageNo:"+pageNo); 
