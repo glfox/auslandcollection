@@ -1,20 +1,25 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 import { createuser } from '../utils/services.js';
-import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import classNames from 'classnames';
-import Login from '../login/login.js';
+import CreateSuccess from './createsuccess.js'
+//import Login from '../login/login.js';
  
 class CreateUser extends Component {
 
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	            username: {value: '', isValid: true, message: ''},
-	            password: {value: '', isValid: true, message: ''},
-	            confirmPassword: {value: '', isValid: true, message: ''}
-	          };
-	     
+            username: {value: '', isValid: true, message: ''},
+            password: {value: '', isValid: true, message: ''},
+            confirmPassword: {value: '', isValid: true, message: ''},
+            loaded: true,
+            success: false,
+            error: "",
+        };
+
+	    this.handleHide = this.handleHide.bind(this); 
 	}
 
 	onChange = (e) => {
@@ -50,15 +55,10 @@ class CreateUser extends Component {
 	    }
 	 
 	resetValidationStates = () => {
-        var state = this.state;
-
-        Object.keys(state).map(key => {
-          if (state[key].hasOwnProperty('isValid')) {
-            state[key].isValid = true;
-            state[key].message = '';
-          }
-        });
-        this.setState(state);
+		this.setState({
+			username: {isValid: true, message: ''},
+            password: {isValid: true, message: ''},
+		})
       }
 	
 	onSubmit = (e) => {
@@ -71,16 +71,19 @@ class CreateUser extends Component {
 	}
 	
 	createuser(username, password) {
+		this.setState({ loaded: false })
 		createuser(this.state.username.value, this.state.password.value)
 			.then(result => {
 				console.log(result);
 				if(result.status === 'ok')
 				{
-					/*this.props.history.push('/SearchOrders');*/
+					this.setState({ 
+						success: true,
+						loaded: true
+					})
 				}
 			}, err => {
 				this.setState({
-					details: null,
 					error: "请求错误",
 					loaded: true
 				});
@@ -88,40 +91,73 @@ class CreateUser extends Component {
 			});
 	}
 
+	handleHide() {
+		this.setState({
+			username: {value: '', isValid: true, message: ''},
+            password: {value: '', isValid: true, message: ''},
+            confirmPassword: {value: '', isValid: true, message: ''},
+            loaded: true,
+            success: false,
+            error: "",
+		})
+		this.props.handleHide()
+	}
+
 	render() {
-		  var {username, password, confirmPassword} = this.state;
-		  var usernameGroupClass = classNames('form-group', {'has-error': !username.isValid});
-	      var passwordGroupClass = classNames('form-group', {'has-error': !password.isValid});
-	      var confirmGroupClass = classNames('form-group', {'has-error': !confirmPassword.isValid});
+		var {username, password, confirmPassword} = this.state;
+		var usernameGroupClass = classNames('form-group', {'has-error': !username.isValid});
+	    var passwordGroupClass = classNames('form-group', {'has-error': !password.isValid});
+	    var confirmGroupClass = classNames('form-group', {'has-error': !confirmPassword.isValid});
+		let loader = (<div className="loader"/>)
+		let registerForm = (
+				<div>
+					<form className="form-signin" onSubmit={this.onSubmit}>
+	                  	<div className={usernameGroupClass}>
+	                    	<input type="text" name="username" className="form-control"
+	                      		placeholder="用户名" value={username.value} onChange={this.onChange} autoFocus />
+	                    	<span className="help-block">{username.message}</span>
+	                  	</div>
 
-	        return (
-	        		<div className="container">
-	                <form className="form-signin" onSubmit={this.onSubmit}>
-	                  <h2 className="form-signin-heading">Create Account</h2>
+	                  	<div className={passwordGroupClass}>
+	                    	<input type="password" name="password" className="form-control"
+	                      		placeholder="登陆密码" value={password.value} onChange={this.onChange} />
+	                    	<span className="help-block">{password.message}</span>
+	                  	</div>
 
-	                  <div className={usernameGroupClass}>
-	                    <input type="text" name="username" className="form-control"
-	                      placeholder="username" value={username.value} onChange={this.onChange} autoFocus />
-	                    <span className="help-block">{username.message}</span>
-	                  </div>
-
-	                  <div className={passwordGroupClass}>
-	                    <input type="password" name="password" className="form-control"
-	                      placeholder="Password" value={password.value} onChange={this.onChange} />
-	                    <span className="help-block">{password.message}</span>
-	                  </div>
-
-	                  <div className={confirmGroupClass}>
-	                    <input type="password" name="confirmPassword" className="form-control"
-	                      placeholder="Confirm Password" value={confirmPassword.value} onChange={this.onChange} />
-	                    <span className="help-block">{confirmPassword.message}</span>
-	                  </div>
-
-	                  <button className="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
+	                  	<div className={confirmGroupClass}>
+	                    	<input type="password" name="confirmPassword" className="form-control"
+	                      		placeholder="确认密码" value={confirmPassword.value} onChange={this.onChange} />
+	                    	<span className="help-block">{confirmPassword.message}</span>
+	                  	</div>
+	                  	<button className="btn btn-primary" type="submit">注册</button>
 	                </form>
-	                <Link to='/Login'>登陆</Link>
-	              </div>
-	        );
+	                <p className="text-danger">{this.state.error}</p>
+	            </div>
+			)
+		let success = <CreateSuccess />
+		let modalBody;
+		if (this.state.loaded) {
+			if (this.state.success) {
+				modalBody = success;
+			} else {
+				modalBody = registerForm; 
+			}
+		} else {
+			modalBody = loader;
+		}
+        return (
+        	<Modal show={this.props.show} onHide={this.handleHide}>
+	          	<Modal.Header closeButton>
+	            	<Modal.Title>注册新用户</Modal.Title>
+	          	</Modal.Header>
+	          	<Modal.Body>
+	          		{modalBody}
+            	</Modal.Body>
+	          	<Modal.Footer>
+	            	<Button onClick={this.handleHide}>关闭</Button>
+	          	</Modal.Footer>
+	        </Modal>
+        );
 	}
 }
 

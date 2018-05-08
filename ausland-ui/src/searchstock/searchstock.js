@@ -36,6 +36,9 @@ class SearchStock extends React.Component {
 
 	//function getProductListBy(brands, productIds, matchingStr, pageNo)
 	handleSubmit(event) {
+		this.setState({
+			loaded: false
+		})
 		this.queryProduct(this.state.selectedBrands.join(','), this.state.searchstr);
 	}
 
@@ -121,7 +124,7 @@ class SearchStock extends React.Component {
 											<td key={p.productId + "*notfound" + k}>{'-'}</td>
 										)
 									} else {
-										let instock = (status[k] === 'Y'? 'btn-success':'btn-danger');
+										let instock = (status[k] === 'Y'? 'label-success':'label-danger');
 										sizeStatus.push(
 											<td className={instock} key={p.productId + "*" + k + "*" + sizes[k]}>{sizes[k]}</td>
 										)
@@ -167,7 +170,7 @@ class SearchStock extends React.Component {
 	getAllBrands() {
 		getAllBrands()
 			.then(result => {
-				if (result.status === 'ok') {
+				if (result.status === 'ok' && result.list) {
 					let brands = [];
 					for (let i = 0; i < result.list.length; i++) {
 						brands.push(
@@ -191,7 +194,7 @@ class SearchStock extends React.Component {
 	getAllCategory() {
 		getAllCategory()
 			.then(result => {
-				if (result.status === 'ok') {
+				if (result.status === 'ok' && result.list) {
 					let categories = [];
 					for (let i = 0; i < result.list.length; i++) {
 						categories.push(
@@ -216,7 +219,7 @@ class SearchStock extends React.Component {
 		let loader = this.state.loaded? null : <div className="loader"/>
 		return (
 			<div>
-				<Form inline onSubmit={this.handleSubmit}>
+				<Form inline>
 					<FormGroup controlId="orderInfo">
 			        	<ControlLabel>产品名称: </ControlLabel>{' '}
 			        	<FormControl

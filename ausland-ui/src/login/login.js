@@ -1,28 +1,36 @@
-import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import React from 'react';
+//import { Link } from 'react-router-dom';
 import { login } from '../utils/services.js';
-import { Form,FormGroup,Button,FormControl,ControlLabel,Table } from 'react-bootstrap';
-import classNames from 'classnames';
+import { Modal, Button } from 'react-bootstrap';
 import CreateUser from '../login/createuser.js';
-import { withCookies, Cookies, cookie} from 'react-cookies';
+import classNames from 'classnames';
+//import { withCookies, Cookies, cookie} from 'react-cookies';
 
-class Login extends Component {
+class Login extends React.Component {
 
 	constructor(props) {
 	    super(props);
 	    this.state = {
 	    	username: {value: '', isValid: true, message: ''},
 		    password: {value: '', isValid: true, message: ''},
+		    registerShow: false,
+		    error: null,
 	    };
-	     
+	    this.showRegister = this.showRegister.bind(this);
+    	this.hideRegister = this.hideRegister.bind(this);
+    	this.hideLogin = this.hideLogin.bind(this);
+    	this.onChange = this.onChange.bind(this);
+    	this.onSubmit = this.onSubmit.bind(this);
 	}
-	onChange = (e) => {
+
+	onChange (e) {
         var state = this.state;
         state[e.target.name].value = e.target.value;
 
         this.setState(state);
       }
-	formIsValid = () => {
+
+	formIsValid () {
 		var state = this.state;
 		  if(state.username.value.length < 4 || state.username.value.length > 20)
 		  {
@@ -41,38 +49,47 @@ class Login extends Component {
 	      return true;
 	    }
 	 
-	resetValidationStates = () => {
-        var state = this.state;
-
-        Object.keys(state).map(key => {
-          if (state[key].hasOwnProperty('isValid')) {
-            state[key].isValid = true;
-            state[key].message = '';
-          }
-        });
-        this.setState(state);
+	resetValidationStates (e) {
+		this.setState({
+			username: {value: this.state.username.value, isValid: true, message: ''},
+		    password: {value: this.state.password.value, isValid: true, message: ''},
+		})
       }
 	
-	onSubmit = (e) => {
+	onSubmit (e) {
 		e.preventDefault();
-		this.resetValidationStates();
+		this.resetValidationStates(e);
 		if (this.formIsValid()) {
 			this.login(this.state.username.value, this.state.password.value);
 		}
+	}
 
+	showRegister() {
+		this.setState({
+			registerShow: true
+		})
+	}
+
+	hideRegister() {
+		this.setState({
+			registerShow: false
+		})
 	}
 
 	login(username, password) {
-		login(this.state.username.value, this.state.password.value)
+		login(username, password)
 			.then(result => {
 				 console.log(result.status);
 				if (result.status === 'ok' ) {
 					/*this.props.history.push('/SearchOrders');*/
-					 
+					this.props.loginStatus(true, username);
+					this.hideLogin();
 	      		}  
 				else
 				{
-				    this.setState({password:{value: '', isValid: 'false', message:result.errorDetails}})
+				    this.setState({
+				    	error: <p className="text-danger">{result.errorDetails}</p>
+				    })
 				}
 			}, err => {
 				this.setState({
@@ -84,34 +101,53 @@ class Login extends Component {
 			});
 	}
 
+	resetLoginValues() {
+		this.setState({
+	    	username: {value: '', isValid: true, message: ''},
+		    password: {value: '', isValid: true, message: ''},
+		    registerShow: false,
+		    error: null,
+	    });
+	}
+
+	hideLogin() {
+		this.resetLoginValues();
+		this.props.handleClose();
+	}
+
 	render() {
 		var {username, password} = this.state;
-		  var usernameGroupClass = classNames('form-group', {'has-error': !username.isValid});
-	      var passwordGroupClass = classNames('form-group', {'has-error': !password.isValid});
-	    
-	        return (
-	        		<div className="container">
+		var usernameGroupClass = classNames('form-group', {'has-error': !username.isValid});
+	    var passwordGroupClass = classNames('form-group', {'has-error': !password.isValid});
+        return (
+        	<Modal show={this.props.show} onHide={this.hideLogin}>
+	          	<Modal.Header closeButton>
+	            	<Modal.Title>登陆/注册</Modal.Title>
+	          	</Modal.Header>
+	          	<Modal.Body>
 	                <form className="form-signin" onSubmit={this.onSubmit}>
-	                  <h2 className="form-signin-heading">登陆</h2>
+	                  	<div className={usernameGroupClass}>
+	                    	<input type="text" name="username" className="form-control form-group"
+	                      		placeholder="用户名" value={username.value} onChange={this.onChange} autoFocus />
+	                    	<span className="help-block">{username.message}</span>
+	                  	</div>
+	                  	<div className={passwordGroupClass}>
+	                    	<input type="password" name="password" className="form-control form-group"
+	                      		placeholder="登陆密码" value={password.value} onChange={this.onChange} />
+	                    	<span className="help-block">{password.message}</span>
+	                  	</div>
+	                  	{this.state.error}
+	                  	<button className="btn btn-primary" type="submit">登陆</button>{' '}
+	                  	<button className="btn btn-info" type="button" onClick={this.showRegister}>注册</button>
+	                </form>	                
+	          	</Modal.Body>
+	          	<Modal.Footer>
+	            	<Button onClick={this.hideLogin}>关闭</Button>
+	          	</Modal.Footer>
 
-	                  <div className={usernameGroupClass}>
-	                    <input type="text" name="username" className="form-control"
-	                      placeholder="username" value={username.value} onChange={this.onChange} autoFocus />
-	                    <span className="help-block">{username.message}</span>
-	                  </div>
-
-	                  <div className={passwordGroupClass}>
-	                    <input type="password" name="password" className="form-control"
-	                      placeholder="Password" value={password.value} onChange={this.onChange} />
-	                    <span className="help-block">{password.message}</span>
-	                  </div>
-
-	                  <button className="btn btn-lg btn-primary btn-block" type="submit">登陆</button>
-	                </form>
-	                <Link to='/CreateUser'>注册</Link>
-	              </div>
-	               
-	        );
+	          	<CreateUser show={this.state.registerShow} handleShow={this.showRegister} handleHide={this.hideRegister}/>
+	        </Modal>
+        )
 	}
 }
 

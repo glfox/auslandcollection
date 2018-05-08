@@ -14,8 +14,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.ausland.weixin.config.AuslandApplicationConstants;
-
 public class DataEncryptionDecryptionUtil {
 	
 	public static void main(String[] args) {
@@ -92,21 +90,26 @@ public class DataEncryptionDecryptionUtil {
 		return finalEncryptedData(iv, cipher);
 	}
 	
-	public static CustomCookie getCustomCookieObjectFromCookieValue(String cookieValue) throws Exception
+	public static CustomCookie getCustomCookieObjectFromCookieValue(String cookieValue)
 	{
-		byte[] bytes = Base64.getDecoder().decode(cookieValue);
-		String decryptedString =  new String(bytes, "utf-8");
-				//decryption(cookieValue,AuslandApplicationConstants.COOKIE_ENCRYPTION_KEY);
-		if(StringUtils.isEmpty(decryptedString))
-			return null;
-		String[] inputs = decryptedString.split(",");
-		if(inputs.length < 3)
-			return null;
 		CustomCookie cc = new CustomCookie();
-		cc.setPassword(inputs[0]);
-		//cc.setUserId(Integer.parseInt(inputs[0]));
-		cc.setUserName(inputs[1]);
-		cc.setRole(inputs[2]);
+		try {
+			byte[] bytes = Base64.getDecoder().decode(cookieValue);
+			String decryptedString =  new String(bytes, "utf-8");
+					//decryption(cookieValue,AuslandApplicationConstants.COOKIE_ENCRYPTION_KEY);
+			if(StringUtils.isEmpty(decryptedString))
+				return null;
+			String[] inputs = decryptedString.split(",");
+			if(inputs.length < 3)
+				return null;
+			
+			cc.setPassword(inputs[0]);
+			//cc.setUserId(Integer.parseInt(inputs[0]));
+			cc.setUserName(inputs[1]);
+			cc.setRole(inputs[2]);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return cc;
 	}
 	

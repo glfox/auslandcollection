@@ -28,10 +28,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -264,7 +261,11 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 
 		config.setMaximumPoolSize(Integer.parseInt(env.getProperty("spring.datasource.hikari.maximum-pool-size")));
 		config.setConnectionTimeout(Integer.parseInt(env.getProperty("spring.datasource.hikari.connection-timeout")));
+		config.setMinimumIdle(Integer.parseInt(env.getProperty("spring.datasource.hikari.minimumidle")));
+		config.setIdleTimeout(Long.parseLong(env.getProperty("spring.datasource.hikari.idletimeout")));
+		config.setMaxLifetime(Long.parseLong(env.getProperty("spring.datasource.hikari.maxlifetime")));
 
+		config.addDataSourceProperty("serverTimezone", "UTC");
 		HikariDataSource dataSource = new HikariDataSource(config);
 
 		return dataSource;

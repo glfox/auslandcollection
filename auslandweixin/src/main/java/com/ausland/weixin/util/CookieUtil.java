@@ -76,4 +76,7 @@ public class CookieUtil {
 		return;
 	}
 	 
+	public String getUserName(String cookieValue) {
+		return DataEncryptionDecryptionUtil.getCustomCookieObjectFromCookieValue(cookieValue).getUserName();
+	}
 }

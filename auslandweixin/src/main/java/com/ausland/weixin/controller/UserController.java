@@ -176,11 +176,11 @@ public class UserController {
 		return userService.resetUserPassword(userName, password);
 	}
 	
-	@RequestMapping(value = "/logout", method = RequestMethod.POST)
-	public void logout(HttpServletRequest httpServletRequest,
-         	           HttpServletResponse httpServletResponse)
-	{
-		cookieUtil.deleteCookie(httpServletRequest, httpServletResponse);
-	}
+//	@RequestMapping(value = "/logout", method = RequestMethod.POST)
+//	public void logout(HttpServletRequest httpServletRequest,
+//         	           HttpServletResponse httpServletResponse)
+//	{
+//		cookieUtil.deleteCookie(httpServletRequest, httpServletResponse);
+//	}
 
 }
