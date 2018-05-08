@@ -171,6 +171,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			productUploadExcelHeaders.add("产品颜色");
 			productUploadExcelHeaders.add("产品尺码");
 			productUploadExcelHeaders.add("产品毛重");
+			productUploadExcelHeaders.add("包邮价");
 
 		} catch (Exception e) {
 			e.printStackTrace();

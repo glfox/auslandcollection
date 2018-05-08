@@ -1,5 +1,6 @@
 package com.ausland.weixin.model.db;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,6 +10,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+
+import com.ausland.weixin.config.AuslandApplicationConstants;
 
 @Entity
 @Table(name="product")
@@ -66,6 +69,29 @@ public class Product {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     Date   lastupdatedDateTime;
+    
+    @Column(precision=5, scale=2)
+    @NotNull
+	BigDecimal productUniPrice;
+
+    @Column(length = 32)
+    String provider=AuslandApplicationConstants.PRODUCT_PROVIDER_AUSLAND;
+    
+	public BigDecimal getProductUniPrice() {
+		return productUniPrice;
+	}
+
+	public void setProductUniPrice(BigDecimal productUniPrice) {
+		this.productUniPrice = productUniPrice;
+	}
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
 
 	public String getSizeCategory() {
 		return sizeCategory;

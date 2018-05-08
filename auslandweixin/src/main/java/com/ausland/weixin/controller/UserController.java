@@ -106,7 +106,7 @@ public class UserController {
 		{
 			logger.debug("got the cookie:"+cookieValue);
 			try {
-				CustomCookie cc = DataEncryptionDecryptionUtil.getCustomCookieObjectFromCookieValue(cookieValue);
+				CustomCookie cc = cookieUtil.getCustomCookieObjectFromCookieValue(cookieValue);
 				logger.debug("parsed cookie to the string:"+cc.toString());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

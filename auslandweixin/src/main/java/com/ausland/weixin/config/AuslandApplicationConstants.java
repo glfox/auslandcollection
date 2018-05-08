@@ -6,6 +6,11 @@ public class AuslandApplicationConstants {
 	public static final String ACTIVE_USER_STATUS = "活跃";
 	public static final String LOCKED_USER_STATUS = "被锁";
 	public static final String PENDING_USER_STATUS = "僵尸";
+	public static final String ORDER_STATUS_CREATED = "已创建";
+	public static final String ORDER_STATUS_DELETED = "已删除";
+	public static final String ORDER_STATUS_CONFIRMED = "已审核";
+	public static final String ORDER_STATUS_CHECKREQUIRED = "需客服处理";
+	public static final String ORDER_STATUS_PENDING = "暂不处理";
 	public static final String STANDARD_USER_ROLE = "standard";
 	public static final String ADMIN_USER_ROLE = "admin";
 	public static final String SUPER_ADMIN_USER_ROLE = "superadmin";
@@ -29,4 +34,5 @@ public class AuslandApplicationConstants {
 	public static final String DATETIME_STRING_FORMAT = "yyyy-MM-dd HHmmss";
 	public static final String DATE_STRING_FORMAT = "yyyy-MM-dd";
 	public static final String IMAGE_HEADER = "data:image/jpeg:base64,";
+	public static final String PRODUCT_PROVIDER_AUSLAND = "ausland";
 }

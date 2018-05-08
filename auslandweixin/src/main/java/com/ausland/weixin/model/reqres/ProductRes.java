@@ -23,8 +23,15 @@ public class ProductRes implements Serializable
 	String status;
 	String comments;
 	String sizeCategory;
+	String productUnitPrice;
 	List<StockInfo> stock;
 	
+	public String getProductUnitPrice() {
+		return productUnitPrice;
+	}
+	public void setProductUnitPrice(String productUnitPrice) {
+		this.productUnitPrice = productUnitPrice;
+	}
 	public String getSizeCategory() {
 		return sizeCategory;
 	}

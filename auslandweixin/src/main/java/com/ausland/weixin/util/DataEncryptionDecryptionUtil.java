@@ -120,4 +120,5 @@ public class DataEncryptionDecryptionUtil {
 		
 		//return encryption(customCookie.toString(), AuslandApplicationConstants.COOKIE_ENCRYPTION_KEY, customCookie.getUserName()); 
 	}
+
 }

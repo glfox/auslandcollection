@@ -2,6 +2,7 @@ package com.ausland.weixin.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -433,6 +434,8 @@ public class ProductServiceImpl implements ProductService{
             	p.setProductId(pres.getProductId());
             	p.setProductName(pres.getProductName());
             	p.setProductWeight(pres.getProductWeight());
+            	p.setProductUniPrice(new BigDecimal(pres.getProductUnitPrice()));
+            	p.setProvider(AuslandApplicationConstants.PRODUCT_PROVIDER_AUSLAND);
             	productList.add(p);
             	List<StockInfo> l = pres.getStock();
             	if(l != null && l.size() > 0)
@@ -705,6 +708,22 @@ public class ProductServiceImpl implements ProductService{
 	        	{
 	        		p.setProductWeight(cell.trim());
 	        	}
+	        	
+	        }
+	        else if(i == 9)
+	        {
+	        	try
+	        	{
+	        		BigDecimal price = new BigDecimal(cell.trim());
+	        		
+	        	}
+	        	catch(Exception e)
+	        	{
+	        		return "价格："+cell+"格式不正确";
+	        	}
+	        	 
+	        	p.setProductUnitPrice(cell.trim());
+	         
 	        	return null;
 	        }
 		}

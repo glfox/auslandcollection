@@ -41,4 +41,5 @@ public interface ProductRepository extends JpaRepository<Product, String>{
 	
 	@Query(value="select p.productId from Product p")
 	List<String> findProductIdsAll();
+
 }
