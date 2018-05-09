@@ -161,6 +161,9 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			e.printStackTrace();
 		}
 		
+		/**
+		 * 产品编号	产品图片	产品品牌	产品类型	产品名称	产品颜色	产品尺码	产品毛重	自提价	包邮价
+		 */
 		productUploadExcelHeaders = new ArrayList<String>();
 		try {
 			productUploadExcelHeaders.add("产品编号");
@@ -171,6 +174,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			productUploadExcelHeaders.add("产品颜色");
 			productUploadExcelHeaders.add("产品尺码");
 			productUploadExcelHeaders.add("产品毛重");
+			productUploadExcelHeaders.add("自提价");
 			productUploadExcelHeaders.add("包邮价");
 
 		} catch (Exception e) {
