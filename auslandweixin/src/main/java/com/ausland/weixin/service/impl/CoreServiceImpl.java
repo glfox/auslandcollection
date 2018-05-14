@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.CustomSendMessage;
 import com.ausland.weixin.model.MessageContent;
+import com.ausland.weixin.model.difou.GetStockListRes;
+import com.ausland.weixin.model.difou.StockDataInfo;
 import com.ausland.weixin.model.reqres.GongZhongHaoUserInfoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
@@ -23,6 +25,8 @@ import com.ausland.weixin.model.reqres.ZhongHuanFydhDetails;
 import com.ausland.weixin.model.xml.WeChatMessage;
 import com.ausland.weixin.model.zhonghuan.xml.Back.Logisticsback;
 import com.ausland.weixin.service.CoreService;
+import com.ausland.weixin.service.DifouProductStockService;
+import com.ausland.weixin.service.DifouService;
 import com.ausland.weixin.service.GongZhongHaoSubscriberUserService;
 import com.ausland.weixin.service.QueryZhongHuanService;
 import com.ausland.weixin.service.WeChatMessageService;
@@ -49,6 +53,12 @@ public class CoreServiceImpl implements CoreService {
 	@Autowired
 	private ValidationUtil validationUtil;
 	
+	@Autowired
+	private DifouProductStockService difouProductStockService;
+	
+	@Autowired
+	private DifouService difouService;
+
 	@Value("${ausland.server.hosturl}")
 	private String auslandHostUrl;
 	
@@ -67,6 +77,7 @@ public class CoreServiceImpl implements CoreService {
 	public void asyncProcessRequest(WeChatMessage message) {
 		//String userName = message.getFromUserName();
 		CustomSendMessage newMsg = new CustomSendMessage();
+		MessageContent mContent = new MessageContent();
 		if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()))
 		{
 			logger.debug("got a text message:"+message.getContent());
@@ -83,9 +94,27 @@ public class CoreServiceImpl implements CoreService {
 	    	else
 	    	{
 	    		logger.debug("got text message which is not valid phoneno nor the valid trackingno:"+message.getContent());
-	    		MessageContent mContent = new MessageContent();
-				mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
-	    		newMsg.setContent(mContent);
+	    		List<String> possibleIdList = difouProductStockService.isValidProductId(message.getContent());
+	    		if(possibleIdList == null || possibleIdList.size() <= 0)
+	    		{
+					mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
+	    		}
+	    		else if (possibleIdList.size() > 1)
+	    		{
+					mContent.setContent(AuslandApplicationConstants.REFINED_SEARCH_PROMPT+String.join("  ", possibleIdList)+"\n 请输入具体的商品编号查询库存信息:"); 
+	    		}
+	    		else
+	    		{
+	    			try {
+						sendStockInfo(message.getFromUserName(), possibleIdList.get(0));
+						return;
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace(); 
+						mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
+						 
+					}
+	    		}
 	    	}
 		}
 		else if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_EVENT.equalsIgnoreCase(message.getMsgType()))
@@ -95,7 +124,59 @@ public class CoreServiceImpl implements CoreService {
 			//GongZhongHaoUserInfoRes res = gongZhongHaoSubscriberUserService.getWeChatUserInfo(message.getFromUserName());
 			return;
 		}
+		
+		newMsg.setContent(mContent);
 		newMsg.setToUserName(message.getFromUserName());
+		newMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
+		logger.debug("send message:"+newMsg.toString());
+		weChatMessageService.sendMessage(newMsg);
+		logger.debug("after send.");
+	}
+	
+	private void sendStockInfo(String toUserName, String productId) throws UnsupportedEncodingException{
+		CustomSendMessage newMsg = new CustomSendMessage(); 
+		MessageContent mContent = new MessageContent();
+		GetStockListRes res = difouService.getStockList(productId);
+		if(res == null || !"0".equals(res.getReturnCode()))
+		{
+			mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
+		}
+		else {
+			if(res.getDataInfoList() != null && res.getDataInfoList().size() > 0)
+			{ 
+				List<String> contentTextList = new ArrayList<String>();
+				StringBuffer strb = new StringBuffer();
+				strb.append("商品编号：【"+productId+"】的库存信息如下：").append("\n");
+				for(StockDataInfo sdi: res.getDataInfoList())
+				{
+					if(StringUtils.isEmpty(sdi.getSpecName()) || StringUtils.isEmpty(sdi.getStock()))
+						continue;
+					if(strb.toString().getBytes("utf-8").length > AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT_MAXLENGTH){
+						contentTextList.add(strb.toString());
+						strb = new StringBuffer();
+					}
+					strb.append("型号：").append(sdi.getSpecName()).append("  库存：").append(sdi.getStock()).append("\n");
+				}
+                contentTextList.add(strb.toString());
+                for(String s: contentTextList)
+                {
+                	CustomSendMessage mesg = new CustomSendMessage();
+					MessageContent mContent1 = new MessageContent();
+					mContent1.setContent(s);
+					mesg.setContent(mContent1);
+					mesg.setToUserName(toUserName);
+					mesg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
+					weChatMessageService.sendMessage(mesg);
+                }
+                return;
+			}
+			else
+			{
+				mContent.setContent(AuslandApplicationConstants.NO_MATCH_PROMPT);
+			}
+		}
+		newMsg.setContent(mContent);
+		newMsg.setToUserName(toUserName);
 		newMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
 		logger.debug("send message:"+newMsg.toString());
 		weChatMessageService.sendMessage(newMsg);

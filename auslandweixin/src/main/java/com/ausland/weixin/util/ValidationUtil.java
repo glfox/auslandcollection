@@ -43,6 +43,10 @@ public class ValidationUtil {
  
 	private static final Logger logger = LoggerFactory.getLogger(ValidationUtil.class);
 
+	private static String cmcc="^[1]{1}(([3]{1}[4-9]{1})|([5]{1}[89]{1}))[0-9]{8}$";
+	private static String cucc="^[1]{1}(([3]{1}[0-3]{1})|([5]{1}[3]{1}))[0-9]{8}$";
+	private static String cnc="^[1]{1}[8]{1}[89]{1}[0-9]{8}$";
+	
 	private static  String createAsterisk(int length) {  
 	    StringBuffer stringBuffer = new StringBuffer();  
 	    for (int i = 0; i < length; i++) {  
@@ -164,6 +168,7 @@ public class ValidationUtil {
 		}
 		return true;
 	}
+	
 	public boolean isValidChinaMobileNo(String phoneNo)
 	{
 		if(phoneNo == null || phoneNo.length() != 11) return false;
@@ -173,7 +178,11 @@ public class ValidationUtil {
 			if(!Character.isDigit(ch))
 				return false;
 		}
-		return true;
+		if(phoneNo.matches(cmcc) || phoneNo.matches(cucc) || phoneNo.matches(cnc))
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	public String removeCDATA(String text) {

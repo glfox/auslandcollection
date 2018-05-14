@@ -24,12 +24,14 @@
 			<!-- rollover daily -->
 			<fileNamePattern>${LOG_DIR}/ausland_weixin.%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
+			<maxHistory>5</maxHistory>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
 				<maxFileSize>200MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 	</appender>
+	
 	<appender name="FILE-METRICS-HTTP"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/ausland_weixin_http_incoming.log</file>
@@ -42,12 +44,14 @@
 			<!-- rollover daily -->
 			<fileNamePattern>${LOG_DIR}/ausland_weixin_http_incoming.%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
+			<maxHistory>5</maxHistory>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
 				<maxFileSize>200MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 	</appender>
+	
 	<appender name="FILE-METRICS-HTTP-CLIENT"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/ausland_weixin_http_outgoing.log</file>
@@ -60,6 +64,7 @@
 			<!-- rollover daily -->
 			<fileNamePattern>${LOG_DIR}/ausland_weixin_http_outgoing.%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
+			<maxHistory>5</maxHistory>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
 				<maxFileSize>200MB</maxFileSize>
