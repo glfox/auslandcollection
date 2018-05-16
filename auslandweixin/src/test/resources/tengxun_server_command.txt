@@ -50,9 +50,9 @@ curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com
 4>create Menu:
 curl -k -X POST --data '{"button":[{"type":"click","name":"单号查询","key":"queryLogistic"},{"type":"click","name":"咨询客服","key":"chat"},{"name":"产品查询","sub_button":[{"type":"click","name":"价格","key":"queryProduct_price"},{"type":"click","name":"库存","key": "queryProduct_stock"},{"type":"click","name":"新品","key":"queryProduct_new"}]}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
   
-  
-  7_wQ437sWnqFVLimTiN2CzueAY6Q_kQSJu7ImpjjUW0tjEOqxNq1420wuPYHVxN96tczNdw2sW7ptraHTHOwpLQcCqAWr-UuEzph9Z2uuAg4apAKod3agl9lJKz29gwlSV7Newq2GNUIwkJJ5rOKJgADAIED
+curl -k -X POST --data '{"button":[{"type":"view","name":"库存查询","url":"http://www.sf-express.com/cn/sc/"},{"type":"view","name":"订单查询","url":"http://118.24.75.119:8080/auslandweixin/swagger-ui.html"},{"type":"view","name":"物流查询","url":"http://118.24.75.119:8080/auslandweixin/swagger-ui.html"}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=9_hncrPybbedm5uXOSKDYLbTbv6jjg7PedEgpTWCi1ALqKlTvuEdJBhMbxxAPPfMemjIs_dWROmh2zD9KUss4x-FiK-CT5dBH7EYGLJlZ5EUnt7IHUyNkrwelKx2cXsJPMd8uv7SPRxKG0Cqj9HNHcAAAOUO' --trace-ascii /dev/stdout
 
+ 
   
 5>get userinfo:
 curl -k  GET 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=h9Z2uuAg4apAKod3agl9lJKz29gwlSV7Newq2GNUIwkJJ5rOKJgADAIED&openid=gh_ec558daefbc8&lang=zh_CN' --trace-ascii /dev/stdout

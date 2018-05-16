@@ -74,7 +74,22 @@ public class DifouServiceImpl implements DifouService {
         			if(!StringUtils.isEmpty(sdi.getStock())){
         				float f = Float.parseFloat(sdi.getStock().trim());
         				int st = (int)f;
-        				sdi.setStock(""+st);
+        				if(st <= 0)
+        				{
+        					sdi.setStock("缺货");
+        				}
+        				else if(st <=3)
+        				{
+        					sdi.setStock("紧张");
+        				}
+        				else if(st <=10)
+        				{
+        					sdi.setStock("有货");
+        				}
+        				else
+        				{
+        					sdi.setStock("充足");
+        				}
         			}
         		}
         	}
