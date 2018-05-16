@@ -118,13 +118,13 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo) {
 		QueryZhongHuanLastThreeMonthByPhoneNoRes res = new QueryZhongHuanLastThreeMonthByPhoneNoRes();
 		
-		if(StringUtils.isEmpty(phoneNo) || validationUtil.isValidChinaMobileNo(phoneNo) == false)
+		if(StringUtils.isEmpty(phoneNo) || (validationUtil.isValidChinaMobileNo(phoneNo) == false && validationUtil.isValidChineseName(phoneNo) == false))
 		{
 			res.setErrorDetails("input phone number is invalid.");
 			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 			return res;
 		} 
-		String trimedPhoneNo = validationUtil.trimPhoneNo(phoneNo);
+		String trimedPhoneNo = phoneNo;//validationUtil.trimPhoneNo(phoneNo);
 		logger.debug("entered  queryZhongHuanLastThreeMonthbyPhoneNo with phoneNo:"+trimedPhoneNo);
 		try
 		{

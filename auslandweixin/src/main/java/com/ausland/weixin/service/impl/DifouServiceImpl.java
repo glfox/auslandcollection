@@ -66,7 +66,18 @@ public class DifouServiceImpl implements DifouService {
         ResponseEntity<GetStockListRes> responseEntity = restTemplate.exchange(difouUrl, HttpMethod.POST, entity, GetStockListRes.class);
         if(responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK)
         {
-        	return responseEntity.getBody(); 
+        	res = responseEntity.getBody(); 
+        	if(res.getDataInfoList()!= null && res.getDataInfoList().size() > 0)
+        	{
+        		for(StockDataInfo sdi : res.getDataInfoList())
+        		{
+        			if(!StringUtils.isEmpty(sdi.getStock())){
+        				float f = Float.parseFloat(sdi.getStock().trim());
+        				int st = (int)f;
+        				sdi.setStock(""+st);
+        			}
+        		}
+        	}
         }else{
         	res.setReturnCode("1");
         	res.setReturnInfo("get difou stock failed.");

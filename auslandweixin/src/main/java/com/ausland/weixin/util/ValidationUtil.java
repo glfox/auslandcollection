@@ -42,10 +42,6 @@ public class ValidationUtil {
 	private static final SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat(AuslandApplicationConstants.DATETIME_STRING_FORMAT);
  
 	private static final Logger logger = LoggerFactory.getLogger(ValidationUtil.class);
-
-	private static String cmcc="^[1]{1}(([3]{1}[4-9]{1})|([5]{1}[89]{1}))[0-9]{8}$";
-	private static String cucc="^[1]{1}(([3]{1}[0-3]{1})|([5]{1}[3]{1}))[0-9]{8}$";
-	private static String cnc="^[1]{1}[8]{1}[89]{1}[0-9]{8}$";
 	
 	private static  String createAsterisk(int length) {  
 	    StringBuffer stringBuffer = new StringBuffer();  
@@ -71,19 +67,29 @@ public class ValidationUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("爱新".length());
-		System.out.println("爱".length());
-		System.out.println("爱新角".length());
-		//System.out.println("爱新觉罗".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "$1" + createAsterisk(str.length() - 1)));
-		System.out.println("爱新觉luo".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
-		System.out.println("爱新觉".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
-		System.out.println("爱新".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
+//		System.out.println("爱新".length());
+//		System.out.println("爱".length());
+//		System.out.println("爱新角".length());
+//		//System.out.println("爱新觉罗".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "$1" + createAsterisk(str.length() - 1)));
+//		System.out.println("爱新觉luo".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
+//		System.out.println("爱新觉".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
+//		System.out.println("爱新".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
+		System.out.println(Float.parseFloat("1.0"));
 		/*// TODO Auto-generated method stub
        System.out.println(u.isValidChinaMobileNo("15618983927"));
        System.out.println(u.trimPhoneNo("156 18983927 "));
        System.out.println(u.removeCDATA("<tel><message>成功</message>"));
        System.out.print(u.removeCDATA("<![CDATA[<?xml  version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?><tel><message>成功</message><issuccess>true</issuccess><fydhlist><chrfydh>970000197505</chrfydh> <chrdysj>2018-03-03 06:33:37</chrdysj> </fydhlist> </tel>]]>"));
 	  */
+//		ArrayList<String> list = new ArrayList<String>();
+//		list.add("13676861358");
+//		list.add("18611328280");
+//		list.add("17600406075");
+//		list.add("13883860243");
+//		list.add("14727638117");
+		String[] list = {"lan", "中国", "中国号", "号吗?"};
+//		 for(String s: list)
+//		 System.out.println(isValidChineseName(s));
 	}
 		
 	private void readExcel(File file)
@@ -147,6 +153,28 @@ public class ValidationUtil {
 		return date;
 	}
 	
+	public boolean isValidChineseName(String name){
+		if(StringUtils.isEmpty(name))
+		{
+			return false;
+		}
+		
+		try {
+			int chineseNo = name.getBytes("utf-8").length;
+			if(chineseNo == name.length() || name.length() > 5 || name.length() < 2)
+				return false;
+		} catch (UnsupportedEncodingException e) {
+			return false;
+		}
+		
+		char[] chars = name.toCharArray();
+		for(char ch : chars)
+		{
+			if(Character.isDigit(ch) || ch <  0x4E00 || ch > 0x9FA5)
+				return false;
+		}
+		return true;
+	}
 	public boolean isValidZhongHuanTrackNo(String trackingNo)
 	{
 		if(StringUtils.isEmpty(trackingNo))
@@ -178,7 +206,8 @@ public class ValidationUtil {
 			if(!Character.isDigit(ch))
 				return false;
 		}
-		if(phoneNo.matches(cmcc) || phoneNo.matches(cucc) || phoneNo.matches(cnc))
+		if(phoneNo.matches("^((13[0-9])|(14[5-9])|(15([0-3]|[5-9]))|(18[0-9])|(17[0-9]))\\d{8}$"))
+		//if(phoneNo.matches(cmcc) || phoneNo.matches(cucc) || phoneNo.matches(cnc))
 		{
 			return true;
 		}

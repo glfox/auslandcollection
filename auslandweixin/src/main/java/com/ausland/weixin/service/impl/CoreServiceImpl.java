@@ -81,7 +81,7 @@ public class CoreServiceImpl implements CoreService {
 		if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()))
 		{
 			logger.debug("got a text message:"+message.getContent());
-			if(validationUtil.isValidChinaMobileNo(message.getContent()) == true)
+			if(validationUtil.isValidChinaMobileNo(message.getContent()) == true || validationUtil.isValidChineseName(message.getContent()) == true)
 	    	{
 				sendQueryZhongHuanLastThreeMonthByPhoneMessage(message.getFromUserName(), message.getContent().trim());
 				return;
