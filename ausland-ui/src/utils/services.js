@@ -1,17 +1,13 @@
-const BASE_URL = 'http://118.24.75.119:8081';
+const BASE_URL = 'http://118.24.75.119:8080';
 //const BASE_URL = 'http://localhost:8081';
-const CONTEXT_PATH = '/auslandtest';
+const CONTEXT_PATH = '/auslandweixin';
 const page_size = 30;
 export { 
 	getOrderDetails, 
 	getHistoryOrders, 
-	getProductListBy, 
-	getAllBrands, 
-	getAllCategory, 
-	login, 
-	createuser, 
-	isLogin, 
-	logout
+	getProductListBy,
+	getAllProdID,
+	queryDiFou
 };
 
 function getOrderDetails(trackingNo) {
@@ -37,44 +33,19 @@ function getProductListBy(brands, productIds, matchingStr, pageNo) {
 		}).then(res => res.json());
 }
 
-function getAllBrands() {
-	let url = BASE_URL + CONTEXT_PATH + '/query/product/getallbrand';
-	return fetch(url).then(res => res.json());
+function getAllProdID(phone) {
+	let url = BASE_URL + CONTEXT_PATH + '/difou/getAllProductIdList';
+	return fetch(url,{
+		method: 'POST',
+	}).then(res => res.json());
 }
 
-function getAllCategory() {
-	let url = BASE_URL + CONTEXT_PATH + '/query/product/getallcategory';
-	return fetch(url).then(res => res.json());
+function queryDiFou(searchVal) {
+	let url = BASE_URL + CONTEXT_PATH + '/difou/getProductStockList?productId=' + searchVal;
+	return fetch(url,{
+		method: 'POST',
+	}).then(res => res.json());
 }
 
-function login(username, password){
-	let url = BASE_URL + CONTEXT_PATH + "/user/validateuser?username=" + username + "&password=" + password;
-	return fetch(url,
-			    {method: 'POST',
-			     credentials: 'include'}
-			    ).then(res => res.json());
-}
 
-function createuser(username, password){
-	let url = BASE_URL + CONTEXT_PATH + "/user/createuser";
-	return fetch(url, {method: 'POST',
-		               credentials: 'include',
-	                   body: JSON.stringify({"username": username, "password": password}),
-	                   headers:  {'Content-Type': 'application/json; charset=utf-8'}
-                      }).then(res => res.json());
-}
-
-function isLogin() {
-	let url = BASE_URL + CONTEXT_PATH + "/islogin";
-	return fetch(url, {method: 'GET',
-		               credentials: 'include'
-                      }).then(res => res.json());
-}
-
-function logout() {
-	let url = BASE_URL + CONTEXT_PATH + "/userlogout";
-	return fetch(url, {method: 'POST',
-		               credentials: 'include'
-	                   }).then(res => res.json());
-}
 

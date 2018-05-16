@@ -82,11 +82,11 @@ class HistoryOrder extends React.Component {
 			<div>
 				<Form inline onSubmit={this.handleSubmit}>
 					<FormGroup controlId="orderForm">
-						<ControlLabel>手机号码: </ControlLabel>{' '}
+						<ControlLabel>手机号码/姓名: </ControlLabel>{' '}
 			          	<FormControl
 				            type="text"
 				            value={this.state.phone}
-				            placeholder="输入手机号码"
+				            placeholder="手机号码或姓名"
 				            onChange={this.handleChange}
 				        />
 			        </FormGroup>{' '}
