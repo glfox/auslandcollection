@@ -39,8 +39,11 @@ tengxun cloud server:
                 ProxyPreserveHost On
                 ProxyPass /auslandweixin http://127.0.0.1:8080/auslandweixin/
                 ProxyPass /auslandtest http://127.0.0.1:8081/auslandtest/
+                ProxyPass /ui          http://127.0.0.1:5000/ui/
                 ProxyPassReverse /auslandweixin http://127.0.0.1:8080/auslandweixin/ 
                 ProxyPassReverse /auslandtest http://127.0.0.1:8081/auslandtest/
+                ProxyPassReverse /ui               http://127.0.0.1:5000/ui/
+                
   sudo systemctl restart apache2
   
 

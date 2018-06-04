@@ -32,6 +32,9 @@ teng xun services:
 1>get access token:
 curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx813359100f7d30dc&secret=ba8523f565575ffc77fcf390897aa24d' --trace-ascii /dev/stdout
 
+curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx65fef60a2e8f82f4&secret=44849317351f0ac759c28c03b9e2b9a1' --trace-ascii /dev/stdout
+
+
 {"access_token":"7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF","expires_in":7200}
  
 2>get Menu:
@@ -44,15 +47,20 @@ curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com
 {"menu":{"button":[{"type":"click","name":"单号查询","key":"queryLogistic","sub_button":[]},{"type":"click","name":"咨询客服","key":"chat","sub_button":[]},{"name":"产品查询","sub_button":[{"type":"click","name":"价格","key":"queryProduct_price","sub_button":[]},{"type":"click","name":"库存","key":"queryProduct_stock","sub_button":[]},{"type":"click","name":"新品","key":"queryProduct_new","sub_button":[]}]}]}}u
 
 3>delete Menu:
-curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=7_wQ437sWnqFVLimTiN2CzueAY6Q_kQSJu7ImpjjUW0tjEOqxNq1420wuPYHVxN96tczNdw2sW7ptraHTHOwpLQcCqAWr-UuEzph9Z2uuAg4apAKod3agl9lJKz29gwlSV7Newq2GNUIwkJJ5rOKJgADAIED' --trace-ascii /dev/stdout
+curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=9_De2bsSbKOmfRuiHEXigGIi471wrQfngmjsb2aYxGdV6RiH-kDxv7FukdvBJ5TeQLhEhbCWthCYrTGtKiBY7wbbJTy6r88AH7V0sbZy55cxSTBVOd5PM8laHPZyttw7w9f_aIuOGqEwhgRRrwITNgAIAZKE' --trace-ascii /dev/stdout
 
+9_De2bsSbKOmfRuiHEXigGIi471wrQfngmjsb2aYxGdV6RiH-kDxv7FukdvBJ5TeQLhEhbCWthCYrTGtKiBY7wbbJTy6r88AH7V0sbZy55cxSTBVOd5PM8laHPZyttw7w9f_aIuOGqEwhgRRrwITNgAIAZKE
 
 4>create Menu:
 curl -k -X POST --data '{"button":[{"type":"click","name":"单号查询","key":"queryLogistic"},{"type":"click","name":"咨询客服","key":"chat"},{"name":"产品查询","sub_button":[{"type":"click","name":"价格","key":"queryProduct_price"},{"type":"click","name":"库存","key": "queryProduct_stock"},{"type":"click","name":"新品","key":"queryProduct_new"}]}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
   
-curl -k -X POST --data '{"button":[{"type":"view","name":"库存查询","url":"http://www.sf-express.com/cn/sc/"},{"type":"view","name":"订单查询","url":"http://118.24.75.119:8080/auslandweixin/swagger-ui.html"},{"type":"view","name":"物流查询","url":"http://118.24.75.119:8080/auslandweixin/swagger-ui.html"}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=9_hncrPybbedm5uXOSKDYLbTbv6jjg7PedEgpTWCi1ALqKlTvuEdJBhMbxxAPPfMemjIs_dWROmh2zD9KUss4x-FiK-CT5dBH7EYGLJlZ5EUnt7IHUyNkrwelKx2cXsJPMd8uv7SPRxKG0Cqj9HNHcAAAOUO' --trace-ascii /dev/stdout
+curl -k -X POST --data '{"button":[{"type":"view","name":"库存查询","url":"http://www.auslandcollection.com/ui/stock"},{"type":"view","name":"订单查询","url":"http://www.auslandcollection.com/ui/history"},{"type":"view","name":"物流查询","url":"http://www.auslandcollection.com/ui/order"}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=9_JmSmY6rQLhyYZt7HU6MKmaj7OWOiCbLQg3SuFiXeGpwhH6v8eNWmYOxHO49gZj5kB5PZpTJcMC40VbcCLE2q7jaIL_FSbsH-yeRlAbFoZ0zxiL9JMdLsxWu87TkO9nHYFqSS7CBGXMHmK8EEFNTfACAWEK' --trace-ascii /dev/stdout
 
- 
+curl -k -X POST --data '{"button":[{"type":"view","name":"库存查询","url":"http://www.auslandcollection.com/ui/stock"},{"type":"view","name":"订单查询","url":"http://www.auslandcollection.com/ui/history"},{"type":"view","name":"物流查询","url":"http://www.auslandcollection.com/ui/order"}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=9_9gpYjrKqex8AGNd0Q73ZVY0_XHbpnKVwUWi8xwmfJFQLypqLpUKdAD_gxBqmPX51q2V15uNgXBnUFU_6ysjheu6H8tKcZ8Gs1p23rXMVtw-dHNJi6BtXcm59jpmXnXtye-BwuF6CPpF2703eOFCjADAIZW' --trace-ascii /dev/stdout
+
+9_JmSmY6rQLhyYZt7HU6MKmaj7OWOiCbLQg3SuFiXeGpwhH6v8eNWmYOxHO49gZj5kB5PZpTJcMC40VbcCLE2q7jaIL_FSbsH-yeRlAbFoZ0zxiL9JMdLsxWu87TkO9nHYFqSS7CBGXMHmK8EEFNTfACAWEK
+
+9_FH-yJbcccAQTaqsULCyOClVCy6TdiE5MTnmH5NF5R9WFgHKLhxKOTefDrs0UrMp33Gcf2J1AEznZmPMkZJ_MGXrbr_lpbgeZTNSVQOlfrL6Qo7nOqkobrTGP8bFmB_v-8eNi-U7TXx_Yz8T1HUZjAJAREJ
   
 5>get userinfo:
 curl -k  GET 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=h9Z2uuAg4apAKod3agl9lJKz29gwlSV7Newq2GNUIwkJJ5rOKJgADAIED&openid=gh_ec558daefbc8&lang=zh_CN' --trace-ascii /dev/stdout
