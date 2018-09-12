@@ -64,9 +64,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				logger.debug("this is the phone number, query by phoneno");
 				ret = orderListFromExcelRepository.findByReceiverPhone(userNameOrPhoneNo);
 			}
-			else {
+			else if(validationUtil.isValidLooseChineseName(userNameOrPhoneNo)){
 				logger.debug("this is not the phone number, query by username");
 				ret = orderListFromExcelRepository.findByReceiverName(userNameOrPhoneNo);
+			}
+			else {
+				res.setErrorDetails("用户输入的不是有效的用户名或手机号码");
+				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+				return res;
 			}
 
 			if(ret == null || ret.size() <= 0) {
@@ -80,7 +85,10 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					z.setCourierCompany(o.getLogisticCompany());
 					z.setCourierNumber(o.getLogisticNo());
 					z.setCourierChinaNumber(o.getOrderNo());
-					z.setReceiverName(o.getReceiverName());
+					if(!StringUtils.isEmpty(o.getReceiverName())) {
+						z.setReceiverName(o.getReceiverName().replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
+					}
+					
 					z.setProductItems(o.getProductItems());
 					z.setCustomStatus(o.getStatus());
 					z.setCourierCreatedDateTime(o.getCreatedDateTime());
@@ -97,11 +105,16 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	}
 
 	@Override
-	public UploadZhonghanCourierExcelRes uploadOzlanaFormatOrderExcel(MultipartFile excelFile) {
+	public UploadZhonghanCourierExcelRes uploadOrderExcel(MultipartFile excelFile, String formatType) {
 		UploadZhonghanCourierExcelRes res = new UploadZhonghanCourierExcelRes();
         if(excelFile == null || excelFile.isEmpty() || excelFile.getOriginalFilename() == null)
         {
         	res.setErrorDetails("empty excel file");
+        	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);  
+        	return res;
+        }
+        if(StringUtils.isEmpty(formatType) || (!"ozlana".equalsIgnoreCase(formatType) && !"mmc".equalsIgnoreCase(formatType))) {
+        	res.setErrorDetails("excel file format type has to be ozlana or mmc.");
         	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);  
         	return res;
         }
@@ -116,7 +129,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         {
              logger.debug("start to process excel file, call validateOzlanaExcelFile()"); 
         	 List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
-             String errorMessage = validateOzlanaExcelFile(excelFile, records);
+             String errorMessage = validateExcelFile(excelFile, records, formatType);
              if(!StringUtils.isEmpty(errorMessage))
              {
              	res.setErrorDetails(errorMessage);
@@ -170,7 +183,20 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         return res;
 	}
 	
-	private String validateOzlanaExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records){
+	 private String validateExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records, String formatType){
+		if(StringUtils.isEmpty(formatType)) {
+        	return "excel file format type is empty.";
+        }
+		 if("mmc".equalsIgnoreCase(formatType)) {
+			 return validateMmcExcelFile(excelFile, records);
+		 }
+		 if("ozlana".equalsIgnoreCase(formatType)) {
+			 return validateOzlanaExcelFile(excelFile, records);
+		 }
+		 return "excel file format type has to be ozlana or mmc.";
+	 }
+	
+    private String validateOzlanaExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records){
         logger.debug("entered validateOzlanaExcelFile with excelFile");
 		StringBuffer errorMessage = new StringBuffer();
 		Workbook workbook = null;
@@ -463,6 +489,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		}
 		Iterator<Cell> cellIterator = currentRow.iterator();
 		int i = 0;
+		StringBuffer IdBuf = new StringBuffer();
 		while(cellIterator.hasNext())
 		{
 	        i ++;
@@ -485,11 +512,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	{
 	        		strB.append("没有订单编号");
 	        		record.setErrorMsg(strB.toString());
-	        		break;
+	        		return record;
 	        	}
 	        	else
 	            {
 	        		record.setOrderNo(cell.trim());
+	        		IdBuf.append(cell.trim());
 	        	}
 	        }
 	        else if(i == 2) {
@@ -531,6 +559,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setProductItems(cell.trim());
+	        		IdBuf.append("-").append(cell.trim());
 	        	}
 	        }
 	        else if(i == 7)
@@ -540,6 +569,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	{
 	        		String p = record.getProductItems()+"-"+cell.trim();
 	        		record.setProductItems(p);
+	        		IdBuf.append("-").append(cell.trim());
 	        	}
 	        } 
 	        else if(i == 8)
@@ -552,9 +582,16 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	}
 	        }
 		}
-
+		if(IdBuf.toString().length() < 64) {
+        	record.setId(IdBuf.toString());
+        }else {
+        	record.setId(IdBuf.toString().substring(0,64));
+        }
         record.setLastupdatedDateTime(validationUtil.getCurrentDate());
-        logger.debug("warning record:", strB.toString());
+        if(!StringUtils.isEmpty(strB.toString())) {
+			logger.debug("warning record:"+strB.toString());
+		}
+        logger.debug("provisionOneRowForOzlana returns with record:"+record.toString());
 		return record;
 	}
 	private boolean isValidHeader(Row currentRow, List<String> templateHeaders)
@@ -604,9 +641,5 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		}
 	}
 
-	@Override
-	public UploadZhonghanCourierExcelRes uploadMmcFormatOrderExcel(MultipartFile excelFile) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 }

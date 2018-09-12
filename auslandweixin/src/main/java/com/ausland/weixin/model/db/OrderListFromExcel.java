@@ -51,7 +51,7 @@ public class OrderListFromExcel implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     Date   lastupdatedDateTime;
 
-    @Column(name="createdtime", nullable = false)	
+    @Column(name="createdtime")	
     String   createdDateTime;
     
 	public String getId() {

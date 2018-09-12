@@ -80,42 +80,44 @@ public class CoreServiceImpl implements CoreService {
 		MessageContent mContent = new MessageContent();
 		if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()))
 		{
-			logger.debug("got a text message:"+message.getContent());
-			if(validationUtil.isValidChinaMobileNo(message.getContent()) == true || validationUtil.isValidChineseName(message.getContent()) == true)
-	    	{
-				sendQueryZhongHuanLastThreeMonthByPhoneMessage(message.getFromUserName(), message.getContent().trim());
-				return;
-	    	}
-	    	else if(validationUtil.isValidZhongHuanTrackNo(message.getContent()) == true)
-	    	{
-	    		sendQueryZhongHuanDetailsByTrackingNoMessage(message.getFromUserName(), message.getContent().trim());
-	    		return;
-	    	}
-	    	else
-	    	{
-	    		logger.debug("got text message which is not valid phoneno nor the valid trackingno:"+message.getContent());
-	    		List<String> possibleIdList = difouProductStockService.isValidProductId(message.getContent());
-	    		if(possibleIdList == null || possibleIdList.size() <= 0)
-	    		{
-					mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
-	    		}
-	    		else if (possibleIdList.size() > 1)
-	    		{
-					mContent.setContent(AuslandApplicationConstants.REFINED_SEARCH_PROMPT+String.join("  ", possibleIdList)+"\n 请输入具体的商品编号查询库存信息:"); 
-	    		}
-	    		else
-	    		{
-	    			try {
-						sendStockInfo(message.getFromUserName(), possibleIdList.get(0));
-						return;
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace(); 
-						mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
+			// logger.debug("got a text message:"+message.getContent());
+			// if(validationUtil.isValidChinaMobileNo(message.getContent()) == true || validationUtil.isValidChineseName(message.getContent()) == true)
+	    	// {
+			// 	sendQueryZhongHuanLastThreeMonthByPhoneMessage(message.getFromUserName(), message.getContent().trim());
+			// 	return;
+	    	// }
+	    	// else if(validationUtil.isValidZhongHuanTrackNo(message.getContent()) == true)
+	    	// {
+	    	// 	sendQueryZhongHuanDetailsByTrackingNoMessage(message.getFromUserName(), message.getContent().trim());
+	    	// 	return;
+	    	// }
+	    	// else
+	    	// {
+	    	// 	logger.debug("got text message which is not valid phoneno nor the valid trackingno:"+message.getContent());
+	    	// 	List<String> possibleIdList = difouProductStockService.isValidProductId(message.getContent());
+	    	// 	if(possibleIdList == null || possibleIdList.size() <= 0)
+	    	// 	{
+			// 		mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
+	    	// 	}
+	    	// 	else if (possibleIdList.size() > 1)
+	    	// 	{
+			// 		mContent.setContent(AuslandApplicationConstants.REFINED_SEARCH_PROMPT+String.join("  ", possibleIdList)+"\n 请输入具体的商品编号查询库存信息:"); 
+	    	// 	}
+	    	// 	else
+	    	// 	{
+	    	// 		try {
+			// 			sendStockInfo(message.getFromUserName(), possibleIdList.get(0));
+			// 			return;
+			// 		} catch (UnsupportedEncodingException e) {
+			// 			// TODO Auto-generated catch block
+			// 			e.printStackTrace(); 
+			// 			mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
 						 
-					}
-	    		}
-	    	}
+			// 		}
+	    	// 	}
+	    	// }
+			logger.debug("got a text message:"+message.getContent());
+			return;
 		}
 		else if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_EVENT.equalsIgnoreCase(message.getMsgType()))
 		{
@@ -133,13 +135,13 @@ public class CoreServiceImpl implements CoreService {
 			logger.debug("got unknown message type:"+message.getMsgType());
 			return;
 		}
-		
-		newMsg.setContent(mContent);
-		newMsg.setToUserName(message.getFromUserName());
-		newMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
-		logger.debug("send message:"+newMsg.toString());
-		weChatMessageService.sendMessage(newMsg);
-		logger.debug("after send.");
+//		
+//		newMsg.setContent(mContent);
+//		newMsg.setToUserName(message.getFromUserName());
+//		newMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
+//		logger.debug("send message:"+newMsg.toString());
+//		weChatMessageService.sendMessage(newMsg);
+//		logger.debug("after send.");
 	}
 	
 	private void sendStockInfo(String toUserName, String productId) throws UnsupportedEncodingException{

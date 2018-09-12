@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,12 +34,34 @@ public class UploadController {
 	@Autowired
 	private ExcelOrderService excelOrderService; 
 	
+	@Value("${multipart.file.per.size}")
+	private long maxFileSize;
+	
+	
 	@PostMapping(value = "/order/excel/ozlana")
 	public UploadZhonghanCourierExcelRes uploadOzlanaFormatOrderExcel(@RequestParam("file") MultipartFile file)
 	{
 		logger.debug("entered uploadOzlanaFormatOrderExcel");
-		return excelOrderService.uploadOzlanaFormatOrderExcel(file);
-
+		if(file.getSize() > maxFileSize) {
+			UploadZhonghanCourierExcelRes res = new UploadZhonghanCourierExcelRes();
+			res.setErrorDetails("上传文件不能超过"+maxFileSize+"字节");
+			res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		return excelOrderService.uploadOrderExcel(file, "ozlana");
+	}
+	
+	@PostMapping(value = "/order/excel/mmc")
+	public UploadZhonghanCourierExcelRes uploadMmcFormatOrderExcel(@RequestParam("file") MultipartFile file)
+	{
+		logger.debug("entered uploadMmcFormatOrderExcel");
+		if(file.getSize() > maxFileSize) {
+			UploadZhonghanCourierExcelRes res = new UploadZhonghanCourierExcelRes();
+			res.setErrorDetails("上传文件不能超过"+maxFileSize+"字节");
+			res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
+			return res;
+		}
+		return excelOrderService.uploadOrderExcel(file, "mmc");
 	}
 
 }

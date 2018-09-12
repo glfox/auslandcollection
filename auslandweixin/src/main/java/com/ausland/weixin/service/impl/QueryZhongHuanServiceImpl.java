@@ -118,9 +118,9 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryZhongHuanLastThreeMonthbyPhoneNo(String phoneNo) {
 		QueryZhongHuanLastThreeMonthByPhoneNoRes res = new QueryZhongHuanLastThreeMonthByPhoneNoRes();
 		
-		if(StringUtils.isEmpty(phoneNo) || (validationUtil.isValidChinaMobileNo(phoneNo) == false && validationUtil.isValidChineseName(phoneNo) == false))
+		if(StringUtils.isEmpty(phoneNo) || (validationUtil.isValidChinaMobileNo(phoneNo) == false && validationUtil.isValidLooseChineseName(phoneNo) == false))
 		{
-			res.setErrorDetails("input phone number is invalid.");
+			res.setErrorDetails("用户输入的不是有效的手机号码或姓名:"+phoneNo);
 			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 			return res;
 		} 
