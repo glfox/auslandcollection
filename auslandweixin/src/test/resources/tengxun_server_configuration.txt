@@ -18,7 +18,7 @@ tengxun cloud server:
   GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
   
   support utf-8:
-  CREATE DATABASE mydatabase CHARACTER SET utf8 COLLATE utf8_general_ci;
+  CREATE DATABASE weixintest CHARACTER SET utf8 COLLATE utf8_general_ci;
   
   2.1>mysql directory:
         sudo -i

@@ -174,7 +174,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 		for(Fydh fydh : tel.getFydhlist())
 		{
 			ZhongHuanFydhDetails details = new ZhongHuanFydhDetails();
-			details.setCourierChinaNumber(fydh.getChrbgdh());
+			//details.setCourierChinaNumber(fydh.getChrbgdh());
 			details.setCourierCompany(fydh.getCkdhm());
 			if(!StringUtils.isEmpty(fydh.getChrlrsj()))
 			{

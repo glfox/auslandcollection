@@ -82,6 +82,9 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	
 	public static List<String> productUploadExcelHeaders = null;
 	
+	public static List<String> ozlanaOrderHeaders = null;
+	public static List<String> mmcOrderHeaders = null;
+	
 	public HashMap<String, List<String>> supportedSizeCategoryMap = null;
 	
 	public HashMap<String, String> fromSizeToSizeCategoryMap = null;
@@ -145,6 +148,37 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	}
 	
 	static {
+		
+		ozlanaOrderHeaders = new ArrayList<String>();
+		try {
+			ozlanaOrderHeaders.add("订单号");
+			ozlanaOrderHeaders.add("下单时间");
+			ozlanaOrderHeaders.add("代理名称");
+			ozlanaOrderHeaders.add("收件人");
+			ozlanaOrderHeaders.add("电话号码");
+			ozlanaOrderHeaders.add("产品编号");
+			ozlanaOrderHeaders.add("尺码");
+			ozlanaOrderHeaders.add("颜色");
+			ozlanaOrderHeaders.add("数量");
+			ozlanaOrderHeaders.add("快递名称");
+			ozlanaOrderHeaders.add("快递单号");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		mmcOrderHeaders = new ArrayList<String>();
+		try {
+			mmcOrderHeaders.add("订单编号");
+			mmcOrderHeaders.add("交易时间");
+			mmcOrderHeaders.add("收货人");
+			mmcOrderHeaders.add("物流方式");
+			mmcOrderHeaders.add("物流单号");
+			mmcOrderHeaders.add("品名");
+			mmcOrderHeaders.add("规格");
+			mmcOrderHeaders.add("数量");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		logisticPackageHeaders = new ArrayList<String>();
 		try {

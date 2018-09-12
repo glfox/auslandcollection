@@ -124,6 +124,15 @@ public class CoreServiceImpl implements CoreService {
 			//GongZhongHaoUserInfoRes res = gongZhongHaoSubscriberUserService.getWeChatUserInfo(message.getFromUserName());
 			return;
 		}
+		else if("file".equalsIgnoreCase(message.getMsgType())){
+            logger.debug("got a file type message:"+message.getContent());
+			return;
+		}
+		else{
+			// ignore
+			logger.debug("got unknown message type:"+message.getMsgType());
+			return;
+		}
 		
 		newMsg.setContent(mContent);
 		newMsg.setToUserName(message.getFromUserName());

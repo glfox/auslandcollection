@@ -21,11 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.ausland.weixin.model.difou.GetDifouOrderListRes;
 import com.ausland.weixin.model.difou.GetProductListRes;
 import com.ausland.weixin.model.difou.GetStockListRes;
 import com.ausland.weixin.model.difou.ProductDataInfo;
 import com.ausland.weixin.model.difou.ProductSpecInfo;
 import com.ausland.weixin.model.difou.StockDataInfo;
+import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
 import com.ausland.weixin.service.DifouService;
 import com.ausland.weixin.util.DifouUtil;
 
@@ -141,6 +143,19 @@ public class DifouServiceImpl implements DifouService {
 			productIdsList.add(p.getGoodsNo().toUpperCase());
 		}
 		return productIdsList;
+	}
+
+	@Override
+	public QueryZhongHuanLastThreeMonthByPhoneNoRes queryDifouLastThreeMonth(String nameOrPhoneNo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public GetDifouOrderListRes getLastThreeMonthOrders() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

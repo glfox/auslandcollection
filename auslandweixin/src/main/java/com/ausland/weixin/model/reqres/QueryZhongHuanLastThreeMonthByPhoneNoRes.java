@@ -1,6 +1,7 @@
 package com.ausland.weixin.model.reqres;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -29,6 +30,9 @@ public class QueryZhongHuanLastThreeMonthByPhoneNoRes implements Serializable {
 		this.status = status;
 	}
 	public List<ZhongHuanFydhDetails> getFydhList() {
+		if(fydhList == null) {
+			fydhList = new ArrayList<>();
+		}
 		return fydhList;
 	}
 	public void setFydhList(List<ZhongHuanFydhDetails> fydhList) {

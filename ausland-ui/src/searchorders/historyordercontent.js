@@ -11,7 +11,7 @@ class HistoryOrderContent extends React.Component {
 		this.attrMap = new Map();
 		this.attrMap.set('courierCreatedDateTime', '下单日期');
 		this.attrMap.set('courierNumber', '快递单号');
-		this.attrMap.set('courierChinaNumber', '国内转运单号');
+		this.attrMap.set('courierChinaNumber', '订单编号');
 		this.attrMap.set('weight', '重量');
 		this.attrMap.set('customStatus', '快递状态');
 		this.attrMap.set('courierCompany', '承运公司');
