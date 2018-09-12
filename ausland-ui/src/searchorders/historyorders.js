@@ -83,17 +83,17 @@ class HistoryOrder extends React.Component {
 				<Form inline onSubmit={this.handleSubmit}>
 					<FormGroup controlId="orderForm">
 						<ControlLabel>手机号码/姓名: </ControlLabel>{' '}
-			          	<FormControl
-				            type="text"
-				            value={this.state.phone}
-				            placeholder="手机号码或姓名"
-				            onChange={this.handleChange}
+		          	<FormControl
+			            type="text"
+			            value={this.state.phone}
+			            placeholder="手机号码或姓名"
+			            onChange={this.handleChange}
 				        />
 			        </FormGroup>{' '}
 			        <Button bsStyle="primary" type="submit">查询</Button>
 			    </Form>
-		      	<br/>
-		      	<div>
+		      <br/>
+		      <div>
 			  		{this.state.details}
 			  		{this.state.error}
 			  		{loader}

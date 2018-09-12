@@ -84,11 +84,11 @@ class SearchOrders extends Component {
 			<div>
 				<Form inline onSubmit={this.handleSubmit}>
 					<FormGroup controlId="orderForm">
-						<ControlLabel>订单号: </ControlLabel>{' '}
+						<ControlLabel>运单号: </ControlLabel>{' '}
 			          	<FormControl
 				            type="text"
 				            value={this.state.trackingNo}
-				            placeholder="输入订单号"
+				            placeholder="输入运单号"
 				            onChange={this.handleChange}
 				        />
 			        </FormGroup>{' '}
