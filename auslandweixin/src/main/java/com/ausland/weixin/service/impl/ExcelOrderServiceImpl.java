@@ -70,25 +70,24 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 			}
 
 			if(ret == null || ret.size() <= 0) {
-				logger.debug("did not get any orderlist from db:");
-				res.setErrorDetails("没有找到任何记录："+userNameOrPhoneNo);
-				res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
+				logger.debug("did not get any orderlist from db with userNameOrPhoneNo:"+userNameOrPhoneNo);
+			}else {
+				List<ZhongHuanFydhDetails> list = new ArrayList<ZhongHuanFydhDetails>();
+				for(int i =0; i < ret.size(); i ++) {
+					OrderListFromExcel o = ret.get(i);
+					logger.debug("got order details from db:"+o.toString());
+					ZhongHuanFydhDetails z = new ZhongHuanFydhDetails();
+					z.setCourierCompany(o.getLogisticCompany());
+					z.setCourierNumber(o.getLogisticNo());
+					z.setCourierChinaNumber(o.getOrderNo());
+					z.setReceiverName(o.getReceiverName());
+					z.setProductItems(o.getProductItems());
+					z.setCustomStatus(o.getStatus());
+					z.setCourierCreatedDateTime(o.getCreatedDateTime());
+					list.add(z);
+				}
+				res.setFydhList(list);
 			}
-			List<ZhongHuanFydhDetails> list = new ArrayList<ZhongHuanFydhDetails>();
-			for(int i =0; i < ret.size(); i ++) {
-				OrderListFromExcel o = ret.get(i);
-				logger.debug("got order details from db:"+o.toString());
-				ZhongHuanFydhDetails z = new ZhongHuanFydhDetails();
-				z.setCourierCompany(o.getLogisticCompany());
-				z.setCourierNumber(o.getLogisticNo());
-				z.setCourierChinaNumber(o.getOrderNo());
-				z.setReceiverName(o.getReceiverName());
-				z.setProductItems(o.getProductItems());
-				z.setCustomStatus(o.getStatus());
-				z.setCourierCreatedDateTime(o.getCreatedDateTime());
-				list.add(z);
-			}
-			res.setFydhList(list);
 			res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		}catch(Exception e) {
 			res.setErrorDetails("查找时遇到异常："+e.getMessage());

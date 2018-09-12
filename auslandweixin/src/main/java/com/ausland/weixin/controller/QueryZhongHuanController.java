@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +58,20 @@ public class QueryZhongHuanController {
 		QueryZhongHuanLastThreeMonthByPhoneNoRes res = new QueryZhongHuanLastThreeMonthByPhoneNoRes();
 
         res.getFydhList().addAll(fydhList);
-        if(res.getFydhList().size() > 0)
+        StringBuffer errorDetails = new StringBuffer();
+        if(!StringUtils.isEmpty(res1.getErrorDetails())) {
+    		errorDetails.append(res1.getErrorDetails());
+    	}
+    	if(!StringUtils.isEmpty(res2.getErrorDetails())) {
+    		errorDetails.append(res2.getErrorDetails());
+    	}
+    	
+        if(res.getFydhList().size() > 0 || StringUtils.isEmpty(errorDetails.toString())) 
         {
         	res.setStatus(AuslandApplicationConstants.STATUS_OK);
+        }else {
+        	res.setErrorDetails(errorDetails.toString());
+        	res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
         }
         logger.debug("the total size of the fydhlist:" + res.getFydhList().size());
 		return res;
