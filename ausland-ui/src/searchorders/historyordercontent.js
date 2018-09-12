@@ -36,14 +36,16 @@ class HistoryOrderContent extends React.Component {
 
 		return (
 			<Panel id="{this.order.courierNumber}">
-	          	<Panel.Heading>
-		            <Panel.Title toggle>
-		            	<p>
-		            		日期：{this.state.order.courierCreatedDateTime}，
-		            		订单号：{this.state.order.courierNumber}，
-		            	</p>
-		            	<p className="long-text" >收件人：{this.state.order.receiverName}，货物：{this.state.order.productItems}</p>
-		            </Panel.Title>
+	          <Panel.Heading>
+	            <Panel.Title toggle>
+	            	<u>
+	            	<p>
+	            		日期：{this.state.order.courierCreatedDateTime}，
+	            		订单号：{this.state.order.courierNumber}，
+	            	</p>
+	            	<p className="long-text" >收件人：{this.state.order.receiverName}，货物：{this.state.order.productItems}</p>
+	            	</u>
+	            </Panel.Title>
 		        </Panel.Heading>
 	          	<Panel.Collapse>
 	            	<Panel.Body>

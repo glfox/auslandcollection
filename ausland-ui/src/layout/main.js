@@ -3,6 +3,9 @@ import { NavItem, Nav, Navbar, Grid, Row } from 'react-bootstrap';
 import SearchOrders from '../searchorders/searchorders.js';
 import SearchStock from '../searchstock/searchstock.js';
 import HistoryOrder from '../searchorders/historyorders.js';
+import '../App.css';
+
+import { Link } from 'react-router-dom'
 
 const contents = {
 	"order": <SearchOrders />,
@@ -10,12 +13,12 @@ const contents = {
 	"stock": <SearchStock />,
 }
 
-class PanelContainer extends React.Component {
+class Main extends React.Component {
 
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
-			item: <SearchStock />,
+			item: this.props.children,
 			show: false,
 			username: '',
 		}
@@ -29,19 +32,19 @@ class PanelContainer extends React.Component {
 	}
 	render() {
 		return (
-			<div>
+			<div className="App">
 				<Navbar inverse collapseOnSelect fixedTop>
 				  	<Navbar.Header>
 				    	<Navbar.Brand>
-				      		<a href="">Ausland Collection</a>
+				      	<a href="">Ausland Collection</a>
 				    	</Navbar.Brand>
 				    	<Navbar.Toggle />
 				  	</Navbar.Header>
 				 	<Navbar.Collapse>
-					    <Nav onSelect={this.handleSelect}>
-					    	<NavItem eventKey="stock">库存查询</NavItem>
-					      <NavItem eventKey="order">物流查询</NavItem>
-							  <NavItem eventKey="history">订单查询</NavItem>
+					    <Nav>
+					    	<NavItem eventKey="stock"><Link to="/ui/stock">库存查询</Link></NavItem>
+					      <NavItem eventKey="order"><Link to="/ui/order">物流查询</Link></NavItem>
+							  <NavItem eventKey="history"><Link to="/ui/history">订单查询</Link></NavItem>
 					    </Nav>
 				  	</Navbar.Collapse>
 				</Navbar>
@@ -57,4 +60,4 @@ class PanelContainer extends React.Component {
 	}
 }
 
-export default PanelContainer;
+export default Main;
