@@ -43,7 +43,7 @@ public class ValidationUtil {
  
 	private static final Logger logger = LoggerFactory.getLogger(ValidationUtil.class);
 	
-	private static  String createAsterisk(int length) {  
+	private String createAsterisk(int length) {  
 	    StringBuffer stringBuffer = new StringBuffer();  
 	    for (int i = 0; i < length; i++) {  
 	        stringBuffer.append("*");  
@@ -153,6 +153,15 @@ public class ValidationUtil {
 		return date;
 	}
 	
+	public boolean isValidLooseChineseName(String name){
+		if(StringUtils.isEmpty(name) || name.length() > 64 || name.length() < 2)
+		{
+			return false;
+		}
+
+		return true;
+	}
+	
 	public boolean isValidChineseName(String name){
 		if(StringUtils.isEmpty(name))
 		{
@@ -175,6 +184,7 @@ public class ValidationUtil {
 		}
 		return true;
 	}
+	
 	public boolean isValidZhongHuanTrackNo(String trackingNo)
 	{
 		if(StringUtils.isEmpty(trackingNo))

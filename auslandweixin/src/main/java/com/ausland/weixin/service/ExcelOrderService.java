@@ -8,6 +8,5 @@ import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
 public interface ExcelOrderService {
    
 	QueryZhongHuanLastThreeMonthByPhoneNoRes getOrderListFromExcel(String userNameOrPhoneNo);
-	UploadZhonghanCourierExcelRes uploadOzlanaFormatOrderExcel(MultipartFile excelFile);
-	UploadZhonghanCourierExcelRes uploadMmcFormatOrderExcel(MultipartFile excelFile);
+	UploadZhonghanCourierExcelRes uploadOrderExcel(MultipartFile excelFile, String formatType);
 }
