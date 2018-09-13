@@ -80,10 +80,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				List<ZhongHuanFydhDetails> list = new ArrayList<ZhongHuanFydhDetails>();
 				for(int i =0; i < ret.size(); i ++) {
 					OrderListFromExcel o = ret.get(i);
-					logger.debug("got order details from db:"+o.toString());
+					//logger.debug("got order details from db:"+o.toString());
 					ZhongHuanFydhDetails z = new ZhongHuanFydhDetails();
 					z.setCourierCompany(o.getLogisticCompany());
-					z.setCourierNumber(o.getLogisticNo());
+					if(StringUtils.isEmpty(o.getLogisticNo())) {
+						z.setCourierNumber(" - ");
+					}else {
+						z.setCourierNumber(o.getLogisticNo());
+					}
 					z.setCourierChinaNumber(o.getOrderNo());
 					if(!StringUtils.isEmpty(o.getReceiverName())) {
 						z.setReceiverName(o.getReceiverName().replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
@@ -95,6 +99,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					list.add(z);
 				}
 				res.setFydhList(list);
+				
 			}
 			res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		}catch(Exception e) {

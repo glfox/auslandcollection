@@ -185,6 +185,10 @@ public class ValidationUtil {
 		return true;
 	}
 	
+	public Date convertFromStringToDate(String date_str) {
+		
+	}
+	
 	public boolean isValidZhongHuanTrackNo(String trackingNo)
 	{
 		if(StringUtils.isEmpty(trackingNo))
