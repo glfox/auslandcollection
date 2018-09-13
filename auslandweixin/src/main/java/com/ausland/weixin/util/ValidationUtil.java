@@ -50,38 +50,38 @@ public class ValidationUtil {
 	    }  
 	    return stringBuffer.toString();  
 	}  
-	
-	private static String getName(String receiverInfo) {
-		char[] chars = receiverInfo.toCharArray();
-		boolean isFirstChineseCharacter = false;
-		int start = 0;
-		int end = 0;
-		for(int i = 0; i < chars.length; i ++)
-		{
-			if(!isFirstChineseCharacter && chars[i] >= 0x4E00 && chars[i] <= 0x9FA5 ) {
-				isFirstChineseCharacter = true;
-				start = i;
-			}
-		 
-			if(isFirstChineseCharacter && (Character.isDigit(chars[i]) || chars[i] <  0x4E00 || chars[i] > 0x9FA5)) {
-				end = i;
-				return receiverInfo.substring(start, end);
-			}
-		}
-		return "";
-	}
-	
-	private static String getTel(String receiverInfo) {
-		char[] chars = receiverInfo.toCharArray();
-		for(int i = 0; i < chars.length; i ++)
-		{
-			if(Character.isDigit(chars[i]) && (i + 11) < chars.length) {
-				String tel = receiverInfo.substring(i, i + 11);
-				return tel; 
-			} 
-		}
-		return "";
-	}
+//	
+//	private static String getName(String receiverInfo) {
+//		char[] chars = receiverInfo.toCharArray();
+//		boolean isFirstChineseCharacter = false;
+//		int start = 0;
+//		int end = 0;
+//		for(int i = 0; i < chars.length; i ++)
+//		{
+//			if(!isFirstChineseCharacter && chars[i] >= 0x4E00 && chars[i] <= 0x9FA5 ) {
+//				isFirstChineseCharacter = true;
+//				start = i;
+//			}
+//		 
+//			if(isFirstChineseCharacter && (Character.isDigit(chars[i]) || chars[i] <  0x4E00 || chars[i] > 0x9FA5)) {
+//				end = i;
+//				return receiverInfo.substring(start, end);
+//			}
+//		}
+//		return "";
+//	}
+//	
+//	private static String getTel(String receiverInfo) {
+//		char[] chars = receiverInfo.toCharArray();
+//		for(int i = 0; i < chars.length; i ++)
+//		{
+//			if(Character.isDigit(chars[i]) && (i + 11) < chars.length) {
+//				String tel = receiverInfo.substring(i, i + 11);
+//				return tel; 
+//			} 
+//		}
+//		return "";
+//	}
 	
 	public static void main(String[] args) {
 		/*ValidationUtil u = new ValidationUtil();
@@ -125,7 +125,7 @@ public class ValidationUtil {
 				"庞婷婷18683813828四川省绵竹市桂圆路59号军干所", 
 				"伍瑶18781896242四川省达州市通川区棕榈岛10幢B单元31楼2号"};
 		for(String s: list) {
-			System.out.println("name:"+getName(s)+"; tel:"+getTel(s)); 
+			//System.out.println("name:"+getName(s)+"; tel:"+getTel(s)); 
 		}
 //		 for(String s: list)
 //		 System.out.println(isValidChineseName(s));
