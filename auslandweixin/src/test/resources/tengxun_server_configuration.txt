@@ -18,7 +18,7 @@ tengxun cloud server:
   GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
   
   support utf-8:
-  CREATE DATABASE weixintest CHARACTER SET utf8 COLLATE utf8_general_ci;
+  CREATE DATABASE weixinprod CHARACTER SET utf8 COLLATE utf8_general_ci;
   
   2.1>mysql directory:
         sudo -i
@@ -26,7 +26,7 @@ tengxun cloud server:
     
   2.3>connect to mysql: 
        mysql -h localhost -u root -p       Lucent123
-       mysql -h 118.24.75.119 -u root -p   pa55w@rd
+       mysql -h 118.24.75.119 -u root -p   Pa55w@rd
   
 3>install apache and configure request forward
   sudo apt-get install apache2

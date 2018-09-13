@@ -5,7 +5,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -95,7 +98,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					
 					z.setProductItems(o.getProductItems());
 					z.setCustomStatus(o.getStatus());
-					z.setCourierCreatedDateTime(o.getCreatedDateTime());
+					z.setCourierCreatedDateTime(o.getCreatedDateTime().toString());
 					list.add(z);
 				}
 				res.setFydhList(list);
@@ -109,6 +112,16 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		return res;
 	}
 
+	private boolean isValidFormatType(String formatType) {
+		if(StringUtils.isEmpty(formatType)) {
+			return false;
+		}
+		if("mmc".equalsIgnoreCase(formatType) || "ozlana".equalsIgnoreCase(formatType) || "vitamin".equalsIgnoreCase(formatType)) {
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public UploadZhonghanCourierExcelRes uploadOrderExcel(MultipartFile excelFile, String formatType) {
 		UploadZhonghanCourierExcelRes res = new UploadZhonghanCourierExcelRes();
@@ -118,8 +131,8 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);  
         	return res;
         }
-        if(StringUtils.isEmpty(formatType) || (!"ozlana".equalsIgnoreCase(formatType) && !"mmc".equalsIgnoreCase(formatType))) {
-        	res.setErrorDetails("excel file format type has to be ozlana or mmc.");
+        if(!isValidFormatType(formatType)) {
+        	res.setErrorDetails("excel file format type" + formatType + " is not correct");
         	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);  
         	return res;
         }
@@ -132,7 +145,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         }
         try
         {
-             logger.debug("start to process excel file, call validateOzlanaExcelFile()"); 
+             logger.debug("start to process excel file, call validateExcelFile()"); 
         	 List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
              String errorMessage = validateExcelFile(excelFile, records, formatType);
              if(!StringUtils.isEmpty(errorMessage))
@@ -198,9 +211,82 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		 if("ozlana".equalsIgnoreCase(formatType)) {
 			 return validateOzlanaExcelFile(excelFile, records);
 		 }
-		 return "excel file format type has to be ozlana or mmc.";
+		 if("vitamin".equalsIgnoreCase(formatType)) {
+			 return validateVitaminExcelFile(excelFile, records);
+		 }
+		 return "excel file format type is not supported"+formatType;
 	 }
-	
+	 
+	 private String validateVitaminExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records){
+	        logger.debug("entered validateVitaminExcelFile with excelFile");
+			StringBuffer errorMessage = new StringBuffer();
+			Workbook workbook = null;
+	        InputStream  inputStream = null;
+	        try
+	        {
+	        	inputStream = excelFile.getInputStream();
+	        	workbook = WorkbookFactory.create(inputStream);// new XSSFWorkbook(excelFile.getInputStream());
+	        	Sheet datatypeSheet = workbook.getSheetAt(0);
+	            Iterator<Row> iterator = datatypeSheet.iterator();
+	            int i = 0;
+	            String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+	        	while(iterator.hasNext())
+	        	{
+	        		Row currentRow = iterator.next();
+	        	    if(i == 0) {
+						if(isValidHeader(currentRow,AuslandweixinConfig.vitaminOrderHeaders) == false) {
+							logger.debug("validate header returns false, not vitamin format");
+							errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+							return errorMessage.toString();
+						}
+						logger.debug("this is the vitamin format excel order file");
+					}
+	        		else
+	        		{
+	        			try
+	        			{
+							OrderListFromExcel record = provisionOneRowForVitamin(fileName, currentRow);
+							if(record != null && !StringUtils.isEmpty(record.getId()) && StringUtils.isEmpty(record.getErrorMsg())) {
+								logger.debug("provisionOneRowForOzlana: add record="+record.toString());
+								records.add(record);
+							}else {
+								logger.debug("provisionOneRowForOzlana: skip this record");
+							}
+	        			}
+	        			catch(Exception e)
+	        			{
+	        				logger.info("caught exception :"+e.getMessage());
+	        				int line = i + 2;
+	        				errorMessage.append("parse line: "+ line + "got exception:"+e.getMessage());
+	        			}
+	        		}
+	        		i ++;
+	        	}
+	        }
+	        catch(Exception e)
+	        {
+	        	logger.error("got exception:"+e.getMessage());
+	        	errorMessage.append("got exception:"+e.getMessage());
+	        }
+	        finally
+	        {
+	        	if(inputStream != null)
+					try {
+						inputStream.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        	if(workbook != null)
+					try {
+						workbook.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        }
+	        return errorMessage.toString();
+		}
     private String validateOzlanaExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records){
         logger.debug("entered validateOzlanaExcelFile with excelFile");
 		StringBuffer errorMessage = new StringBuffer();
@@ -340,6 +426,17 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         return errorMessage.toString();
 	}
 
+	private Date stringToDate(String str, String format) {
+	    Date date = null;
+	    SimpleDateFormat formatter = new SimpleDateFormat(format);
+	    try {
+	       date = formatter.parse(str);
+	    } catch (ParseException e) {
+	        logger.error("caught exception during parsing date string"+e.getMessage());
+	    }
+	    return date;
+	}
+	
 	private OrderListFromExcel provisionOneRowForOzlana(String fileName, Row currentRow)
 	{
 		if(currentRow == null)
@@ -387,7 +484,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(cell.trim());
+	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy-MM-dd"));
 	        	} 
 	        }
 	        else if(i == 3) {
@@ -484,6 +581,126 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		return record;
 	}
 	
+	private OrderListFromExcel provisionOneRowForVitamin(String fileName, Row currentRow)
+	{
+		if(currentRow == null)
+		{
+			return null;
+		}
+		logger.debug("entered provisionOneRowForVitamin with filename:"+fileName);
+		OrderListFromExcel record = new OrderListFromExcel();
+		StringBuffer strB = new StringBuffer();
+		
+		Iterator<Cell> cellIterator = currentRow.iterator();
+		int i = 0;
+		while(cellIterator.hasNext())
+		{
+	        i ++;
+	        Cell currentCell = cellIterator.next();
+	        String cell = "";
+			if(currentCell.getCellTypeEnum() == CellType.STRING)
+			{
+				cell = currentCell.getStringCellValue();
+				logger.debug("cell "+i +":"+cell);
+			}
+			else if(currentCell.getCellTypeEnum() == CellType.NUMERIC)
+			{
+				cell = currentCell.getNumericCellValue() +"";
+				logger.debug("cell "+i +":"+cell);
+			}
+	        if(i == 1)
+	        {
+	        	//运单号
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有运单号");
+	        		record.setErrorMsg(strB.toString());
+	        		return record;
+	        	}
+	        	else
+	            {
+	        		record.setLogisticNo(cell.trim());
+					record.setId(cell.trim());
+	        	}
+	        }
+	        else if(i == 2) {
+	        	// 下单日期
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy/m/d"));
+	        	} 
+	        }
+	        else if(i == 3) {
+	        	// 下单编号
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setOrderNo(cell.trim());
+	        	} 
+	        }
+	        else if(i == 4)
+	        {
+	        	//产品信息
+	        	if(!StringUtils.isEmpty(cell)) 
+	        	{
+	        		record.setProductItems(cell.trim());
+	        	}
+	        }
+	        else if(i == 5) {
+	        	//ignore
+	        }
+	        else if(i == 6)
+	        {
+	        	//收件人信息
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setReceiverName(getName(cell.trim()));
+	        		record.setReceiverPhone(getTel(cell.trim()));
+	        	} 
+	        }
+		}
+
+        record.setLastupdatedDateTime(validationUtil.getCurrentDate());
+		if(!StringUtils.isEmpty(strB.toString())) {
+			logger.debug("warning record:"+strB.toString());
+		}
+        logger.debug("provisionOneRowForOzlana returns with record:"+record.toString());
+		return record;
+	}
+	
+	private String getName(String receiverInfo) {
+		char[] chars = receiverInfo.toCharArray();
+		boolean isFirstChineseCharacter = false;
+		int start = 0;
+		int end = 0;
+		for(int i = 0; i < chars.length; i ++)
+		{
+			if(!isFirstChineseCharacter && chars[i] >= 0x4E00 && chars[i] <= 0x9FA5 ) {
+				isFirstChineseCharacter = true;
+				start = i;
+			}
+		 
+			if(isFirstChineseCharacter && (Character.isDigit(chars[i]) || chars[i] <  0x4E00 || chars[i] > 0x9FA5)) {
+				end = i;
+				return receiverInfo.substring(start, end+1);
+			}
+		}
+		return "";
+	}
+	
+	private String getTel(String receiverInfo) {
+		char[] chars = receiverInfo.toCharArray();
+		for(int i = 0; i < chars.length; i ++)
+		{
+			if(Character.isDigit(chars[i]) && (i + 11) < chars.length) {
+				String tel = receiverInfo.substring(i, i + 11);
+				if(validationUtil.isValidChinaMobileNo(tel)) {
+					return tel;
+				}
+				return "";
+			} 
+		}
+		return "";
+	}
 	private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow)
 	{
 		OrderListFromExcel record = new OrderListFromExcel();
@@ -529,7 +746,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//交易时间
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(cell.trim());
+	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy/m/d"));
 	        	}
 	        }
 	        else if(i == 3)
@@ -615,14 +832,13 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					logger.debug("got cell value:"+currentCell.getStringCellValue()+"; tempalte header cell value:"+templateHeaders.get(i));
 					return false;
 				}
-				
+				i ++; 
 			}
 			else
 			{
 				 logger.debug("got wrong cell type:"+currentCell.getCellTypeEnum().name());
 				 return false;
-			}
-			i ++;	 
+			}	 
 		}
 		if(i < templateHeaders.size())
 			return false;

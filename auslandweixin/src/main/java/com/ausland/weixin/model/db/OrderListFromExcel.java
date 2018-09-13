@@ -23,10 +23,10 @@ public class OrderListFromExcel implements Serializable{
     @Column(name="orderid", length = 64)	
     String Id;
     
-    @Column(name="orderno", length = 32)	
+    @Column(name="orderno", length = 64)	
     String orderNo;
 
-	@Column(name="logisticno", length = 32)	
+	@Column(name="logisticno", length = 64)	
     String logisticNo;
 	
     @Column(name="logisticcompany", length = 64)	
@@ -52,7 +52,8 @@ public class OrderListFromExcel implements Serializable{
     Date   lastupdatedDateTime;
 
     @Column(name="createdtime")	
-    String   createdDateTime;
+    @Temporal(TemporalType.DATE)
+    Date   createdDateTime;
     
 	public String getId() {
 		return Id;
@@ -102,11 +103,12 @@ public class OrderListFromExcel implements Serializable{
 		this.receiverPhone = receiverPhone;
 	}
 
-	public String getCreatedDateTime() {
+
+	public Date getCreatedDateTime() {
 		return createdDateTime;
 	}
 
-	public void setCreatedDateTime(String createdDateTime) {
+	public void setCreatedDateTime(Date createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
 

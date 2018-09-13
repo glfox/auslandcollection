@@ -11,15 +11,15 @@ public class ZhongHuanFydhDetails  implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	String courierCreatedDateTime;//电子下单时间chrlrsj
-      String courierNumber;  //分运单号chrfydh
       String courierChinaNumber; //国内单号
-      String weight; //重量
+	  String courierCreatedDateTime;//电子下单时间chrlrsj
+      String courierNumber;  //分运单号chrfydh
       String customStatus;//审核状态
       String courierCompany;//快递公司
       String receiverName;//收件人
       String receiverAddress;//收件人地址
       String receiverPhone;//收件人电话
+      String weight; //重量
       String productItems; //商品
 	public String getCourierCreatedDateTime() {
 		return courierCreatedDateTime;

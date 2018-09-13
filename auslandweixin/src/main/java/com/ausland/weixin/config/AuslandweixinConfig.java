@@ -83,6 +83,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	public static List<String> productUploadExcelHeaders = null;
 	
 	public static List<String> ozlanaOrderHeaders = null;
+	public static List<String> vitaminOrderHeaders = null;
 	public static List<String> mmcOrderHeaders = null;
 	
 	public HashMap<String, List<String>> supportedSizeCategoryMap = null;
@@ -162,6 +163,18 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			ozlanaOrderHeaders.add("数量");
 			ozlanaOrderHeaders.add("快递名称");
 			ozlanaOrderHeaders.add("快递单号");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		vitaminOrderHeaders = new ArrayList<String>();
+		try {
+			vitaminOrderHeaders.add("运单号");
+			vitaminOrderHeaders.add("下单日期");
+			vitaminOrderHeaders.add("下单编号");
+			vitaminOrderHeaders.add("产品信息");
+			vitaminOrderHeaders.add("发件人姓名+电话");
+			vitaminOrderHeaders.add("收件人信息");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -42,26 +42,20 @@ public class UploadController {
 	public UploadZhonghanCourierExcelRes uploadOzlanaFormatOrderExcel(@RequestParam("file") MultipartFile file)
 	{
 		logger.debug("entered uploadOzlanaFormatOrderExcel");
-		if(file.getSize() > maxFileSize) {
-			UploadZhonghanCourierExcelRes res = new UploadZhonghanCourierExcelRes();
-			res.setErrorDetails("上传文件不能超过"+maxFileSize+"字节");
-			res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
-			return res;
-		}
 		return excelOrderService.uploadOrderExcel(file, "ozlana");
 	}
 	
-	@PostMapping(value = "/order/excel/mmc")
-	public UploadZhonghanCourierExcelRes uploadMmcFormatOrderExcel(@RequestParam("file") MultipartFile file)
+	@PostMapping(value = "/order/excel/difou")
+	public UploadZhonghanCourierExcelRes uploadDifouFormatOrderExcel(@RequestParam("file") MultipartFile file)
 	{
-		logger.debug("entered uploadMmcFormatOrderExcel");
-		if(file.getSize() > maxFileSize) {
-			UploadZhonghanCourierExcelRes res = new UploadZhonghanCourierExcelRes();
-			res.setErrorDetails("上传文件不能超过"+maxFileSize+"字节");
-			res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
-			return res;
-		}
+		logger.debug("entered uploadDifouFormatOrderExcel");
 		return excelOrderService.uploadOrderExcel(file, "mmc");
 	}
 
+	@PostMapping(value = "/order/excel/vitamin")
+	public UploadZhonghanCourierExcelRes uploadVitaminFormatOrderExcel(@RequestParam("file") MultipartFile file)
+	{
+		logger.debug("entered uploadVitaminFormatOrderExcel");
+		return excelOrderService.uploadOrderExcel(file, "vitamin");
+	}
 }

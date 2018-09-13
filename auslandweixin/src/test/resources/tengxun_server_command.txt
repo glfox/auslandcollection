@@ -1,8 +1,22 @@
+
+build ui env setup: npm install (do once only)
+
+build ui:
+1> npm run build
+   this will genereate a build folder
+ 
+Deploy ui:
+1>upload build folder to 
+scp -r build ubuntu@118.24.75.119:/home/ubuntu/ui/
+2>run ui:
+nohup serve -s build &
+
 1>connect to mysql :
 mysql -h localhost -u root -p 
 
 2>start springboot:
-nohup java -Xmx512m  -jar auslandweixin.jar &
+nohup java -Xmx1024m  -jar auslandweixin.jar &
+
 
 3>apache logs: /var/log/apache2/access.log error.log
   spring boot logs: /home/ubuntu/springboot/logs
