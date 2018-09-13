@@ -32,7 +32,7 @@ public class OrderListFromExcel implements Serializable{
     @Column(name="logisticcompany", length = 64)	
     String logisticCompany;
 
-    @Column(name="items", length = 1024)	
+    @Column(name="items", length = 128)	
     String ProductItems;
     
     @Column(name="rname", length = 64)	

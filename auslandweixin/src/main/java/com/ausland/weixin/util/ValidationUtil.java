@@ -50,6 +50,39 @@ public class ValidationUtil {
 	    }  
 	    return stringBuffer.toString();  
 	}  
+	
+	private static String getName(String receiverInfo) {
+		char[] chars = receiverInfo.toCharArray();
+		boolean isFirstChineseCharacter = false;
+		int start = 0;
+		int end = 0;
+		for(int i = 0; i < chars.length; i ++)
+		{
+			if(!isFirstChineseCharacter && chars[i] >= 0x4E00 && chars[i] <= 0x9FA5 ) {
+				isFirstChineseCharacter = true;
+				start = i;
+			}
+		 
+			if(isFirstChineseCharacter && (Character.isDigit(chars[i]) || chars[i] <  0x4E00 || chars[i] > 0x9FA5)) {
+				end = i;
+				return receiverInfo.substring(start, end);
+			}
+		}
+		return "";
+	}
+	
+	private static String getTel(String receiverInfo) {
+		char[] chars = receiverInfo.toCharArray();
+		for(int i = 0; i < chars.length; i ++)
+		{
+			if(Character.isDigit(chars[i]) && (i + 11) < chars.length) {
+				String tel = receiverInfo.substring(i, i + 11);
+				return tel; 
+			} 
+		}
+		return "";
+	}
+	
 	public static void main(String[] args) {
 		/*ValidationUtil u = new ValidationUtil();
 		SimpleDateFormat df = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT);
@@ -87,7 +120,13 @@ public class ValidationUtil {
 //		list.add("17600406075");
 //		list.add("13883860243");
 //		list.add("14727638117");
-		String[] list = {"lan", "中国", "中国号", "号吗?"};
+		String[] list = {"李星月16620168615广东省广州市番禺区横江村车公庙一巷2号", 
+				"朱明月15857292737浙江省安吉县递铺镇后寨路34号（动感发艺）", 
+				"庞婷婷18683813828四川省绵竹市桂圆路59号军干所", 
+				"伍瑶18781896242四川省达州市通川区棕榈岛10幢B单元31楼2号"};
+		for(String s: list) {
+			System.out.println("name:"+getName(s)+"; tel:"+getTel(s)); 
+		}
 //		 for(String s: list)
 //		 System.out.println(isValidChineseName(s));
 	}
@@ -217,7 +256,7 @@ public class ValidationUtil {
 			if(!Character.isDigit(ch))
 				return false;
 		}
-		if(phoneNo.matches("^((13[0-9])|(14[5-9])|(15([0-3]|[5-9]))|(18[0-9])|(17[0-9]))\\d{8}$"))
+		if(phoneNo.matches("^((13[0-9])|(14[5-9])|(15([0-3]|[5-9]))|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\\d{8}$"))
 		//if(phoneNo.matches(cmcc) || phoneNo.matches(cucc) || phoneNo.matches(cnc))
 		{
 			return true;

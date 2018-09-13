@@ -247,10 +247,10 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        			{
 							OrderListFromExcel record = provisionOneRowForVitamin(fileName, currentRow);
 							if(record != null && !StringUtils.isEmpty(record.getId()) && StringUtils.isEmpty(record.getErrorMsg())) {
-								logger.debug("provisionOneRowForOzlana: add record="+record.toString());
+								logger.debug("provisionOneRowForvitamin: add record="+record.toString());
 								records.add(record);
 							}else {
-								logger.debug("provisionOneRowForOzlana: skip this record");
+								logger.debug("provisionOneRowForvitamin: skip this record");
 							}
 	        			}
 	        			catch(Exception e)
@@ -476,7 +476,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	}
 	        	else
 	            {
-	        		record.setOrderNo(cell.trim());
+	        		record.setOrderNo(getSubStringByLength(cell,64));
 					IdBuf.append(cell.trim());
 	        	}
 	        }
@@ -499,7 +499,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	}
 	        	else
 	        	{
-	        		record.setReceiverName(cell.trim());
+	        		record.setReceiverName(getSubStringByLength(cell,64));
 	        	}
 	        }
 	        else if(i == 5) {
@@ -510,7 +510,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	}
 	        	else
 	        	{
-	        		record.setReceiverPhone(cell.trim());
+	        		record.setReceiverPhone(getSubStringByLength(cell,64));
 	        	}
 	        }
 	        else if(i == 6)
@@ -518,7 +518,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//产品编号
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setProductItems(cell.trim());
+	        		record.setProductItems(getSubStringByLength(cell,128));
 					IdBuf.append("-").append(cell.trim());
 	        	}       	
 	        }
@@ -528,7 +528,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		String p = record.getProductItems() + "-" + cell.trim();
-	        		record.setProductItems(p);
+	        		record.setProductItems(getSubStringByLength(p,128));
 					IdBuf.append("-").append(cell.trim());
 	        	} 
 	        }
@@ -538,7 +538,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		String p = record.getProductItems() + "-" + cell.trim();
-	        		record.setProductItems(p);
+	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
 	        else if(i == 9)
@@ -547,14 +547,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		String p = record.getProductItems() + "-" + cell.trim();
-	        		record.setProductItems(p);
+	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
 	        else if(i == 10) {
 	        	// 快递名称
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setLogisticCompany(cell.trim());
+	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
 	        else if(i == 11)
@@ -562,23 +562,29 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//快递单号
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setLogisticNo(cell.trim());
+	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
 	        } 
 		}
 
         record.setLastupdatedDateTime(validationUtil.getCurrentDate());
-        if(IdBuf.toString().length() < 64) {
-        	record.setId(IdBuf.toString());
-        }else {
-        	record.setId(IdBuf.toString().substring(0,64));
-        }
-		
+        record.setId(getSubStringByLength(IdBuf.toString(),64));
+
 		if(!StringUtils.isEmpty(strB.toString())) {
 			logger.debug("warning record:"+strB.toString());
 		}
         logger.debug("provisionOneRowForOzlana returns with record:"+record.toString());
 		return record;
+	}
+	
+	private String getSubStringByLength(String str, int maxLength) {
+		if(StringUtils.isEmpty(str)) {
+			return str;
+		}
+		if(str.trim().length() > maxLength) {
+			return str.trim().substring(0, maxLength);
+		}
+		return str.trim();
 	}
 	
 	private OrderListFromExcel provisionOneRowForVitamin(String fileName, Row currentRow)
@@ -619,8 +625,8 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	}
 	        	else
 	            {
-	        		record.setLogisticNo(cell.trim());
-					record.setId(cell.trim());
+	        		record.setLogisticNo(getSubStringByLength(cell,64));
+					record.setId(record.getLogisticNo());
 	        	}
 	        }
 	        else if(i == 2) {
@@ -634,7 +640,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	// 下单编号
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setOrderNo(cell.trim());
+	        		record.setOrderNo(getSubStringByLength(cell,64));
 	        	} 
 	        }
 	        else if(i == 4)
@@ -642,7 +648,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//产品信息
 	        	if(!StringUtils.isEmpty(cell)) 
 	        	{
-	        		record.setProductItems(cell.trim());
+	        		record.setProductItems(getSubStringByLength(cell,128));
 	        	}
 	        }
 	        else if(i == 5) {
@@ -653,8 +659,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//收件人信息
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setReceiverName(getName(cell.trim()));
-	        		record.setReceiverPhone(getTel(cell.trim()));
+	        		record.setReceiverName(getSubStringByLength(getName(cell.trim()),64));
+	        		record.setReceiverPhone(getSubStringByLength(getTel(cell.trim()),64));
+	        		logger.debug("from cell:" + cell.trim()+ " got receivername:"+record.getReceiverName()+"receiverphone:"+record.getReceiverPhone());
 	        	} 
 	        }
 		}
@@ -663,7 +670,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		if(!StringUtils.isEmpty(strB.toString())) {
 			logger.debug("warning record:"+strB.toString());
 		}
-        logger.debug("provisionOneRowForOzlana returns with record:"+record.toString());
+        logger.debug("provisionOneRowForVitamin returns with record:"+record.toString());
 		return record;
 	}
 	
@@ -681,9 +688,11 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		 
 			if(isFirstChineseCharacter && (Character.isDigit(chars[i]) || chars[i] <  0x4E00 || chars[i] > 0x9FA5)) {
 				end = i;
-				return receiverInfo.substring(start, end+1);
+				logger.debug("got name from receiverinfo:"+receiverInfo+";start:"+start+";end:"+end);
+				return receiverInfo.substring(start, end);
 			}
 		}
+		logger.warn("can not getName from "+receiverInfo);
 		return "";
 	}
 	
@@ -691,14 +700,16 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		char[] chars = receiverInfo.toCharArray();
 		for(int i = 0; i < chars.length; i ++)
 		{
-			if(Character.isDigit(chars[i]) && (i + 11) < chars.length) {
+			if(Character.isDigit(chars[i]) && (i + 11) <= chars.length) {
 				String tel = receiverInfo.substring(i, i + 11);
 				if(validationUtil.isValidChinaMobileNo(tel)) {
 					return tel;
 				}
+				logger.warn("not the valid china mobile no, can not getTel from "+receiverInfo);
 				return "";
 			} 
 		}
+		logger.warn("can not getTel from "+receiverInfo);
 		return "";
 	}
 	private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow)
@@ -738,7 +749,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	}
 	        	else
 	            {
-	        		record.setOrderNo(cell.trim());
+	        		record.setOrderNo(getSubStringByLength(cell,64));
 	        		IdBuf.append(cell.trim());
 	        	}
 	        }
@@ -758,13 +769,13 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	}
 	        	else
 	        	{
-	        		record.setReceiverName(cell.trim());
+	        		record.setReceiverName(getSubStringByLength(cell,64));
 	        	}
 	        }
 	        else if(i == 4) {
 	        	// 物流方式
 	        	if(!StringUtils.isEmpty(cell)) {
-	        		record.setLogisticCompany(cell.trim());
+	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
 	        else if(i == 5)
@@ -772,7 +783,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//物流单号
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setLogisticNo(cell.trim());
+	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
 	        }
 	        else if(i == 6)
@@ -780,7 +791,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//品名
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setProductItems(cell.trim());
+	        	    record.setProductItems(getSubStringByLength(cell,128));
 	        		IdBuf.append("-").append(cell.trim());
 	        	}
 	        }
@@ -790,7 +801,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		String p = record.getProductItems()+"-"+cell.trim();
-	        		record.setProductItems(p);
+	        		record.setProductItems(getSubStringByLength(p,128));
 	        		IdBuf.append("-").append(cell.trim());
 	        	}
 	        } 
@@ -800,15 +811,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		String p = record.getProductItems()+"-"+cell.trim();
-	        		record.setProductItems(p);
+	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
 		}
-		if(IdBuf.toString().length() < 64) {
-        	record.setId(IdBuf.toString());
-        }else {
-        	record.setId(IdBuf.toString().substring(0,64));
-        }
+		record.setId(getSubStringByLength(IdBuf.toString(),64));
+         
         record.setLastupdatedDateTime(validationUtil.getCurrentDate());
         if(!StringUtils.isEmpty(strB.toString())) {
 			logger.debug("warning record:"+strB.toString());

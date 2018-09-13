@@ -108,6 +108,12 @@
 	<logger name="org.apache.commons.beanutils.converters">
 		<level value="ERROR" />
 	</logger>
+	<logger name="org.hibernate.jpa">
+		<level value="ERROR" />
+	</logger>
+	<logger name="org.hibernate.engine">
+		<level value="ERROR" />
+	</logger>
 	
 	<logger name="org.springframework.core">
 		<level value="ERROR" />
