@@ -32,7 +32,10 @@ http://localhost:8081/auslandtest/swagger-ui.html
 5>actuator url:
 http://118.24.75.119/auslandweixin/health
   
-  
+
+ select orderid, items, createdtime, rname, rphone from excelorder where createdtime between date('2018-06-11') and date('2018-09-01');
+ 
+ 
 curl command:
 
 chongqingzhonghuan services:

@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
+import com.ausland.weixin.model.reqres.UploadPackingPhotoRes;
 import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
 import com.ausland.weixin.service.ExcelOrderService;
 import com.ausland.weixin.service.QueryZhongHuanService;
@@ -57,5 +58,12 @@ public class UploadController {
 	{
 		logger.debug("entered uploadVitaminFormatOrderExcel");
 		return excelOrderService.uploadOrderExcel(file, "vitamin");
+	}
+	
+	@PostMapping(value = "/packing/photo")
+	public UploadPackingPhotoRes uploadPackingPhoto()
+	{
+		logger.debug("entered uploadPackingPhoto");
+		return excelOrderService.uploadPackingPhoto();
 	}
 }

@@ -32,6 +32,7 @@ import com.ausland.weixin.config.AuslandweixinConfig;
 import com.ausland.weixin.dao.OrderListFromExcelRepository;
 import com.ausland.weixin.model.db.OrderListFromExcel;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
+import com.ausland.weixin.model.reqres.UploadPackingPhotoRes;
 import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
 import com.ausland.weixin.model.reqres.ZhongHuanFydhDetails;
 import com.ausland.weixin.service.ExcelOrderService;
@@ -446,14 +447,11 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		logger.debug("entered provisionOneRowForOzlana with filename:"+fileName);
 		OrderListFromExcel record = new OrderListFromExcel();
 		StringBuffer strB = new StringBuffer();
-		
-		Iterator<Cell> cellIterator = currentRow.iterator();
-		int i = 0;
+
 		StringBuffer IdBuf = new StringBuffer();
-		while(cellIterator.hasNext())
+		for(int i = 0; i < currentRow.getLastCellNum(); i++)
 		{
-	        i ++;
-	        Cell currentCell = cellIterator.next();
+	        Cell currentCell = currentRow.getCell(i, AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
 	        String cell = "";
 			if(currentCell.getCellTypeEnum() == CellType.STRING)
 			{
@@ -465,7 +463,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				cell = currentCell.getNumericCellValue() +"";
 				logger.debug("cell "+i +":"+cell);
 			}
-	        if(i == 1)
+	        if(i == 0)
 	        {
 	        	//订单号
 	        	if(StringUtils.isEmpty(cell))
@@ -480,17 +478,17 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					IdBuf.append(cell.trim());
 	        	}
 	        }
-	        else if(i == 2) {
+	        else if(i == 1) {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy-MM-dd"));
 	        	} 
 	        }
-	        else if(i == 3) {
+	        else if(i == 2) {
 	        	// 代理名称
 	        }
-	        else if(i == 4)
+	        else if(i == 3)
 	        {
 	        	//收件人
 	        	if(StringUtils.isEmpty(cell))
@@ -502,7 +500,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setReceiverName(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 5) {
+	        else if(i == 4) {
 	        	// 电话号码
 	        	if(StringUtils.isEmpty(cell))
 	        	{
@@ -513,7 +511,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setReceiverPhone(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 6)
+	        else if(i == 5)
 	        {
 	        	//产品编号
 	        	if(!StringUtils.isEmpty(cell))
@@ -522,7 +520,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					IdBuf.append("-").append(cell.trim());
 	        	}       	
 	        }
-	        else if(i == 7)
+	        else if(i == 6)
 	        {
 	        	//尺码
 	        	if(!StringUtils.isEmpty(cell))
@@ -532,7 +530,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					IdBuf.append("-").append(cell.trim());
 	        	} 
 	        }
-	        else if(i == 8)
+	        else if(i == 7)
 	        {
 	        	//颜色
 	        	if(!StringUtils.isEmpty(cell))
@@ -541,7 +539,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
-	        else if(i == 9)
+	        else if(i == 8)
 	        {
 	        	//数量
 	        	if(!StringUtils.isEmpty(cell))
@@ -550,20 +548,21 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
-	        else if(i == 10) {
+	        else if(i == 9) {
 	        	// 快递名称
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 11)
+	        else if(i == 10)
 	        {
 	        	//快递单号
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
+	        	break;
 	        } 
 		}
 
@@ -596,13 +595,10 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		logger.debug("entered provisionOneRowForVitamin with filename:"+fileName);
 		OrderListFromExcel record = new OrderListFromExcel();
 		StringBuffer strB = new StringBuffer();
-		
-		Iterator<Cell> cellIterator = currentRow.iterator();
-		int i = 0;
-		while(cellIterator.hasNext())
+
+		for(int i = 0; i < currentRow.getLastCellNum(); i++)
 		{
-	        i ++;
-	        Cell currentCell = cellIterator.next();
+	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
 	        String cell = "";
 			if(currentCell.getCellTypeEnum() == CellType.STRING)
 			{
@@ -614,7 +610,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				cell = currentCell.getNumericCellValue() +"";
 				logger.debug("cell "+i +":"+cell);
 			}
-	        if(i == 1)
+	        if(i == 0)
 	        {
 	        	//运单号
 	        	if(StringUtils.isEmpty(cell))
@@ -629,21 +625,21 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					record.setId(record.getLogisticNo());
 	        	}
 	        }
-	        else if(i == 2) {
+	        else if(i == 1) {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy/m/d"));
+	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy/M/d"));
 	        	} 
 	        }
-	        else if(i == 3) {
+	        else if(i == 2) {
 	        	// 下单编号
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setOrderNo(getSubStringByLength(cell,64));
 	        	} 
 	        }
-	        else if(i == 4)
+	        else if(i == 3)
 	        {
 	        	//产品信息
 	        	if(!StringUtils.isEmpty(cell)) 
@@ -651,10 +647,10 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setProductItems(getSubStringByLength(cell,128));
 	        	}
 	        }
-	        else if(i == 5) {
+	        else if(i == 4) {
 	        	//ignore
 	        }
-	        else if(i == 6)
+	        else if(i == 5)
 	        {
 	        	//收件人信息
 	        	if(!StringUtils.isEmpty(cell))
@@ -663,6 +659,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setReceiverPhone(getSubStringByLength(getTel(cell.trim()),64));
 	        		logger.debug("from cell:" + cell.trim()+ " got receivername:"+record.getReceiverName()+"receiverphone:"+record.getReceiverPhone());
 	        	} 
+	        	break;
 	        }
 		}
 
@@ -720,13 +717,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		{
 			return null;
 		}
-		Iterator<Cell> cellIterator = currentRow.iterator();
-		int i = 0;
+		 
 		StringBuffer IdBuf = new StringBuffer();
-		while(cellIterator.hasNext())
+		for(int i = 0; i < currentRow.getLastCellNum(); i++)
 		{
-	        i ++;
-	        Cell currentCell = cellIterator.next();
+
+	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
 	        String cell = "";
 			if(currentCell.getCellTypeEnum() == CellType.STRING)
 			{
@@ -738,7 +734,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				cell = currentCell.getNumericCellValue() +"";
 				logger.debug("cell "+i +":"+cell);
 			}
-	        if(i == 1)
+	        if(i == 0)
 	        {
 	        	//订单编号
 	        	if(StringUtils.isEmpty(cell))
@@ -753,14 +749,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		IdBuf.append(cell.trim());
 	        	}
 	        }
-	        else if(i == 2) {
+	        else if(i == 1) {
 	        	//交易时间
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy/m/d"));
+	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy/M/d"));
 	        	}
 	        }
-	        else if(i == 3)
+	        else if(i == 2)
 	        {
 	        	//收货人
 	        	if(StringUtils.isEmpty(cell))
@@ -772,13 +768,13 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setReceiverName(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 4) {
+	        else if(i == 3) {
 	        	// 物流方式
 	        	if(!StringUtils.isEmpty(cell)) {
 	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 5)
+	        else if(i == 4)
 	        {
 	        	//物流单号
 	        	if(!StringUtils.isEmpty(cell))
@@ -786,7 +782,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 6)
+	        else if(i == 5)
 	        {
 	        	//品名
 	        	if(!StringUtils.isEmpty(cell))
@@ -795,7 +791,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		IdBuf.append("-").append(cell.trim());
 	        	}
 	        }
-	        else if(i == 7)
+	        else if(i == 6)
 	        {
 	        	//规格
 	        	if(!StringUtils.isEmpty(cell))
@@ -805,7 +801,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		IdBuf.append("-").append(cell.trim());
 	        	}
 	        } 
-	        else if(i == 8)
+	        else if(i == 7)
 	        {
 	        	//数量
 	        	if(!StringUtils.isEmpty(cell))
@@ -813,6 +809,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		String p = record.getProductItems()+"-"+cell.trim();
 	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
+	        	break;
 	        }
 		}
 		record.setId(getSubStringByLength(IdBuf.toString(),64));
@@ -824,6 +821,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         logger.debug("provisionOneRowForOzlana returns with record:"+record.toString());
 		return record;
 	}
+	
 	private boolean isValidHeader(Row currentRow, List<String> templateHeaders)
     {
     	if(currentRow == null || currentRow.iterator() == null || templateHeaders == null || templateHeaders.size() <= 0)
@@ -868,6 +866,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		{
 			return "save file:"+ csvFile.getOriginalFilename()+" to " + fileName + " got exception:"+e.getMessage();
 		}
+	}
+
+	@Override
+	public UploadPackingPhotoRes uploadPackingPhoto() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

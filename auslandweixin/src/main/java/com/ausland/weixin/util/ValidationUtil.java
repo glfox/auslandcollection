@@ -83,6 +83,17 @@ public class ValidationUtil {
 //		return "";
 //	}
 	
+//	private static Date stringToDate(String str, String format) {
+//	    Date date = null;
+//	    SimpleDateFormat formatter = new SimpleDateFormat(format);
+//	    try {
+//	       date = formatter.parse(str);
+//	    } catch (ParseException e) {
+//	        logger.error("caught exception during parsing date string"+e.getMessage());
+//	    }
+//	    return date;
+//	}
+	
 	public static void main(String[] args) {
 		/*ValidationUtil u = new ValidationUtil();
 		SimpleDateFormat df = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT);
@@ -93,13 +104,13 @@ public class ValidationUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		String str = "爱新觉罗";
-		try {
-			System.out.println(str.getBytes("utf-8").length);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		String str = "爱新觉罗";
+//		try {
+//			System.out.println(str.getBytes("utf-8").length);
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		System.out.println("爱新".length());
 //		System.out.println("爱".length());
 //		System.out.println("爱新角".length());
@@ -107,7 +118,7 @@ public class ValidationUtil {
 //		System.out.println("爱新觉luo".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
 //		System.out.println("爱新觉".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
 //		System.out.println("爱新".replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
-		System.out.println(Float.parseFloat("1.0"));
+		//System.out.println(Float.parseFloat("1.0"));
 		/*// TODO Auto-generated method stub
        System.out.println(u.isValidChinaMobileNo("15618983927"));
        System.out.println(u.trimPhoneNo("156 18983927 "));
@@ -120,13 +131,12 @@ public class ValidationUtil {
 //		list.add("17600406075");
 //		list.add("13883860243");
 //		list.add("14727638117");
-		String[] list = {"李星月16620168615广东省广州市番禺区横江村车公庙一巷2号", 
-				"朱明月15857292737浙江省安吉县递铺镇后寨路34号（动感发艺）", 
-				"庞婷婷18683813828四川省绵竹市桂圆路59号军干所", 
-				"伍瑶18781896242四川省达州市通川区棕榈岛10幢B单元31楼2号"};
-		for(String s: list) {
-			//System.out.println("name:"+getName(s)+"; tel:"+getTel(s)); 
-		}
+//		String[] list = {"2018/5/30 11:11:22", 
+//				"2018/5/29"};
+//		for(String s: list) {
+//			Date d = stringToDate(s,"yyyy/M/d"); 
+//			System.out.println(d.toString());
+//		}
 //		 for(String s: list)
 //		 System.out.println(isValidChineseName(s));
 	}

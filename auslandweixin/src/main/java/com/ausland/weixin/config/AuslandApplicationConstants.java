@@ -1,5 +1,7 @@
 package com.ausland.weixin.config;
 
+import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
+
 public class AuslandApplicationConstants {
 
 	public static final String COOKIE_NAME= "AuslandCookieSessionId";
@@ -37,4 +39,5 @@ public class AuslandApplicationConstants {
 	public static final String DATE_STRING_FORMAT = "yyyy-MM-dd";
 	public static final String IMAGE_HEADER = "data:image/jpeg:base64,";
 	public static final String PRODUCT_PROVIDER_AUSLAND = "ausland";
+	public static MissingCellPolicy xRow;
 }
