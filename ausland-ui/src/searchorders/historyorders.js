@@ -26,8 +26,9 @@ class HistoryOrder extends React.Component {
 	handleSubmit(event) {
 		if (this.state.phone) {
 			this.setState({
+				details: null,
 				orders: null,
-	    		error: null,
+	    	error: null,
 				loaded: false
 			})
 			this.getHistoryOrder(this.state.phone);
