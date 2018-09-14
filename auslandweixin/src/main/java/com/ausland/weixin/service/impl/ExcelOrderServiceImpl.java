@@ -1,5 +1,7 @@
 package com.ausland.weixin.service.impl;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -16,10 +18,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +42,7 @@ import com.ausland.weixin.model.reqres.UploadPackingPhotoRes;
 import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
 import com.ausland.weixin.model.reqres.ZhongHuanFydhDetails;
 import com.ausland.weixin.service.ExcelOrderService;
+import com.ausland.weixin.util.CodeReader;
 import com.ausland.weixin.util.ValidationUtil;
 
 @Service
@@ -45,13 +52,21 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	private ValidationUtil validationUtil;
 	
 	@Autowired
+	private CodeReader photoReader;
+	
+	@Autowired
 	private OrderListFromExcelRepository orderListFromExcelRepository;
 	
 	@Value("${upload.order.excel.server.directory}")
 	private String excelDirectory;
 	
+	@Value("${upload.packing.photo.server.directory}")
+	private String packingPhotoDirectory;
+
 	@Value("${multipart.file.per.size}")
 	private int fileMaxSize;
+	
+	private DataFormatter objDefaultFormat = new DataFormatter();
 	
 	private static final Logger logger = LoggerFactory.getLogger(ExcelOrderServiceImpl.class);
 
@@ -231,6 +246,8 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	            Iterator<Row> iterator = datatypeSheet.iterator();
 	            int i = 0;
 	            String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+	            FormulaEvaluator objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+
 	        	while(iterator.hasNext())
 	        	{
 	        		Row currentRow = iterator.next();
@@ -246,7 +263,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		{
 	        			try
 	        			{
-							OrderListFromExcel record = provisionOneRowForVitamin(fileName, currentRow);
+							OrderListFromExcel record = provisionOneRowForVitamin(fileName, currentRow, objFormulaEvaluator);
 							if(record != null && !StringUtils.isEmpty(record.getId()) && StringUtils.isEmpty(record.getErrorMsg())) {
 								logger.debug("provisionOneRowForvitamin: add record="+record.toString());
 								records.add(record);
@@ -447,7 +464,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		logger.debug("entered provisionOneRowForOzlana with filename:"+fileName);
 		OrderListFromExcel record = new OrderListFromExcel();
 		StringBuffer strB = new StringBuffer();
-
+ 
 		StringBuffer IdBuf = new StringBuffer();
 		for(int i = 0; i < currentRow.getLastCellNum(); i++)
 		{
@@ -461,8 +478,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 			else if(currentCell.getCellTypeEnum() == CellType.NUMERIC)
 			{
 				cell = currentCell.getNumericCellValue() +"";
-				logger.debug("cell "+i +":"+cell);
+				logger.debug("numeric cell "+i +":"+cell);
 			}
+	 
 	        if(i == 0)
 	        {
 	        	//订单号
@@ -475,14 +493,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	else
 	            {
 	        		record.setOrderNo(getSubStringByLength(cell,64));
-					IdBuf.append(cell.trim());
+					IdBuf.append(cell);
 	        	}
 	        }
 	        else if(i == 1) {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy-MM-dd"));
+	        		record.setCreatedDateTime(stringToDate(cell, "yyyy-MM-dd"));
 	        	} 
 	        }
 	        else if(i == 2) {
@@ -517,7 +535,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setProductItems(getSubStringByLength(cell,128));
-					IdBuf.append("-").append(cell.trim());
+					IdBuf.append("-").append(cell);
 	        	}       	
 	        }
 	        else if(i == 6)
@@ -525,9 +543,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//尺码
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		String p = record.getProductItems() + "-" + cell.trim();
+	        		String p = record.getProductItems() + "-" + cell;
 	        		record.setProductItems(getSubStringByLength(p,128));
-					IdBuf.append("-").append(cell.trim());
+					IdBuf.append("-").append(cell);
 	        	} 
 	        }
 	        else if(i == 7)
@@ -535,7 +553,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//颜色
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		String p = record.getProductItems() + "-" + cell.trim();
+	        		String p = record.getProductItems() + "-" + cell;
 	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
@@ -544,7 +562,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//数量
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		String p = record.getProductItems() + "-" + cell.trim();
+	        		String p = record.getProductItems() + "-" + cell;
 	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
@@ -586,7 +604,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		return str.trim();
 	}
 	
-	private OrderListFromExcel provisionOneRowForVitamin(String fileName, Row currentRow)
+	private OrderListFromExcel provisionOneRowForVitamin(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
 	{
 		if(currentRow == null)
 		{
@@ -596,20 +614,13 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		OrderListFromExcel record = new OrderListFromExcel();
 		StringBuffer strB = new StringBuffer();
 
+
 		for(int i = 0; i < currentRow.getLastCellNum(); i++)
 		{
 	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
-	        String cell = "";
-			if(currentCell.getCellTypeEnum() == CellType.STRING)
-			{
-				cell = currentCell.getStringCellValue();
-				logger.debug("cell "+i +":"+cell);
-			}
-			else if(currentCell.getCellTypeEnum() == CellType.NUMERIC)
-			{
-				cell = currentCell.getNumericCellValue() +"";
-				logger.debug("cell "+i +":"+cell);
-			}
+	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
+	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
+            logger.debug("got cell value:"+cell);
 	        if(i == 0)
 	        {
 	        	//运单号
@@ -629,7 +640,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy/M/d"));
+	        		record.setCreatedDateTime(stringToDate(cell, "yyyy/M/d"));
 	        	} 
 	        }
 	        else if(i == 2) {
@@ -655,9 +666,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//收件人信息
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setReceiverName(getSubStringByLength(getName(cell.trim()),64));
-	        		record.setReceiverPhone(getSubStringByLength(getTel(cell.trim()),64));
-	        		logger.debug("from cell:" + cell.trim()+ " got receivername:"+record.getReceiverName()+"receiverphone:"+record.getReceiverPhone());
+	        		record.setReceiverName(getSubStringByLength(getName(cell),64));
+	        		record.setReceiverPhone(getSubStringByLength(getTel(cell),64));
+	        		logger.debug("from cell:" + cell+ " got receivername:"+record.getReceiverName()+"receiverphone:"+record.getReceiverPhone());
 	        	} 
 	        	break;
 	        }
@@ -746,14 +757,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	else
 	            {
 	        		record.setOrderNo(getSubStringByLength(cell,64));
-	        		IdBuf.append(cell.trim());
+	        		IdBuf.append(cell);
 	        	}
 	        }
 	        else if(i == 1) {
 	        	//交易时间
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(stringToDate(cell.trim(), "yyyy/M/d"));
+	        		record.setCreatedDateTime(stringToDate(cell, "yyyy/M/d"));
 	        	}
 	        }
 	        else if(i == 2)
@@ -788,7 +799,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        	    record.setProductItems(getSubStringByLength(cell,128));
-	        		IdBuf.append("-").append(cell.trim());
+	        		IdBuf.append("-").append(cell);
 	        	}
 	        }
 	        else if(i == 6)
@@ -796,9 +807,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//规格
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		String p = record.getProductItems()+"-"+cell.trim();
+	        		String p = record.getProductItems()+"-"+cell;
 	        		record.setProductItems(getSubStringByLength(p,128));
-	        		IdBuf.append("-").append(cell.trim());
+	        		IdBuf.append("-").append(cell);
 	        	}
 	        } 
 	        else if(i == 7)
@@ -806,7 +817,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//数量
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		String p = record.getProductItems()+"-"+cell.trim();
+	        		String p = record.getProductItems()+"-"+cell;
 	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        	break;
@@ -870,9 +881,78 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 
 	@Override
 	public UploadPackingPhotoRes uploadPackingPhoto() {
-		// TODO Auto-generated method stub
-		return null;
+		UploadPackingPhotoRes res = new UploadPackingPhotoRes();
+		int successCount = 0;
+		int failedCount = 0;
+        try {
+        	File dir = new File(packingPhotoDirectory+"toprocess/");
+        	if(dir == null || !dir.isDirectory()) {
+        		res.setErrorDetails("The directory does not exist:"+packingPhotoDirectory);
+        		res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
+        		return res;
+        	}
+        	String[] filenames = dir.list();
+        	if(filenames == null || filenames.length <= 0) {
+        		res.setErrorDetails("There is no file under toprocess directory:"+packingPhotoDirectory);
+        		res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
+        		return res;
+        	}
+        	for(String filename: filenames) {
+        		if(processPhoto(packingPhotoDirectory+"toprocess/"+filename)) {
+        			successCount ++;
+        		}else {
+        			failedCount ++;
+        		}
+        	}
+        	res.setUploadResult(AuslandApplicationConstants.STATUS_OK);
+        }catch(Exception e) {
+        	logger.error("caught exception during uploadPackingPhoto:"+e.getMessage());
+        	res.setErrorDetails(e.getMessage());
+        	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
+        }
+        
+        res.setSuccessUploadedCount(successCount);
+        res.setFailedUploadedCount(failedCount);
+		return res;
 	}
 
-
+    private boolean processPhoto(String imagePath) {
+    	try
+    	{
+    		if(!isValidPhotoSuffix(imagePath)) {
+            	return false;
+            }
+            File f = new File(imagePath);
+            if(!f.exists())
+            {
+            	return false;
+            }
+            String suffix = imagePath.substring(imagePath.lastIndexOf("."));
+        	BufferedImage image = photoReader.cropImage(imagePath);
+        	if(image == null) {
+        		return false;
+        	}
+        	String barCode = photoReader.decode(image); 
+        	if(StringUtils.isEmpty(barCode) || !validationUtil.isValidZhongHuanTrackNo(barCode)) {
+        		return false;
+        	}
+        	String dst = packingPhotoDirectory+"processed/"+barCode+suffix;
+        	
+        	return f.renameTo(new File(dst));
+  
+    	}catch(Exception e) {
+    		logger.error("caught exception during processPhoto:"+e.getMessage());
+    	}
+		return false;
+    }
+    
+    private boolean isValidPhotoSuffix(String imagePath) {
+    	if(StringUtils.isEmpty(imagePath))
+    		return false;
+    	if(imagePath.endsWith(".jpg") || imagePath.endsWith(".png")) {
+    		return true;
+    	}
+    	return false;
+    }
+     
 }

@@ -82,9 +82,28 @@ class SearchOrders extends Component {
 		let loader = this.state.loaded? null : <div className="loader"/>
 		return (
 			<div>
+				<br/>
+				<div>
+			    	<div>
+						<a href="http://www.sf-express.com">顺丰快递</a>
+					</div>
+					<div>
+						<a href="http://www.yto.net.cn">圆通快递</a>
+					</div>
+					<div>
+						<a href="http://www.sto.cn">申通快递</a>
+					</div>
+					<div>
+						<a href="http://www.yundaex.com">韵达快递</a>
+					</div>
+					<div>
+						<a href="http://www.zto.com/">中通快递</a>
+					</div>
+				</div>
+				<br/>
 				<Form inline onSubmit={this.handleSubmit}>
 					<FormGroup controlId="orderForm">
-						<ControlLabel>运单号: </ControlLabel>{' '}
+						<ControlLabel>重庆中环运单号: </ControlLabel>{' '}
 			          	<FormControl
 				            type="text"
 				            value={this.state.trackingNo}

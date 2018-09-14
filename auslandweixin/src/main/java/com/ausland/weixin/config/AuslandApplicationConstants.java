@@ -22,6 +22,7 @@ public class AuslandApplicationConstants {
 	public static final String STATUS_FAILED = "failed";
 	public static final String STATUS_PARTIAL = "partial";
 	public static final String WEIXIN_MSG_TYPE_TEXT="text";
+	public static final String WEIXIN_MSG_TYPE_PHOTO="image";
 	public static final Integer WEIXIN_MSG_TYPE_TEXT_MAXLENGTH=2046;
 	public static final String WEIXIN_MSG_TYPE_EVENT="event";
 	public static final String WELCOME_SUBSCRIBE="欢迎关注AUSLAND微信公众号";

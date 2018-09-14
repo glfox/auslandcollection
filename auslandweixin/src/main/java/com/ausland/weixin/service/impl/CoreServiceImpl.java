@@ -1,10 +1,21 @@
 package com.ausland.weixin.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.CustomSendMessage;
@@ -21,9 +34,12 @@ import com.ausland.weixin.model.difou.StockDataInfo;
 import com.ausland.weixin.model.reqres.GongZhongHaoUserInfoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
+import com.ausland.weixin.model.reqres.WeiXinImageUploadRes;
 import com.ausland.weixin.model.reqres.ZhongHuanFydhDetails;
 import com.ausland.weixin.model.xml.WeChatMessage;
+import com.ausland.weixin.model.xml.WeChatPhotoMessage;
 import com.ausland.weixin.model.zhonghuan.xml.Back.Logisticsback;
+import com.ausland.weixin.service.AuthService;
 import com.ausland.weixin.service.CoreService;
 import com.ausland.weixin.service.DifouProductStockService;
 import com.ausland.weixin.service.DifouService;
@@ -40,10 +56,19 @@ public class CoreServiceImpl implements CoreService {
 	
 	@Value("${message.send.url}")
 	private String messageSendUrl;
+	
+	@Value("${photo.send.url}")
+	private String photoSendUrl;
 
 	 @Autowired
 	private WeChatMessageService weChatMessageService; 
-	
+	 
+    @Autowired
+	private AuthService authService;
+    
+    @Autowired
+	private RestTemplate restTemplate;
+    
 	@Autowired
 	private QueryZhongHuanService queryZhongHuanService; 
 	
@@ -72,77 +97,122 @@ public class CoreServiceImpl implements CoreService {
 	@Value("${ausland.text.max.split}")
 	private Integer maxSplitMessage;
 	
+	@Value("${upload.packing.photo.server.directory}")
+	private String packingPhotoDirectory;
+	
 	@Override
 	@Async
 	public void asyncProcessRequest(WeChatMessage message) {
 		//String userName = message.getFromUserName();
 		CustomSendMessage newMsg = new CustomSendMessage();
 		MessageContent mContent = new MessageContent();
-		if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()))
+		try
 		{
-			// logger.debug("got a text message:"+message.getContent());
-			// if(validationUtil.isValidChinaMobileNo(message.getContent()) == true || validationUtil.isValidChineseName(message.getContent()) == true)
-	    	// {
-			// 	sendQueryZhongHuanLastThreeMonthByPhoneMessage(message.getFromUserName(), message.getContent().trim());
-			// 	return;
-	    	// }
-	    	// else if(validationUtil.isValidZhongHuanTrackNo(message.getContent()) == true)
-	    	// {
-	    	// 	sendQueryZhongHuanDetailsByTrackingNoMessage(message.getFromUserName(), message.getContent().trim());
-	    	// 	return;
-	    	// }
-	    	// else
-	    	// {
-	    	// 	logger.debug("got text message which is not valid phoneno nor the valid trackingno:"+message.getContent());
-	    	// 	List<String> possibleIdList = difouProductStockService.isValidProductId(message.getContent());
-	    	// 	if(possibleIdList == null || possibleIdList.size() <= 0)
-	    	// 	{
-			// 		mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT);
-	    	// 	}
-	    	// 	else if (possibleIdList.size() > 1)
-	    	// 	{
-			// 		mContent.setContent(AuslandApplicationConstants.REFINED_SEARCH_PROMPT+String.join("  ", possibleIdList)+"\n 请输入具体的商品编号查询库存信息:"); 
-	    	// 	}
-	    	// 	else
-	    	// 	{
-	    	// 		try {
-			// 			sendStockInfo(message.getFromUserName(), possibleIdList.get(0));
-			// 			return;
-			// 		} catch (UnsupportedEncodingException e) {
-			// 			// TODO Auto-generated catch block
-			// 			e.printStackTrace(); 
-			// 			mContent.setContent(AuslandApplicationConstants.ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR);
-						 
-			// 		}
-	    	// 	}
-	    	// }
-			logger.debug("got a text message:"+message.getContent());
-			return;
-		}
-		else if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_EVENT.equalsIgnoreCase(message.getMsgType()))
+			if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT.equalsIgnoreCase(message.getMsgType()))
+			{
+				 logger.debug("got a text message:"+message.getContent());
+				 String courierNo = message.getContent().trim();
+				 if(!validationUtil.isValidZhongHuanTrackNo(courierNo)) {
+					 mContent.setContent("您输入的不是一个有效的重庆中环运单号，请重新输入"); 
+				 }
+				 else {
+					 File dir = new File(packingPhotoDirectory+"processed/");
+					 if(dir == null || !dir.isDirectory() ) {
+						 mContent.setContent("不能找到上传图片的目录，请联系客服获取打包图片");
+					 }
+					 else
+					 {
+						String[] filenames = dir.list();
+						boolean found = false;
+						if(filenames != null && filenames.length > 0) {
+							for(String filename: filenames) {
+								String baseName = FilenameUtils.getBaseName(filename);
+								if(courierNo.equalsIgnoreCase(baseName)) {
+									//find the packing photo
+									WeiXinImageUploadRes res = uploadToWeiXin(packingPhotoDirectory+"processed/"+filename);
+									if(res == null || !StringUtils.isEmpty(res.getErrMsg()) || StringUtils.isEmpty(res.getMediaId())) {
+										mContent.setContent("不能上传打包图片到微信服务器端，请联系客服获取打包图片");
+									}
+									else {
+										WeChatPhotoMessage photoMessage = new WeChatPhotoMessage();
+										
+										photoMessage.setMediaId(res.getMediaId());
+										photoMessage.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_PHOTO);
+										photoMessage.setToUserName(message.getFromUserName());
+										logger.debug("send message:"+newMsg.toString());
+										weChatMessageService.sendMessage(newMsg);
+										logger.debug("after send.");
+										return;
+									}
+								}
+							}
+							if(!found) {
+								mContent.setContent("不能找到打包图片，目前仅提供澳洲发货的重庆中环类产品的打包图片");
+							}
+						}
+					 }
+				 }
+				
+				logger.debug("got a text message:"+message.getContent());
+		
+			}
+			else if(AuslandApplicationConstants.WEIXIN_MSG_TYPE_EVENT.equalsIgnoreCase(message.getMsgType()))
+			{
+				// this is the user subscribe event
+				logger.debug("got a event message:"+message.getContent());
+				//GongZhongHaoUserInfoRes res = gongZhongHaoSubscriberUserService.getWeChatUserInfo(message.getFromUserName());
+				return;
+			}
+			else if("file".equalsIgnoreCase(message.getMsgType())){
+	            logger.debug("got a file type message:"+message.getContent());
+				return;
+			}
+			else{
+				// ignore
+				logger.debug("got unknown message type:"+message.getMsgType());
+				return;
+			}
+		}catch(Exception e)
 		{
-			// this is the user subscribe event
-			logger.debug("got a event message:"+message.getContent());
-			//GongZhongHaoUserInfoRes res = gongZhongHaoSubscriberUserService.getWeChatUserInfo(message.getFromUserName());
-			return;
+			logger.error("caught exception during asyncProcessRequest:"+e.getMessage());
+			e.printStackTrace();
+			mContent.setContent("服务器异常，请联系客服获取打包图片");
 		}
-		else if("file".equalsIgnoreCase(message.getMsgType())){
-            logger.debug("got a file type message:"+message.getContent());
-			return;
-		}
-		else{
-			// ignore
-			logger.debug("got unknown message type:"+message.getMsgType());
-			return;
-		}
-//		
-//		newMsg.setContent(mContent);
-//		newMsg.setToUserName(message.getFromUserName());
-//		newMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
-//		logger.debug("send message:"+newMsg.toString());
-//		weChatMessageService.sendMessage(newMsg);
-//		logger.debug("after send.");
+
+		newMsg.setContent(mContent);
+		newMsg.setToUserName(message.getFromUserName());
+		newMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
+		logger.debug("send message:"+newMsg.toString());
+		weChatMessageService.sendMessage(newMsg);
+		logger.debug("after send.");
+		return;
 	}
+	
+	private WeiXinImageUploadRes uploadToWeiXin(String imagePath) throws IOException {
+		logger.debug("uploadToWeiXin entered with imagePath:" + imagePath);
+		String accessToken = authService.getAccessToken();
+		logger.debug("authService got accessToken:" + accessToken);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+		LinkedMultiValueMap<String, String> imageHeaderMap = new LinkedMultiValueMap<>();
+		imageHeaderMap.add("Content-disposition", "form-data; name=media; filename=" + imagePath);
+		imageHeaderMap.add("Content-type", "image/jpeg");
+	    HttpEntity<byte[]> photo = new HttpEntity<byte[]>(Files.readAllBytes(new File(imagePath).toPath()), imageHeaderMap);
+
+		LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+		map.add("media", photo);
+		HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(map, headers);
+        
+		ResponseEntity<WeiXinImageUploadRes> res = restTemplate.exchange(photoSendUrl, HttpMethod.POST, entity, WeiXinImageUploadRes.class,accessToken);
+		if(res == null || HttpStatus.OK != res.getStatusCode())
+		{
+			return null;
+		}
+		logger.debug("res.getBody():"+res.getBody());
+		return res.getBody();
+	}
+	
+	
 	
 	private void sendStockInfo(String toUserName, String productId) throws UnsupportedEncodingException{
 		CustomSendMessage newMsg = new CustomSendMessage(); 
