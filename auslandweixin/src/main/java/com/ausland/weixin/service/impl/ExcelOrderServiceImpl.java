@@ -16,6 +16,8 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -162,21 +164,16 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         try
         {
              logger.debug("start to process excel file, call validateExcelFile()"); 
-        	 List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
-             String errorMessage = validateExcelFile(excelFile, records, formatType);
+        	 
+             String errorMessage = validateExcelFile(excelFile, formatType);
              if(!StringUtils.isEmpty(errorMessage))
              {
              	res.setErrorDetails(errorMessage);
              	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED); 
              	return res;
              }
-             if(records.size() <= 0)
-             {
-             	res.setErrorDetails("did not get any valid row from excel.");
-             	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED); 
-             	return res;
-             }
-             logger.debug("precheck completed start to save the excel file");
+             
+             logger.debug("save to db completed start to save the excel file");
              String fileNamewithFullPath = excelDirectory+FilenameUtils.getBaseName(excelFile.getOriginalFilename())+"_"+validationUtil.getCurrentDateTimeString()+ "."+fileExtension;
              errorMessage = saveExcelFileInServerDirectory(fileNamewithFullPath, excelFile);
              if(!StringUtils.isEmpty(errorMessage))
@@ -186,30 +183,13 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
              	return res;
              }
              logger.debug("save records in db.");
-             
-             if(records.size() <= AuslandApplicationConstants.DB_BATCH_SIZE)
-             {
-             	orderListFromExcelRepository.save(records);
-             	orderListFromExcelRepository.flush();
-             }
-             else
-             {
-             	//split to batch size and loop 
-             	int i = 0;
-             	while(i < records.size())
-             	{
-             		int endIndex = Math.min(i + AuslandApplicationConstants.DB_BATCH_SIZE, records.size());
-             		List<OrderListFromExcel> sublist = records.subList(i, endIndex);
-             		orderListFromExcelRepository.save(sublist);
-             		orderListFromExcelRepository.flush();
-             		i = i + AuslandApplicationConstants.DB_BATCH_SIZE;
-             	}
-             	 
-             }
+              
+             orderListFromExcelRepository.deleteByCreatedDateTimeBefore(validationUtil.getThreeMonthEarlyDate());
              res.setUploadResult(AuslandApplicationConstants.STATUS_OK);
         }
         catch(Exception e) {
         	logger.error("got exception during uploadOrderExcel"+e.getMessage());
+        	e.printStackTrace();
         	res.setErrorDetails(e.getMessage());
         	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
         }
@@ -217,24 +197,25 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         return res;
 	}
 	
-	 private String validateExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records, String formatType){
+	 private String validateExcelFile(MultipartFile excelFile, String formatType){
 		if(StringUtils.isEmpty(formatType)) {
         	return "excel file format type is empty.";
         }
 		 if("mmc".equalsIgnoreCase(formatType)) {
-			 return validateMmcExcelFile(excelFile, records);
+			 return validateMmcExcelFile(excelFile);
 		 }
 		 if("ozlana".equalsIgnoreCase(formatType)) {
-			 return validateOzlanaExcelFile(excelFile, records);
+			 return validateOzlanaExcelFile(excelFile);
 		 }
 		 if("vitamin".equalsIgnoreCase(formatType)) {
-			 return validateVitaminExcelFile(excelFile, records);
+			 return validateVitaminExcelFile(excelFile);
 		 }
 		 return "excel file format type is not supported"+formatType;
 	 }
 	 
-	 private String validateVitaminExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records){
+	 private String validateVitaminExcelFile(MultipartFile excelFile){
 	        logger.debug("entered validateVitaminExcelFile with excelFile");
+	        List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
 			StringBuffer errorMessage = new StringBuffer();
 			Workbook workbook = null;
 	        InputStream  inputStream = null;
@@ -246,8 +227,26 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	            Iterator<Row> iterator = datatypeSheet.iterator();
 	            int i = 0;
 	            String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
-	            FormulaEvaluator objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
-
+	            FormulaEvaluator objFormulaEvaluator = null;
+	            
+	            try {
+	            	if(workbook instanceof HSSFWorkbook) {
+	            		objFormulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) workbook);
+	            	}
+	            	else if(workbook instanceof XSSFWorkbook){
+	            		objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+	            	}
+	            	else {
+	            		logger.debug("invalidate excel format");
+						errorMessage.append("invalid excel format:"+excelFile.getOriginalFilename());
+						return errorMessage.toString();
+	            	}
+	            }
+	            catch(Exception e1) {
+	            	logger.debug("validate header returns false, not mmc format");
+					errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+					return errorMessage.toString();
+	            }
 	        	while(iterator.hasNext())
 	        	{
 	        		Row currentRow = iterator.next();
@@ -267,6 +266,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 							if(record != null && !StringUtils.isEmpty(record.getId()) && StringUtils.isEmpty(record.getErrorMsg())) {
 								logger.debug("provisionOneRowForvitamin: add record="+record.toString());
 								records.add(record);
+								if(records.size() >= AuslandApplicationConstants.DB_BATCH_SIZE)
+								{
+									orderListFromExcelRepository.save(records);
+									orderListFromExcelRepository.flush();
+									records.clear();
+								}
 							}else {
 								logger.debug("provisionOneRowForvitamin: skip this record");
 							}
@@ -303,10 +308,18 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 						e.printStackTrace();
 					}
 	        }
+	        if(records.size() > 0)
+			{
+				orderListFromExcelRepository.save(records);
+				orderListFromExcelRepository.flush();
+				records.clear();
+			}
+	        
 	        return errorMessage.toString();
 		}
-    private String validateOzlanaExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records){
+    private String validateOzlanaExcelFile(MultipartFile excelFile){
         logger.debug("entered validateOzlanaExcelFile with excelFile");
+        List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
 		StringBuffer errorMessage = new StringBuffer();
 		Workbook workbook = null;
         InputStream  inputStream = null;
@@ -318,6 +331,26 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
             Iterator<Row> iterator = datatypeSheet.iterator();
             int i = 0;
             String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+            FormulaEvaluator objFormulaEvaluator = null;
+            
+            try {
+            	if(workbook instanceof HSSFWorkbook) {
+            		objFormulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) workbook);
+            	}
+            	else if(workbook instanceof XSSFWorkbook){
+            		objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+            	}
+            	else {
+            		logger.debug("invalidate excel format");
+					errorMessage.append("invalid excel format:"+excelFile.getOriginalFilename());
+					return errorMessage.toString();
+            	}
+            }
+            catch(Exception e1) {
+            	logger.debug("validate header returns false, not mmc format");
+				errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+				return errorMessage.toString();
+            }
         	while(iterator.hasNext())
         	{
         		Row currentRow = iterator.next();
@@ -336,10 +369,16 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         		{
         			try
         			{
-						OrderListFromExcel record = provisionOneRowForOzlana(fileName, currentRow);
+						OrderListFromExcel record = provisionOneRowForOzlana(fileName, currentRow, objFormulaEvaluator);
 						if(record != null && !StringUtils.isEmpty(record.getId()) && StringUtils.isEmpty(record.getErrorMsg())) {
 							logger.debug("provisionOneRowForOzlana: add record="+record.toString());
 							records.add(record);
+							if(records.size() >= AuslandApplicationConstants.DB_BATCH_SIZE)
+							{
+								orderListFromExcelRepository.save(records);
+								orderListFromExcelRepository.flush();
+								records.clear();
+							}
 						}else {
 							logger.debug("provisionOneRowForOzlana: skip this record");
 						}
@@ -376,11 +415,18 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					e.printStackTrace();
 				}
         }
+        if(records.size() > 0)
+		{
+			orderListFromExcelRepository.save(records);
+			orderListFromExcelRepository.flush();
+			records.clear();
+		}
         return errorMessage.toString();
 	}
 
-	private String validateMmcExcelFile(MultipartFile excelFile, List<OrderListFromExcel> records){
+	private String validateMmcExcelFile(MultipartFile excelFile){
         logger.debug("entered validateMmcExcelFile with excelFile");
+        List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
 		StringBuffer errorMessage = new StringBuffer();
 		Workbook workbook = null;
         InputStream  inputStream = null;
@@ -392,6 +438,27 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
             Iterator<Row> iterator = datatypeSheet.iterator();
             int i = 0;
             String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+            FormulaEvaluator objFormulaEvaluator = null;
+           
+            try {
+            	if(workbook instanceof HSSFWorkbook) {
+            		objFormulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) workbook);
+            	}
+            	else if(workbook instanceof XSSFWorkbook){
+            		objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+            	}
+            	else {
+            		logger.debug("invalidate excel format");
+					errorMessage.append("invalid excel format:"+excelFile.getOriginalFilename());
+					return errorMessage.toString();
+            	}
+            }
+            catch(Exception e1) {
+            	logger.debug("validate header returns false, not mmc format");
+				errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+				return errorMessage.toString();
+            }
+
         	while(iterator.hasNext())
         	{
         		Row currentRow = iterator.next();
@@ -406,8 +473,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         		}else{
         			try
         			{
-						OrderListFromExcel record = provisionOneRowForMmc(fileName, currentRow);
+						OrderListFromExcel record = provisionOneRowForMmc(fileName, currentRow, objFormulaEvaluator);
 						records.add(record);
+						if(records.size() >= AuslandApplicationConstants.DB_BATCH_SIZE)
+						{
+							orderListFromExcelRepository.save(records);
+							orderListFromExcelRepository.flush();
+							records.clear();
+						}
         			}
         			catch(Exception e)
         			{
@@ -441,6 +514,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					e.printStackTrace();
 				}
         }
+        if(records.size() > 0)
+		{
+			orderListFromExcelRepository.save(records);
+			orderListFromExcelRepository.flush();
+			records.clear();
+		}
         return errorMessage.toString();
 	}
 
@@ -455,7 +534,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	    return date;
 	}
 	
-	private OrderListFromExcel provisionOneRowForOzlana(String fileName, Row currentRow)
+	private OrderListFromExcel provisionOneRowForOzlana(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
 	{
 		if(currentRow == null)
 		{
@@ -469,18 +548,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		for(int i = 0; i < currentRow.getLastCellNum(); i++)
 		{
 	        Cell currentCell = currentRow.getCell(i, AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
-	        String cell = "";
-			if(currentCell.getCellTypeEnum() == CellType.STRING)
-			{
-				cell = currentCell.getStringCellValue();
-				logger.debug("cell "+i +":"+cell);
-			}
-			else if(currentCell.getCellTypeEnum() == CellType.NUMERIC)
-			{
-				cell = currentCell.getNumericCellValue() +"";
-				logger.debug("numeric cell "+i +":"+cell);
-			}
-	 
+	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
+	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
+           //logger.debug("got cell value:"+cell);
 	        if(i == 0)
 	        {
 	        	//订单号
@@ -620,7 +690,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
 	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
 	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
-            logger.debug("got cell value:"+cell);
+            //logger.debug("got cell value:"+cell);
 	        if(i == 0)
 	        {
 	        	//运单号
@@ -720,7 +790,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		logger.warn("can not getTel from "+receiverInfo);
 		return "";
 	}
-	private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow)
+	private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
 	{
 		OrderListFromExcel record = new OrderListFromExcel();
 		StringBuffer strB = new StringBuffer();
@@ -734,17 +804,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		{
 
 	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
-	        String cell = "";
-			if(currentCell.getCellTypeEnum() == CellType.STRING)
-			{
-				cell = currentCell.getStringCellValue();
-				logger.debug("cell "+i +":"+cell);
-			}
-			else if(currentCell.getCellTypeEnum() == CellType.NUMERIC)
-			{
-				cell = currentCell.getNumericCellValue() +"";
-				logger.debug("cell "+i +":"+cell);
-			}
+	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
+	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
+            //logger.debug("got cell value:"+cell);
 	        if(i == 0)
 	        {
 	        	//订单编号

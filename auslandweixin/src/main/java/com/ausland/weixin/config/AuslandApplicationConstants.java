@@ -32,7 +32,7 @@ public class AuslandApplicationConstants {
 	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_NOORDERINFO="没有找到最近三个月内该手机号对应的重庆中环单号信息 ";
 	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_NOCOURIERINFO="没有找到重庆中环对应单号的物流信息";
 	public static final String ZHONGHUAN_COURIER_SEARCH_PROMPT_SERVERERROR="服务器异常请稍后再试";
-	public static final Integer DB_BATCH_SIZE=20;
+	public static final Integer DB_BATCH_SIZE=40;
 	public static final String STOCKTATUS_INSTOCK = "Y";
 	public static final String STOCKTATUS_NA = "N/A";
 	public static final String STOCKTATUS_OUTOFSTOCK = "N";

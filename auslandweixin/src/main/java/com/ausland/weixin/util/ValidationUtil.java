@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -194,6 +195,13 @@ public class ValidationUtil {
 	{
 		Date date = new Date();
 		return simpleDateTimeFormat.format(date);
+	}
+	
+	public Date getThreeMonthEarlyDate() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -3);
+		Date result = cal.getTime();
+		return result;
 	}
 	
 	public Date getCurrentDate()

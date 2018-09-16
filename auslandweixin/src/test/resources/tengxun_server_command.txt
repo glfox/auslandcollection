@@ -34,7 +34,8 @@ http://118.24.75.119/auslandweixin/health
   
 
  select orderid, items, createdtime, rname, rphone from excelorder where createdtime between date('2018-06-11') and date('2018-09-01');
- 
+ delete from excelorder where  createdtime between date('2018-06-11') and date('2018-06-15');
+ select * from excelorder where  createdtime between date('2010-01-11') and date('2018-06-15');
  
 curl command:
 

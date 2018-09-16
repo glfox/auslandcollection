@@ -1,8 +1,6 @@
 package com.ausland.weixin.service.impl;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
+import com.ausland.weixin.model.CustomSendImageMessage;
 import com.ausland.weixin.model.CustomSendMessage;
 import com.ausland.weixin.model.CustomSendMessageRes;
 import com.ausland.weixin.model.MessageContent;
+ 
 import com.ausland.weixin.service.AuthService;
 import com.ausland.weixin.service.WeChatMessageService;
 
@@ -90,5 +90,33 @@ public class WeChatMessageServiceImpl implements WeChatMessageService {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken));
 		return headers;
+	}
+
+	@Override
+	public CustomSendMessageRes sendMessage(CustomSendImageMessage message) {
+		logger.info("Send message:" + message);
+		CustomSendMessage errorMsg = new CustomSendMessage();
+		MessageContent errorMc = new MessageContent();
+		String accessToken = accessTokenService.getAccessToken();
+		try {
+			if(message != null && message.getImage() != null && !StringUtils.isEmpty(accessToken)
+			&& AuslandApplicationConstants.WEIXIN_MSG_TYPE_PHOTO.equalsIgnoreCase(message.getMsgType()) 
+			&& !StringUtils.isEmpty(message.getImage().getMediaId()))
+			{
+				CustomSendMessageRes res = restTemplate.postForObject(msgSendUrl, message, CustomSendMessageRes.class, accessToken);
+				logger.info("Send message got res. " + res.toString());
+				return res; 
+			} 
+			errorMc.setContent("没有找到mediaid");
+		}catch(Exception e) {
+			logger.debug("got exception:"+e.getMessage());
+			errorMc.setContent("数据解析异常："+e.getMessage());
+		}
+		errorMsg.setContent(errorMc);
+		errorMsg.setToUserName(message.getToUserName());
+		errorMsg.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_TEXT);
+		CustomSendMessageRes res = restTemplate.postForObject(msgSendUrl, errorMsg, CustomSendMessageRes.class, accessToken);
+		logger.info("Send message got res. " + res.toString());
+		return res;
 	}
 }

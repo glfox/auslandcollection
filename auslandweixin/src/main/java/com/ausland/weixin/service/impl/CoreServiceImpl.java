@@ -1,8 +1,17 @@
 package com.ausland.weixin.service.impl;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -17,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +37,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.ausland.weixin.config.AuslandApplicationConstants;
+import com.ausland.weixin.model.CustomSendImageMessage;
 import com.ausland.weixin.model.CustomSendMessage;
 import com.ausland.weixin.model.MessageContent;
+import com.ausland.weixin.model.WeChatImage;
 import com.ausland.weixin.model.difou.GetStockListRes;
 import com.ausland.weixin.model.difou.StockDataInfo;
 import com.ausland.weixin.model.reqres.GongZhongHaoUserInfoRes;
@@ -36,8 +48,9 @@ import com.ausland.weixin.model.reqres.QueryZhongHuanDetailsByTrackingNoRes;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
 import com.ausland.weixin.model.reqres.WeiXinImageUploadRes;
 import com.ausland.weixin.model.reqres.ZhongHuanFydhDetails;
+ 
 import com.ausland.weixin.model.xml.WeChatMessage;
-import com.ausland.weixin.model.xml.WeChatPhotoMessage;
+ 
 import com.ausland.weixin.model.zhonghuan.xml.Back.Logisticsback;
 import com.ausland.weixin.service.AuthService;
 import com.ausland.weixin.service.CoreService;
@@ -48,6 +61,7 @@ import com.ausland.weixin.service.QueryZhongHuanService;
 import com.ausland.weixin.service.WeChatMessageService;
 import com.ausland.weixin.util.ValidationUtil;
 import com.ausland.weixin.util.ZhongHuanFydhDetailsComparator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class CoreServiceImpl implements CoreService {
@@ -134,13 +148,14 @@ public class CoreServiceImpl implements CoreService {
 										mContent.setContent("不能上传打包图片到微信服务器端，请联系客服获取打包图片");
 									}
 									else {
-										WeChatPhotoMessage photoMessage = new WeChatPhotoMessage();
-										
-										photoMessage.setMediaId(res.getMediaId());
+										CustomSendImageMessage photoMessage = new CustomSendImageMessage();
+										WeChatImage image = new WeChatImage();
+										image.setMediaId(res.getMediaId());
+										photoMessage.setImage(image);
 										photoMessage.setMsgType(AuslandApplicationConstants.WEIXIN_MSG_TYPE_PHOTO);
 										photoMessage.setToUserName(message.getFromUserName());
-										logger.debug("send message:"+newMsg.toString());
-										weChatMessageService.sendMessage(newMsg);
+										logger.debug("send message:"+photoMessage.toString());
+										weChatMessageService.sendMessage(photoMessage);
 										logger.debug("after send.");
 										return;
 									}
@@ -188,31 +203,191 @@ public class CoreServiceImpl implements CoreService {
 		return;
 	}
 	
+	public WeiXinImageUploadRes uploadphoto(String fileUrl,String accesstoken,String type) throws IOException{
+
+		//创建一个文件file
+
+		File file = new File(fileUrl);
+
+		//判断file文件是否为空
+
+		if(file==null)   throw new IOException("文件不存在");
+        StringBuffer url = new StringBuffer("https://api.weixin.qq.com/cgi-bin/media/upload?access_token=");
+		url.append(accesstoken).append("&type=image");
+        logger.debug("post url:"+url.toString());
+		URL urlobj = new URL(url.toString());
+
+		urlobj.openStream();
+
+		//httpURLConnection实例的作用是用来做一个请求但潜在网络连接到HTTP服务器
+
+		HttpURLConnection urlconnection = (HttpURLConnection) urlobj.openConnection();
+
+		//进行urconnection对象设置
+
+		urlconnection.setRequestMethod("POST");
+
+		urlconnection.setDoInput(true);
+
+		urlconnection.setDoOutput(true);
+
+		urlconnection.setUseCaches(false);
+
+		//设置请求头信息
+
+		urlconnection.setRequestProperty("Connection", "Keep-Alive");
+
+		urlconnection.setRequestProperty("Charset", "UTF-8");
+
+		//设置边界
+
+		//currentTimeMillis方法获取当前时间信息
+
+		String BOUNDARY = "-----------"+System.currentTimeMillis();
+
+		//Content-Type，内容类型一般是指网页中存在的Content-Type，用于定义网络文件的类型和网页的编码
+
+		//multipart/from-data请求文件上传类型
+
+		urlconnection.setRequestProperty("Content-Type","multipart/form-data;boundary="+BOUNDARY);
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("--");
+
+		sb.append(BOUNDARY);
+
+		sb.append("\r\n");
+
+		//Content-Disposition就是当用户请求所得内容存为一个文件的提供一个默认的文件名
+
+		sb.append("Content-Disposition:form-data;name=\"file\";filename=\""+file.getName()+"\"\r\n");
+
+		//application.octet-stream 只能提交二进制，而且提交一个二进制，如果提交文件的话，只能提交一个文件
+
+		//后台接收参数只能有一个，而且还只能是流或者是字节码
+
+		sb.append("Content-Type:application/octet-stream\r\n\r\n");
+
+		//创建一个byte数组
+
+		       //sb对象数据转换成字节码
+
+		byte[] head = sb.toString().getBytes("utf-8");
+
+		//获取输出流   getoutputStream作用就是返回使用此连接的流
+
+		//OutputStream 该抽象类是所有类的字节输出流的父类
+
+		//DataOutputStream 创建一个新的数据输出流，以便将数据写入指定的基础输出流,返回为零
+
+		OutputStream output = new DataOutputStream(urlconnection.getOutputStream());
+
+		//在将字节码数据转入到流对象中
+
+		output.write(head);
+
+		//文件正文部分
+
+		//把文件一流文件的方式 推入url中
+
+		//DateinputStream的作用就是file目录的文件以流的方式输入进来
+        logger.debug("checkpoint1");
+		DataInputStream in = new DataInputStream(new FileInputStream(file));
+
+		int bytes = 0;
+
+		byte [] b = new byte[1024];
+
+		while((bytes=in.read(b))!=-1){
+
+		output.write(b, 0, bytes);
+
+		}
+		logger.debug("checkpoint2");
+		//关闭输入流
+
+		in.close();
+
+		//结尾部分
+
+		byte []foot = ("\r\n--"+BOUNDARY+"--\r\n").getBytes("utf-8"); //定义最后数据分割线
+
+		//把定义最后的数据分割线字节码数据转入流对象中
+
+		output.write(foot);
+
+		//刷新
+
+		output.flush();
+
+		//关闭
+
+		output.close();
+		logger.debug("checkpoint3");
+		StringBuffer buffer = new StringBuffer();
+
+		BufferedReader reader = null;
+
+		String result = null;
+
+		try {
+
+		//定义一个BufferRader输入流来读取url的响应
+
+		reader = new BufferedReader(new InputStreamReader(urlconnection.getInputStream()));
+
+		System.out.println(urlconnection.getInputStream());
+
+		String line = null;
+
+		//while循环读取文字
+
+		while((line=reader.readLine())!=null){
+
+		buffer.append(line);
+
+		}
+
+		if(result == null){
+
+		result = buffer.toString();
+
+		}
+
+		} catch (IOException e) {
+
+		   e.printStackTrace();
+
+		}finally{
+
+		//关闭流
+
+		            if(reader!=null){
+
+		            reader.close();
+
+		            logger.debug("关闭");
+
+		            }
+
+		}
+		logger.debug("checkpoint4");
+		ObjectMapper objectMapper = new ObjectMapper();
+		WeiXinImageUploadRes resObject = objectMapper.readValue(result, WeiXinImageUploadRes.class);
+		logger.debug("parse json string to resObject:"+resObject.toString());
+
+		return resObject;
+
+	}
+	
 	private WeiXinImageUploadRes uploadToWeiXin(String imagePath) throws IOException {
 		logger.debug("uploadToWeiXin entered with imagePath:" + imagePath);
 		String accessToken = authService.getAccessToken();
 		logger.debug("authService got accessToken:" + accessToken);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-		LinkedMultiValueMap<String, String> imageHeaderMap = new LinkedMultiValueMap<>();
-		imageHeaderMap.add("Content-disposition", "form-data; name=media; filename=" + imagePath);
-		imageHeaderMap.add("Content-type", "image/jpeg");
-	    HttpEntity<byte[]> photo = new HttpEntity<byte[]>(Files.readAllBytes(new File(imagePath).toPath()), imageHeaderMap);
-
-		LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-		map.add("media", photo);
-		HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(map, headers);
-        
-		ResponseEntity<WeiXinImageUploadRes> res = restTemplate.exchange(photoSendUrl, HttpMethod.POST, entity, WeiXinImageUploadRes.class,accessToken);
-		if(res == null || HttpStatus.OK != res.getStatusCode())
-		{
-			return null;
-		}
-		logger.debug("res.getBody():"+res.getBody());
-		return res.getBody();
+		
+		return uploadphoto(imagePath, accessToken, "image");
 	}
-	
-	
 	
 	private void sendStockInfo(String toUserName, String productId) throws UnsupportedEncodingException{
 		CustomSendMessage newMsg = new CustomSendMessage(); 

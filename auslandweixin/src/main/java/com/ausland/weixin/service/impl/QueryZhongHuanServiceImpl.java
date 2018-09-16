@@ -175,7 +175,7 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 		{
 			ZhongHuanFydhDetails details = new ZhongHuanFydhDetails();
 			//details.setCourierChinaNumber(fydh.getChrbgdh());
-			details.setCourierCompany(fydh.getCkdhm());
+			details.setCourierCompany("重庆中环");
 			if(!StringUtils.isEmpty(fydh.getChrlrsj()))
 			{
 				SimpleDateFormat df = new SimpleDateFormat(AuslandApplicationConstants.DATE_STRING_FORMAT);
