@@ -28,7 +28,7 @@ public class CodeReader {
 		if(image == null) 
 			return null;
 		try {   
-		 
+		    logger.debug("entered decode.");
             LuminanceSource source = new BufferedImageLuminanceSource(image);  
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));  
             
@@ -58,6 +58,7 @@ public class CodeReader {
     
   
     public BufferedImage cropImage(String imgPath) { 
+    	logger.debug("cropImage entered with imagePath:"+imgPath);
     	 BufferedImage img = null;  
  
          try {  
@@ -66,7 +67,7 @@ public class CodeReader {
                  logger.error("the decode image may  not exist."); 
                  return null;
              }  
-             img = img.getSubimage(img.getWidth()*3/4,img.getHeight()/2,img.getWidth()/4, img.getHeight()/2); //fill in the corners of the desired crop location here
+             img = img.getSubimage(img.getWidth()/2,img.getHeight()/2,img.getWidth()/2, img.getHeight()/2); //fill in the corners of the desired crop location here
              BufferedImage copyOfImage = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
              AffineTransform identity = new AffineTransform();
              AffineTransform trans = new AffineTransform();

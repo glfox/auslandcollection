@@ -10,5 +10,5 @@ public interface ExcelOrderService {
    
 	QueryZhongHuanLastThreeMonthByPhoneNoRes getOrderListFromExcel(String userNameOrPhoneNo);
 	UploadZhonghanCourierExcelRes uploadOrderExcel(MultipartFile excelFile, String formatType);
-	UploadPackingPhotoRes uploadPackingPhoto();
+	UploadPackingPhotoRes uploadPackingPhoto(MultipartFile file);
 }

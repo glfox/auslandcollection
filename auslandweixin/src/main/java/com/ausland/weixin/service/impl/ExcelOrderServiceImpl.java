@@ -2,6 +2,8 @@ package com.ausland.weixin.service.impl;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -940,32 +944,145 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 			return "save file:"+ csvFile.getOriginalFilename()+" to " + fileName + " got exception:"+e.getMessage();
 		}
 	}
+	
+	private boolean unzipFile(File file) {
+		ZipInputStream zis = null;
+		try
+		{
+			zis = new ZipInputStream(new FileInputStream(file));
+	        ZipEntry zipEntry = null;
+	        byte[] buffer = new byte[4096];
+	        while((zipEntry = zis.getNextEntry()) != null){
+	            String fileName = zipEntry.getName();
+	            if(zipEntry.isDirectory()) {
+	            	logger.error("it is a subdirectory, ignore:"+fileName);
+	            	continue;
+	            }
+	            logger.debug("got the fileName:"+fileName); 
+	            if(!isValidPhotoSuffix(fileName)) {
+	            	logger.error("it is not a valid photo suffix, ignore:"+fileName);
+	            	continue;
+	            }
+	            if(StringUtils.contains(fileName, "/")) {
+	            	logger.error("it is the file under a subdirectory, ignore:"+fileName);
+	            	continue;
+	            }
+	            logger.debug("got the filePath:"+file.getPath()); 
+	            File newFile = new File(packingPhotoDirectory+"toprocess/" + fileName);
+	            FileOutputStream fos = new FileOutputStream(newFile);
+	            int len;
+	            while ((len = zis.read(buffer)) >= 0) {
+	                fos.write(buffer, 0, len);
+	            }
+	            fos.flush();
+	            fos.close();
+	 
+	        }
+	        zis.closeEntry();
+	        file.delete();
+	        return true;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			logger.error("caught exception during unzipFile:"+e.getMessage());
+		}
+		finally {
+			if(zis != null) {
+				try {
+					zis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return false;
+	}
+	private boolean saveFile(MultipartFile file, String path) {
+		FileOutputStream fos = null;
+		InputStream is = null;
+		try {
+			File convFile = new File(path+file.getOriginalFilename());
+		    convFile.createNewFile(); 
+		    fos = new FileOutputStream(convFile); 
+		    is = file.getInputStream();
+		    // Create the byte array to hold the data
+	       byte[] bytes = new byte[4096];
+	       int numRead = 0;
+	       while ( (numRead=is.read(bytes, 0, 4096)) >= 0 ) {
+	    	   fos.write(bytes, 0, numRead);
+	       }
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			logger.error("caught exception during saveFile:"+e.getMessage());
+			return false;
+		}
+		finally {
+			if(fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return true;
+	}
 
 	@Override
-	public UploadPackingPhotoRes uploadPackingPhoto() {
+	public UploadPackingPhotoRes uploadPackingPhoto(MultipartFile zipFile) {
 		UploadPackingPhotoRes res = new UploadPackingPhotoRes();
 		int successCount = 0;
 		int failedCount = 0;
         try {
+        	//
+        	if(zipFile != null && !zipFile.isEmpty()) {
+        		logger.debug("there is zip file, so save and unzip it.");
+        		boolean bRet = saveFile(zipFile, packingPhotoDirectory+"toprocess/");
+            	if(!bRet) {
+            		res.setErrorDetails("failed to save the zip file:"+zipFile.getOriginalFilename());
+            		res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
+            		return res;
+            	}
+            	logger.debug("successfully save zipfile :"+packingPhotoDirectory+"toprocess/"+zipFile.getOriginalFilename());
+            	 bRet = unzipFile(new File(packingPhotoDirectory+"toprocess/"+zipFile.getOriginalFilename()));
+            	 if(!bRet) {
+            	 	res.setErrorDetails("failed to unzip the zip file:"+zipFile.getOriginalFilename());
+            	 	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
+            	 	return res;
+            	 }
+        	}else {
+        		logger.debug("got empty zip file");
+        	}
         	File dir = new File(packingPhotoDirectory+"toprocess/");
         	if(dir == null || !dir.isDirectory()) {
         		res.setErrorDetails("The directory does not exist:"+packingPhotoDirectory);
         		res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
         		return res;
         	}
-        	String[] filenames = dir.list();
-        	if(filenames == null || filenames.length <= 0) {
-        		res.setErrorDetails("There is no file under toprocess directory:"+packingPhotoDirectory);
-        		res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
-        		return res;
-        	}
-        	for(String filename: filenames) {
-        		if(processPhoto(packingPhotoDirectory+"toprocess/"+filename)) {
-        			successCount ++;
-        		}else {
-        			failedCount ++;
-        		}
-        	}
+        	 String[] filenames = dir.list();
+        	 if(filenames == null || filenames.length <= 0) {
+        	 	res.setErrorDetails("There is no file under toprocess directory:"+packingPhotoDirectory);
+        	 	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);
+        	 	return res;
+        	 }
+        	 for(String filename: filenames) {
+        	 	if(processPhoto(packingPhotoDirectory+"toprocess/"+filename)) {
+        	 		successCount ++;
+        	 	}else {
+        	 		failedCount ++;
+        	 	}
+        	 }
         	res.setUploadResult(AuslandApplicationConstants.STATUS_OK);
         }catch(Exception e) {
         	logger.error("caught exception during uploadPackingPhoto:"+e.getMessage());
@@ -979,6 +1096,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	}
 
     private boolean processPhoto(String imagePath) {
+    	logger.debug("processPhoto entered with imagePath:"+imagePath);
     	try
     	{
     		if(!isValidPhotoSuffix(imagePath)) {
