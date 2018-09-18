@@ -499,19 +499,28 @@ public class Tel {
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
+        	"aschrjs",
             "chrggxh",
             "chrpp",
             "chrpm",
             "chrjs"
         })
         public static class Njxx {
-
+        	protected String aschrjs;
             protected String chrggxh;
             protected String chrpp;
             protected String chrpm;
             protected String chrjs;
 
-            /**
+            public String getAschrjs() {
+				return aschrjs;
+			}
+
+			public void setAschrjs(String aschrjs) {
+				this.aschrjs = aschrjs;
+			}
+
+			/**
              * Gets the value of the chrggxh property.
              * 
              * @return

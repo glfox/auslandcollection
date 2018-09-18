@@ -217,17 +217,17 @@ public class QueryZhongHuanServiceImpl implements QueryZhongHuanService{
 					{
 						strb.append(njxx.getChrpm()).append(" ");
 					}
-					if(!StringUtils.isEmpty(njxx.getChrpp()))
+					// if(!StringUtils.isEmpty(njxx.getChrpp()))
+					// {
+					// 	strb.append(njxx.getChrpp()).append(" ");
+					// }
+					// if(!StringUtils.isEmpty(njxx.getChrggxh()))
+					// {
+					// 	strb.append(njxx.getChrggxh()).append(" ");
+					// }
+					if(!StringUtils.isEmpty(njxx.getAschrjs()))
 					{
-						strb.append(njxx.getChrpp()).append(" ");
-					}
-					if(!StringUtils.isEmpty(njxx.getChrggxh()))
-					{
-						strb.append(njxx.getChrggxh()).append(" ");
-					}
-					if(!StringUtils.isEmpty(njxx.getChrjs()))
-					{
-						strb.append(njxx.getChrjs()).append(" ");
+						strb.append(njxx.getAschrjs()).append(" ");
 					}
 					strb.append(",");
 				}
