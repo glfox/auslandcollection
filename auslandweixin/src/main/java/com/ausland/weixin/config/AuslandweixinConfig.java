@@ -169,12 +169,13 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 
 		vitaminOrderHeaders = new ArrayList<String>();
 		try {
-			vitaminOrderHeaders.add("运单号");
+			vitaminOrderHeaders.add("物流单号");
 			vitaminOrderHeaders.add("下单日期");
 			vitaminOrderHeaders.add("下单编号");
 			vitaminOrderHeaders.add("产品信息");
-			vitaminOrderHeaders.add("发件人姓名+电话");
+			vitaminOrderHeaders.add("发件人信息");
 			vitaminOrderHeaders.add("收件人信息");
+			vitaminOrderHeaders.add("物流公司");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

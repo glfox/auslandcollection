@@ -700,7 +700,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	//运单号
 	        	if(StringUtils.isEmpty(cell))
 	        	{
-	        		strB.append("没有运单号");
+	        		strB.append("没有物流单号");
 	        		record.setErrorMsg(strB.toString());
 	        		return record;
 	        	}
@@ -742,7 +742,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	{
 	        		record.setReceiverName(getSubStringByLength(getName(cell),64));
 	        		record.setReceiverPhone(getSubStringByLength(getTel(cell),64));
-	        		logger.debug("from cell:" + cell+ " got receivername:"+record.getReceiverName()+"receiverphone:"+record.getReceiverPhone());
+	        		//logger.debug("from cell:" + cell+ " got receivername:"+record.getReceiverName()+"receiverphone:"+record.getReceiverPhone());
+	        	} 
+	        }
+	        else if(i == 6) {
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setLogisticCompany(getSubStringByLength(cell,64)); 
+	        		//logger.debug("from cell:" + cell+ );
 	        	} 
 	        	break;
 	        }
