@@ -83,8 +83,12 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	public static List<String> productUploadExcelHeaders = null;
 	
 	public static List<String> ozlanaOrderHeaders = null;
+	public static List<String> fruitOrderHeaders = null; 
 	public static List<String> vitaminOrderHeaders = null;
+	public static List<String> luxuryOrderHeaders = null;
+	public static List<String> everOrderHeaders = null; 
 	public static List<String> mmcOrderHeaders = null;
+	public static List<String> tasmanOrderHeaders = null;
 	
 	public HashMap<String, List<String>> supportedSizeCategoryMap = null;
 	
@@ -149,7 +153,65 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	}
 	
 	static {
-		
+		luxuryOrderHeaders = new ArrayList<String>();
+		try{
+			luxuryOrderHeaders.add("订单编号");
+			luxuryOrderHeaders.add("日期");
+			luxuryOrderHeaders.add("收货人地址");
+			luxuryOrderHeaders.add("收货人姓名");
+			luxuryOrderHeaders.add("收货人电话");
+			luxuryOrderHeaders.add("买家信息");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		fruitOrderHeaders = new ArrayList<String>();
+		try{
+			fruitOrderHeaders.add("客户名称");
+			fruitOrderHeaders.add("订单编号");
+			fruitOrderHeaders.add("收货人姓名");
+			fruitOrderHeaders.add("收货地址");
+			fruitOrderHeaders.add("收货电话");
+			fruitOrderHeaders.add("商品编码");
+			fruitOrderHeaders.add("商品名称");
+			fruitOrderHeaders.add("规格");
+			fruitOrderHeaders.add("数量");
+			fruitOrderHeaders.add("备注");
+			fruitOrderHeaders.add("发货日期");
+			fruitOrderHeaders.add("顺丰速运");
+			fruitOrderHeaders.add("运单号");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		everOrderHeaders = new ArrayList<String>();
+		try{
+            everOrderHeaders.add("订单号");
+			everOrderHeaders.add("订单日期");
+			everOrderHeaders.add("发货单号");
+			everOrderHeaders.add("配单号");
+			everOrderHeaders.add("收件人");
+			everOrderHeaders.add("PHONE");
+			everOrderHeaders.add("ADDRESS");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		tasmanOrderHeaders = new ArrayList<String>();
+		try{
+			tasmanOrderHeaders.add("款式");
+			tasmanOrderHeaders.add("发件人");
+			tasmanOrderHeaders.add("名称");
+			tasmanOrderHeaders.add("颜色");
+			tasmanOrderHeaders.add("码数");
+			tasmanOrderHeaders.add("数量");
+			tasmanOrderHeaders.add("发件人电话");
+			tasmanOrderHeaders.add("收件姓名");
+			tasmanOrderHeaders.add("收件地址");
+			tasmanOrderHeaders.add("收件电话");
+			tasmanOrderHeaders.add("运单号");
+			tasmanOrderHeaders.add("快递公司");
+			tasmanOrderHeaders.add("日期");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		ozlanaOrderHeaders = new ArrayList<String>();
 		try {
 			ozlanaOrderHeaders.add("订单号");

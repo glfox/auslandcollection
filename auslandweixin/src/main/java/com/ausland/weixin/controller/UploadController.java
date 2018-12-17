@@ -29,6 +29,34 @@ public class UploadController {
 	@Value("${upload.packing.photo.server.directory}")
 	private String packingPhotoDirectory;
 	
+	@PostMapping(value = "/order/excel/ever")
+	public UploadZhonghanCourierExcelRes uploadEverFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	{
+		logger.debug("entered uploadEverFormatOrderExcel");
+		return excelOrderService.uploadOrderExcel(file, "ever");
+	}
+
+    @PostMapping(value = "/order/excel/luxury")
+	public UploadZhonghanCourierExcelRes uploadLuxuryFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	{
+		logger.debug("entered uploadLuxuryFormatOrderExcel");
+		return excelOrderService.uploadOrderExcel(file, "luxury");
+	}
+    
+    @PostMapping(value = "/order/excel/fruit")
+   	public UploadZhonghanCourierExcelRes uploadFruitFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+   	{
+   		logger.debug("entered uploadFruitFormatOrderExcel");
+   		return excelOrderService.uploadOrderExcel(file, "fruit");
+   	}
+
+	 @PostMapping(value = "/order/excel/tasman")
+	 public UploadZhonghanCourierExcelRes uploadTasmanFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	 {
+	 	logger.debug("entered uploadTasmanFormatOrderExcel");
+	 	return excelOrderService.uploadOrderExcel(file, "tasman");
+	 }
+
 	@PostMapping(value = "/order/excel/ozlana")
 	public UploadZhonghanCourierExcelRes uploadOzlanaFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
 	{

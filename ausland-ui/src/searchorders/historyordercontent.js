@@ -41,7 +41,7 @@ class HistoryOrderContent extends React.Component {
 	            	<u>
 	            	<p>
 	            		日期：{this.state.order.courierCreatedDateTime}，
-	            		订单号：{this.state.order.courierNumber}，
+	            		运单号：{this.state.order.courierNumber}，
 	            	</p>
 	            	<p className="long-text" >收件人：{this.state.order.receiverName}，货物：{this.state.order.productItems}</p>
 	            	</u>
