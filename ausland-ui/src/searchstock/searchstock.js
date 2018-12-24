@@ -1,7 +1,7 @@
 import React from 'react';
 import './searchstock.css';
-import { Form,FormGroup,Button,ControlLabel,Table } from 'react-bootstrap';
-import { getAllProdID, queryDiFou } from '../utils/services.js';
+import { Form,FormGroup,Button,ControlLabel,Table, FormControl } from 'react-bootstrap';
+import { getAllProdID, queryShouhou } from '../utils/services.js';
 import {Typeahead} from 'react-bootstrap-typeahead';
 
 class SearchStock extends React.Component {
@@ -50,10 +50,10 @@ class SearchStock extends React.Component {
 	}
 
 	getProdStockDetails(searchVal) {
-		queryDiFou(searchVal)
+		queryShouhou(searchVal)
 			.then(res => {
 
-				if (res && res.returncode === 1) {
+				if (res && res.returncode === "1") {
 					this.setState({
 						error: res.returninfo,
 						loaded: true,
@@ -61,25 +61,9 @@ class SearchStock extends React.Component {
 					return;
 				}
 
-				if (res.returninfo === 0) {
-					this.setState({
-						error: '产品不存在',
-						loaded: true,
-					})
-					return;
-				}
-
-				if (res.returninfo > 0 && !res.datalist) {
-					this.setState({
-						error: '可能的产品为： ' + res.possibleids + ', 请重新查询',
-						loaded: true,
-					})
-					return;
-				}
-
 				if (!res.datalist || res.datalist.length === 0) {
 					this.setState({
-						error: '产品不存在',
+						error: '售后不存在',
 						loaded: true,
 					})
 					return;
@@ -88,18 +72,32 @@ class SearchStock extends React.Component {
 				let rows = [];
 				rows.push(
 					<tr key="-1">
-						<th>产品编号</th>
-						<th>种类编号</th>
-						<th>库存数量</th>
+						<th>售后时间</th>
+						<th>品牌</th>
+						<th>收货人姓名</th>
+						<th>售后货号</th>
+						<th>售后问题</th>
+						<th>处理进度</th>
+						<th>换码费</th>
+						<th>客户寄出单号</th>
+						<th>品牌方寄出单号</th>
 					</tr>
 				)
 				for (let i = 0; i < res.datalist.length; i++) {
 					let data = res.datalist[i];
 					rows.push(
 						<tr key={i}>
-							<td key={i + '-' + data.goodsno}>{data.goodsno}</td>
-							<td key={i + '-' + data.specname}>{data.specname}</td>
-							<td key={i + '-' + data.stock}>{data.stock}</td>
+							<td key={i + '-' + data.creationdate}>{data.creationdate}</td>
+							<td key={i + '-' + data.brand}>{data.brand}</td>
+							<td key={i + '-' + data.name}>{data.name}</td>
+							<td key={i + '-' + data.product}>{data.product}</td>
+
+							<td key={i + '-' + data.problem}>{data.problem}</td>
+							<td key={i + '-' + data.progress}>{data.progress}</td>
+							<td key={i + '-' + data.comments}>{data.comments}</td>
+
+							<td key={i + '-' + data.customercourierid}>{data.customercourierid}</td>
+							<td key={i + '-' + data.brandcourierid}>{data.brandcourierid}</td>
 						</tr>
 					)
 				}
@@ -122,15 +120,13 @@ class SearchStock extends React.Component {
 			<div>
 				<Form inline>
 					<FormGroup controlId="searchProd">
-		        <ControlLabel>产品名称: </ControlLabel>{' '}
-		        <ControlLabel>
-		        	<Typeahead
-              onChange={(selected) => {
-                    this.setState({searchstr: selected})}}
-              options={this.state.prodIds}
-              emptyLabel='没有此商品'
-            />
-		       </ControlLabel>{' '}
+		        <ControlLabel>手机号码/姓名: </ControlLabel>{' '}
+		        <FormControl
+				            type="text"
+				            value={this.state.searchstr}
+				            placeholder="输入手机号码/姓名"
+				            onChange={this.handleChange}
+				        />{' '}
 	        </FormGroup>{' '}
 	        <Button bsStyle="primary" type="button" onClick={this.handleSubmit}>查询</Button>
 		    </Form>

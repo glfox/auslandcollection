@@ -56,7 +56,7 @@ curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com
 {"access_token":"7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF","expires_in":7200}
  
 2>get Menu:
-curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
+curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=16_e4YXe2TntRYGWLM21eu7gC4-PkvJKYEjTeY26EHsabJxnK3Lt6IJXe_ga24g0nL0yx41S8SDLdDpLQaBg0rtIjAZOn3_NIbyHA7m4uGn3nB_Ih2ZvHoALh4Hf-VguNF0AbVP467eCGCIGBvZJTMiAAAYIB' --trace-ascii /dev/stdout
 
 {"is_menu_open":1,"selfmenu_info":{"button":[{"type":"click","name":"单号查询","key":"queryLogistic"},{"type":"click","name":"咨询客服","key":"chat"},{"name":"产品查询","sub_button":{"list":[{"type":"click","name":"价格","key":"queryProduct_price"},{"type":"click","name":"库存","key":"queryProduct_stock"},{"type":"click","name":"新品","key":"queryProduct_new"}]}}]}}
 
@@ -69,12 +69,20 @@ curl -k GET --header 'Content-type: application/json' 'https://api.weixin.qq.com
 
 9_De2bsSbKOmfRuiHEXigGIi471wrQfngmjsb2aYxGdV6RiH-kDxv7FukdvBJ5TeQLhEhbCWthCYrTGtKiBY7wbbJTy6r88AH7V0sbZy55cxSTBVOd5PM8laHPZyttw7w9f_aIuOGqEwhgRRrwITNgAIAZKE
 
+
+
+{"is_menu_open":1,"selfmenu_info":{"button":[
+{"type":"view","name":"库存查询","url":"http:\/\/www.auslandcollection.com\/ui\/stock"},
+{"type":"view","name":"订单查询","url":"http:\/\/www.auslandcollection.com\/ui\/history"},
+{"type":"view","name":"物流查询","url":"http:\/\/www.auslandcollection.com\/ui\/order"}]}}
+
+
 4>create Menu:
 curl -k -X POST --data '{"button":[{"type":"click","name":"单号查询","key":"queryLogistic"},{"type":"click","name":"咨询客服","key":"chat"},{"name":"产品查询","sub_button":[{"type":"click","name":"价格","key":"queryProduct_price"},{"type":"click","name":"库存","key": "queryProduct_stock"},{"type":"click","name":"新品","key":"queryProduct_new"}]}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=7_oKiZ0kAp01lYHggxehrwlaESC-XZeGDmLBzIMoLivEdRodcBP9w9hwQ3DNtACosQKt42RAqsghmXu8Mpov6yev_5zhdXk-OUo-PUm0nhrijXEE_XHqgGnJ08mBcXpM7XIgeTA264AdBqFWDAPRJcAAALNF' --trace-ascii /dev/stdout
   
 curl -k -X POST --data '{"button":[{"type":"view","name":"库存查询","url":"http://www.auslandcollection.com/ui/stock"},{"type":"view","name":"订单查询","url":"http://www.auslandcollection.com/ui/history"},{"type":"view","name":"物流查询","url":"http://www.auslandcollection.com/ui/order"}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=9_JmSmY6rQLhyYZt7HU6MKmaj7OWOiCbLQg3SuFiXeGpwhH6v8eNWmYOxHO49gZj5kB5PZpTJcMC40VbcCLE2q7jaIL_FSbsH-yeRlAbFoZ0zxiL9JMdLsxWu87TkO9nHYFqSS7CBGXMHmK8EEFNTfACAWEK' --trace-ascii /dev/stdout
 
-curl -k -X POST --data '{"button":[{"type":"view","name":"库存查询","url":"http://www.auslandcollection.com/ui/stock"},{"type":"view","name":"订单查询","url":"http://www.auslandcollection.com/ui/history"},{"type":"view","name":"物流查询","url":"http://www.auslandcollection.com/ui/order"}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=9_9gpYjrKqex8AGNd0Q73ZVY0_XHbpnKVwUWi8xwmfJFQLypqLpUKdAD_gxBqmPX51q2V15uNgXBnUFU_6ysjheu6H8tKcZ8Gs1p23rXMVtw-dHNJi6BtXcm59jpmXnXtye-BwuF6CPpF2703eOFCjADAIZW' --trace-ascii /dev/stdout
+curl -k -X POST --data '{"button":[{"type":"view","name":"售后查询","url":"http://www.auslandcollection.com/ui/stock"},{"type":"view","name":"订单查询","url":"http://www.auslandcollection.com/ui/history"},{"type":"view","name":"物流查询","url":"http://www.auslandcollection.com/ui/order"}]}' 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=16_e4YXe2TntRYGWLM21eu7gC4-PkvJKYEjTeY26EHsabJxnK3Lt6IJXe_ga24g0nL0yx41S8SDLdDpLQaBg0rtIjAZOn3_NIbyHA7m4uGn3nB_Ih2ZvHoALh4Hf-VguNF0AbVP467eCGCIGBvZJTMiAAAYIB' --trace-ascii /dev/stdout
 
 9_JmSmY6rQLhyYZt7HU6MKmaj7OWOiCbLQg3SuFiXeGpwhH6v8eNWmYOxHO49gZj5kB5PZpTJcMC40VbcCLE2q7jaIL_FSbsH-yeRlAbFoZ0zxiL9JMdLsxWu87TkO9nHYFqSS7CBGXMHmK8EEFNTfACAWEK
 

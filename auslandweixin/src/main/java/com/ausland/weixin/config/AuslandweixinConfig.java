@@ -88,6 +88,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	public static List<String> luxuryOrderHeaders = null;
 	public static List<String> everOrderHeaders = null; 
 	public static List<String> mmcOrderHeaders = null;
+	public static List<String> shouhouOrderHeaders = null;
 	public static List<String> tasmanOrderHeaders = null;
 	
 	public HashMap<String, List<String>> supportedSizeCategoryMap = null;
@@ -238,6 +239,23 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			vitaminOrderHeaders.add("发件人信息");
 			vitaminOrderHeaders.add("收件人信息");
 			vitaminOrderHeaders.add("物流公司");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		shouhouOrderHeaders = new ArrayList<String>();
+		try {
+			shouhouOrderHeaders.add("售后时间");
+			shouhouOrderHeaders.add("收货人姓名");
+			shouhouOrderHeaders.add("收货人电话");
+			shouhouOrderHeaders.add("货号");
+			shouhouOrderHeaders.add("售后问题");
+			shouhouOrderHeaders.add("处理进度");
+			shouhouOrderHeaders.add("群编号/微信号");
+			shouhouOrderHeaders.add("换码费");
+			shouhouOrderHeaders.add("客户寄出单号");
+			shouhouOrderHeaders.add("品牌方寄出单号");
+			shouhouOrderHeaders.add("是否完成");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

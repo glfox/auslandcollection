@@ -42,7 +42,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.config.AuslandweixinConfig;
 import com.ausland.weixin.dao.OrderListFromExcelRepository;
+import com.ausland.weixin.dao.ShouhouListFromExcelRepository;
 import com.ausland.weixin.model.db.OrderListFromExcel;
+import com.ausland.weixin.model.db.ShouhouListFromExcel;
+import com.ausland.weixin.model.difou.GetShouhouListRes;
+import com.ausland.weixin.model.difou.ShouhouInfo;
 import com.ausland.weixin.model.reqres.QueryZhongHuanLastThreeMonthByPhoneNoRes;
 import com.ausland.weixin.model.reqres.UploadPackingPhotoRes;
 import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
@@ -62,6 +66,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	
 	@Autowired
 	private OrderListFromExcelRepository orderListFromExcelRepository;
+	@Autowired
+	private ShouhouListFromExcelRepository shouhouListFromExcelRepository;
+	
 	
 	@Value("${upload.order.excel.server.directory}")
 	private String excelDirectory;
@@ -75,7 +82,86 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	private DataFormatter objDefaultFormat = new DataFormatter();
 	
 	private static final Logger logger = LoggerFactory.getLogger(ExcelOrderServiceImpl.class);
-
+	
+	@Override
+	public GetShouhouListRes getShouhouListByUserNameOrPhoneNo(String userNameOrPhoneNo) {
+		logger.debug("entered getShouhouListByUserNameOrPhoneNo with username or phoneno:"+userNameOrPhoneNo);
+		GetShouhouListRes res = new GetShouhouListRes();
+		List<ShouhouListFromExcel> list = null;
+		try {
+			if(validationUtil.isValidChinaMobileNo(userNameOrPhoneNo)) {
+				list = shouhouListFromExcelRepository.findByReceiverPhone(userNameOrPhoneNo);
+			}else {
+				list = shouhouListFromExcelRepository.findByReceiverName(userNameOrPhoneNo);
+			}
+			if(list == null || list.size() <= 0) {
+				res.setReturnCode("1");
+				res.setReturnInfo("没有找到对应的售后信息");
+				return res;
+			}
+			ArrayList<ShouhouInfo> dataInfoList = new ArrayList<ShouhouInfo>();
+			for(int i = 0; i < list.size(); i ++) {
+				ShouhouInfo data = new ShouhouInfo();
+				data.setBrandName(list.get(i).getBranName());
+				data.setCreationDate(list.get(i).getCreatedDateTime());
+				if(StringUtils.isEmpty(list.get(i).getReceiverName())) {
+					data.setReceriverName("-");
+				}else {
+					data.setReceriverName(list.get(i).getReceiverName().replaceAll("([\\u4e00-\\u9fa5]{1})(.*)", "*" + "$2"));
+				}
+				
+				if(StringUtils.isEmpty(list.get(i).getProductItems())) {
+					data.setProduct("-");
+				}else {
+					data.setProduct(list.get(i).getProductItems());
+				}
+				
+				if(StringUtils.isEmpty(list.get(i).getProblem())) {
+					data.setProblem("-");
+				}else {
+					
+				}
+				
+				if(StringUtils.isEmpty(list.get(i).getProgress())) {
+					data.setProgress("-");
+				}else {
+					data.setProgress(list.get(i).getProgress());
+				}
+				
+				if(StringUtils.isEmpty(list.get(i).getComments())) {
+					data.setComments("-");
+				}else {
+					data.setComments(list.get(i).getComments());
+				}
+				
+				if(StringUtils.isEmpty(list.get(i).getCustomerLogisticNo())) {
+					data.setCustomerCourierId("-");
+				}else {
+					data.setCustomerCourierId(list.get(i).getCustomerLogisticNo());
+				}
+				
+				if(StringUtils.isEmpty(list.get(i).getBrandLogisticNo())) {
+					data.setBrandCourierId("-");
+				}else {
+					data.setBrandCourierId(list.get(i).getBrandLogisticNo());
+				}
+				
+				if(StringUtils.isEmpty(list.get(i).getStatus())) {
+					data.setStatus("-");
+				}else {
+					data.setStatus(list.get(i).getStatus());
+				}
+				dataInfoList.add(data);
+			}
+			res.setDataInfoList(dataInfoList);
+			res.setReturnCode("0");
+		}catch(Exception e) {
+			res.setReturnCode("1");
+			res.setReturnInfo("查找对应售后信息时遇到系统错误");
+		}
+		return res;
+	}
+	
 	@Override
 	public QueryZhongHuanLastThreeMonthByPhoneNoRes getOrderListFromExcel(String userNameOrPhoneNo) {
 		// TODO Auto-generated method stub
@@ -105,7 +191,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				List<ZhongHuanFydhDetails> list = new ArrayList<ZhongHuanFydhDetails>();
 				for(int i =0; i < ret.size(); i ++) {
 					OrderListFromExcel o = ret.get(i);
-					//logger.debug("got order details from db:"+o.toString());
+					logger.debug("got order details from db:"+o.toString());
 					ZhongHuanFydhDetails z = new ZhongHuanFydhDetails();
 					z.setCourierCompany(o.getLogisticCompany());
 					if(StringUtils.isEmpty(o.getLogisticNo())) {
@@ -120,17 +206,23 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					
 					z.setProductItems(o.getProductItems());
 					z.setCustomStatus(o.getStatus());
-					z.setCourierCreatedDateTime(o.getCreatedDateTime().toString());
+					if(o.getCreatedDateTime() != null) {
+						z.setCourierCreatedDateTime(o.getCreatedDateTime().toString());
+					}
+					
 					list.add(z);
 				}
+				logger.debug("got the size of fydh list:"+list.size());
 				res.setFydhList(list);
 				
 			}
 			res.setStatus(AuslandApplicationConstants.STATUS_OK);
 		}catch(Exception e) {
+			logger.error("caught exception during here.");
 			res.setErrorDetails("查找时遇到异常："+e.getMessage());
 			res.setStatus(AuslandApplicationConstants.STATUS_FAILED);
 		}
+		
 		return res;
 	}
 
@@ -140,7 +232,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		}
 		if("mmc".equalsIgnoreCase(formatType) || "ozlana".equalsIgnoreCase(formatType) || "vitamin".equalsIgnoreCase(formatType)
 		   || "luxury".equalsIgnoreCase(formatType) || "ever".equalsIgnoreCase(formatType) || "tasman".equalsIgnoreCase(formatType)
-		   || "fruit".equalsIgnoreCase(formatType)) {
+		   || "fruit".equalsIgnoreCase(formatType) || "shouhou".equalsIgnoreCase(formatType)) {
 			return true;
 		}
 		return false;
@@ -188,9 +280,13 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
              	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED); 
              	return res;
              }
-             logger.debug("save records in db.");
-              
-             orderListFromExcelRepository.deleteByCreatedDateTimeBefore(validationUtil.getThreeMonthEarlyDate());
+             if ("shouhou".equalsIgnoreCase(formatType)) {
+            	 logger.debug("don't delete old records for shouhou");
+             }else {
+            	 logger.debug("delete old records in db.");
+                 orderListFromExcelRepository.deleteByCreatedDateTimeBefore(validationUtil.getThreeMonthEarlyDate());
+             }
+             
              res.setUploadResult(AuslandApplicationConstants.STATUS_OK);
         }
         catch(Exception e) {
@@ -227,6 +323,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		 }
 		 if("fruit".equalsIgnoreCase(formatType)) {
 			 return validateFruitExcelFile(excelFile);
+		 }
+		 if("shouhou".equalsIgnoreCase(formatType)) {
+			 return validateShouhouExcelFile(excelFile);
 		 }
 		 return "excel file format type is not supported "+formatType;
 	 }
@@ -716,6 +815,9 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 						}
 						logger.debug("this is the vitamin format excel order file");
 					}
+						//else if(i < 2676) {
+//
+//        			}
 	        		else
 	        		{
 	        			try
@@ -882,6 +984,137 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         return errorMessage.toString();
 	}
 
+    
+    private String validateShouhouExcelFile(MultipartFile excelFile){
+        logger.debug("entered validateShouhouExcelFile with excelFile");
+		StringBuffer errorMessage = new StringBuffer();
+		Workbook workbook = null;
+        InputStream  inputStream = null;
+        try
+        {
+        	inputStream = excelFile.getInputStream();
+        	workbook = WorkbookFactory.create(inputStream);// new XSSFWorkbook(excelFile.getInputStream());
+            FormulaEvaluator objFormulaEvaluator = null;
+            try {
+            	if(workbook instanceof HSSFWorkbook) {
+            		objFormulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) workbook);
+            	}
+            	else if(workbook instanceof XSSFWorkbook){
+            		objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+            	}
+            	else {
+            		logger.debug("invalidate excel format");
+					errorMessage.append("invalid excel format:"+excelFile.getOriginalFilename());
+					return errorMessage.toString();
+            	}
+            }
+            catch(Exception e1) {
+            	logger.debug("validate header returns false, not shouhou format");
+				errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+				return errorMessage.toString();
+            }
+            
+        	for(int j = 0; j < workbook.getNumberOfSheets(); j ++) {
+        		Sheet datatypeSheet = workbook.getSheetAt(j);
+        		try {
+        			List<ShouhouListFromExcel> records = getRecordsFromSheet(datatypeSheet, objFormulaEvaluator);
+        			if(records != null && records.size() > 0) {
+        				shouhouListFromExcelRepository.deleteByBranName(datatypeSheet.getSheetName());
+        				shouhouListFromExcelRepository.flush();
+        				shouhouListFromExcelRepository.save(records);
+        				shouhouListFromExcelRepository.flush();
+        			}
+        		}catch(Exception e3) {
+        			logger.error("caught exception during getRecordsFromSheet."+e3.getMessage());
+        			return "caught exception during parse sheet.";
+        		}
+        	}
+        }
+        catch(Exception e)
+        {
+        	logger.error("got exception:"+e.getMessage());
+        	errorMessage.append("got exception:"+e.getMessage());
+        }
+        finally
+        {
+        	if(inputStream != null)
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	if(workbook != null)
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        }
+       
+        return errorMessage.toString();
+	}
+    
+    private List<ShouhouListFromExcel> getRecordsFromSheet(Sheet datatypeSheet,FormulaEvaluator objFormulaEvaluator){
+    	String sheetName = datatypeSheet.getSheetName();
+    	logger.debug("entered sheetName=",sheetName);
+        Iterator<Row> iterator = datatypeSheet.iterator();
+        int i = 0;
+        List<ShouhouListFromExcel> records = new ArrayList<ShouhouListFromExcel>();
+    	while(iterator.hasNext())
+    	{
+    		Row currentRow = iterator.next();
+    		ShouhouListFromExcel record = new ShouhouListFromExcel();
+    		if(i == 0) {
+				if(isValidHeader(currentRow,AuslandweixinConfig.shouhouOrderHeaders) == false) {
+					logger.error("validate header returns false, not shouhou format for sheet "+sheetName); 
+					return null;
+				}
+				logger.debug("this is the shouhou format excel order file");
+			}
+    		else
+    		{
+    			try
+    			{   
+    				String dateStr = getCellStringByIndex(0,currentRow, objFormulaEvaluator);
+					if(!StringUtils.isEmpty(dateStr)) {
+						record.setCreatedDateTime(stringToDate(getCellStringByIndex(0,currentRow, objFormulaEvaluator), "yyyyMMdd"));
+					}else {
+						record.setCreatedDateTime(validationUtil.getCurrentDate());
+					}
+					record.setBranName(sheetName);
+					record.setReceiverName(getCellStringByIndex(1,currentRow, objFormulaEvaluator));
+					record.setReceiverPhone(getCellStringByIndex(2,currentRow, objFormulaEvaluator));
+					record.setProductItems(getSubStringByLength(getCellStringByIndex(3,currentRow, objFormulaEvaluator),128));
+					record.setProblem(getSubStringByLength(getCellStringByIndex(4,currentRow, objFormulaEvaluator),128));
+					record.setProgress(getSubStringByLength(getCellStringByIndex(5,currentRow, objFormulaEvaluator),128));
+					record.setComments(getCellStringByIndex(7,currentRow, objFormulaEvaluator));
+					record.setCustomerLogisticNo(getCellStringByIndex(8,currentRow, objFormulaEvaluator));
+					record.setBrandLogisticNo(getCellStringByIndex(9,currentRow, objFormulaEvaluator));
+					record.setStatus(getCellStringByIndex(10,currentRow, objFormulaEvaluator));
+					if(StringUtils.isEmpty(record.getReceiverName()) && StringUtils.isEmpty(record.getReceiverPhone()) && StringUtils.isEmpty(record.getProductItems())) {
+						break;
+					}
+					records.add(record);
+    			}
+    			catch(Exception e)
+    			{
+    				logger.info("caught exception :"+e.getMessage());
+    				continue;
+    			}
+    		}
+    		i ++;
+    	}
+    	return records;
+    }
+    
+    private String getCellStringByIndex(int i, Row currentRow, FormulaEvaluator objFormulaEvaluator) {
+    	Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
+        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
+        return objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
+    }
+    
 	private String validateMmcExcelFile(MultipartFile excelFile){
         logger.debug("entered validateMmcExcelFile with excelFile");
         List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
@@ -991,7 +1224,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	    }
 	    return date;
 	}
-	 private OrderListFromExcel provisionOneRowForFruit(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
+	private OrderListFromExcel provisionOneRowForFruit(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
 		{
 			if(currentRow == null)
 			{
@@ -1515,11 +1748,16 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				//商品规格
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,60)); 
+	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,40)); 
+	        	} 
+	        }else if(i == 18) {
+				//商品shuliang
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,10)); 
 	        	} 
 	        	break;
 	        }
-
 		}
 
         record.setLastupdatedDateTime(validationUtil.getCurrentDate());
@@ -1566,7 +1804,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(stringToDate(cell, "yyyy/M/d"));
+	        		if(cell.contains("/")){
+	        			return null;
+	        		}
+	        		try {
+	        			record.setCreatedDateTime(stringToDate(cell, "yyyyMMdd"));
+	        		}catch(Exception e) {
+	        			return null;
+	        		}
 	        	} 
 	        }
 	        else if(i == 2) {
@@ -1653,6 +1898,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		logger.warn("can not getTel from "+receiverInfo);
 		return "";
 	}
+
 	private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
 	{
 		OrderListFromExcel record = new OrderListFromExcel();

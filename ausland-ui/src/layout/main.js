@@ -42,7 +42,7 @@ class Main extends React.Component {
 				  	</Navbar.Header>
 				 	<Navbar.Collapse>
 					    <Nav>
-					    	<NavItem eventKey="stock"><Link to="/ui/stock">库存查询</Link></NavItem>
+					    	<NavItem eventKey="stock"><Link to="/ui/stock">售后查询</Link></NavItem>
 					      <NavItem eventKey="order"><Link to="/ui/order">物流查询</Link></NavItem>
 							  <NavItem eventKey="history"><Link to="/ui/history">订单查询</Link></NavItem>
 					    </Nav>

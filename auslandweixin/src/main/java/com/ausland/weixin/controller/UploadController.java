@@ -1,7 +1,6 @@
 package com.ausland.weixin.controller;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ausland.weixin.config.AuslandApplicationConstants;
 import com.ausland.weixin.model.reqres.UploadPackingPhotoRes;
 import com.ausland.weixin.model.reqres.UploadZhonghanCourierExcelRes;
 import com.ausland.weixin.service.ExcelOrderService;
@@ -76,6 +74,13 @@ public class UploadController {
 	{
 		logger.debug("entered uploadVitaminFormatOrderExcel");
 		return excelOrderService.uploadOrderExcel(file, "vitamin");
+	}
+	
+	@PostMapping(value = "/shouhou/excel/shouhou")
+	public UploadZhonghanCourierExcelRes uploadShouhouExcel(@RequestParam("excelFile") MultipartFile file)
+	{
+		logger.debug("entered uploadShouhouExcel");
+		return excelOrderService.uploadOrderExcel(file, "shouhou");
 	}
 	
 	@PostMapping(value = "/packing/photo")

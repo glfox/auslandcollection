@@ -1,13 +1,14 @@
 const BASE_URL = 'http://118.24.75.119:8080';
 //const BASE_URL = 'http://localhost:8081';
 const CONTEXT_PATH = '/auslandweixin';
+//const CONTEXT_PATH = '/auslandtest';
 const page_size = 30;
 export { 
 	getOrderDetails, 
 	getHistoryOrders, 
 	getProductListBy,
 	getAllProdID,
-	queryDiFou
+	queryShouhou
 };
 
 function getOrderDetails(trackingNo) {
@@ -40,8 +41,8 @@ function getAllProdID(phone) {
 	}).then(res => res.json());
 }
 
-function queryDiFou(searchVal) {
-	let url = BASE_URL + CONTEXT_PATH + '/difou/getProductStockList?productId=' + searchVal;
+function queryShouhou(searchVal) {
+	let url = BASE_URL + CONTEXT_PATH + '/shouhou/getShouhouList?user=' + searchVal;
 	return fetch(url,{
 		method: 'POST',
 	}).then(res => res.json());
