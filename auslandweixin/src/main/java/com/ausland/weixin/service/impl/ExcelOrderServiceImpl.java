@@ -1967,8 +1967,8 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	{
 	        		String []items = cell.split(" ");
 					for (int j= 0; j < items.length && j <=2; j ++){
-						if (!StringUtils.isEmpty(items[i])){
-							record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(items[i],32));
+						if (!StringUtils.isEmpty(items[j])){
+							record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(items[j],32));
 						}
 					}
 	        	}
