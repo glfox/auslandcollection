@@ -1948,7 +1948,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		String[] items = cell.split(",");
-					for (j=0; j< items.length && j< 2; j ++){
+					for (int j=0; j< items.length && j< 2; j ++){
 						if (j == 0 && !StringUtils.isEmpty(items[0])){
 							//收件人
 						    record.setReceiverName(getSubStringByLength(items[0],64));
@@ -1966,7 +1966,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell)) 
 	        	{
 	        		String []items = cell.split(" ");
-					for (j= 0; j < items.length && j <=2; j ++){
+					for (int j= 0; j < items.length && j <=2; j ++){
 						if (!StringUtils.isEmpty(items[i])){
 							record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(items[i],32));
 						}
