@@ -1889,7 +1889,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				break;
 	        }
 		}
-		record.setId(getSubStringByLength(record.getId()+"-"+record.getLogisticNo()+"-"+record.getProductItems(),64));
+		record.setId(getSubStringByLength(record.getId()+"-"+record.getProductItems(),64));
         record.setLastupdatedDateTime(validationUtil.getCurrentDate());
 		if(!StringUtils.isEmpty(strB.toString())) {
 			logger.debug("warning record:"+strB.toString());
@@ -1908,12 +1908,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		OrderListFromExcel record = new OrderListFromExcel();
 		StringBuffer strB = new StringBuffer();
 
-		for(int i = 0; i < currentRow.getLastCellNum(); i++)
+		for(int i = 0; i < currentRow.getLastCellNum() && i <= 9; i++)
 		{
 	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
 	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
 	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
-            //logger.debug("got cell value:"+cell);
+            logger.debug("got cell value:"+cell);
 	        if(i == 0)
 	        {
 	        	//订单号
@@ -1948,11 +1948,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		String[] items = cell.split(",");
-					for (i=0; i < items.length && i < 2; i ++){
-						if (i == 0 && !StringUtils.isEmpty(items[0])){
+					for (j=0; j< items.length && j< 2; j ++){
+						if (j == 0 && !StringUtils.isEmpty(items[0])){
 							//收件人
 						    record.setReceiverName(getSubStringByLength(items[0],64));
-						}else if (i == 1 && !StringUtils.isEmpty(items[1])){
+						}
+						if (j == 1 && !StringUtils.isEmpty(items[1])){
 							//电话
 							record.setReceiverPhone(getSubStringByLength(items[1],64));
 						}
@@ -1965,7 +1966,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	if(!StringUtils.isEmpty(cell)) 
 	        	{
 	        		String []items = cell.split(" ");
-					for (i = 0; i < items.length && i <=2; i ++){
+					for (j= 0; j < items.length && j <=2; j ++){
 						if (!StringUtils.isEmpty(items[i])){
 							record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(items[i],32));
 						}
@@ -1983,7 +1984,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				break;
 			}
 		}
-		record.setId(getSubStringByLength(record.getId()+"-"+record.getLogisticNo()+"-"+record.getProductItems(),64));
+		record.setId(getSubStringByLength(record.getId()+"-"+record.getProductItems(),64));
         record.setLastupdatedDateTime(validationUtil.getCurrentDate());
 		if(!StringUtils.isEmpty(strB.toString())) {
 			logger.debug("warning record:"+strB.toString());
@@ -2082,7 +2083,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 				break;
 	        }
 		}
-		record.setId(getSubStringByLength(record.getId()+"-"+record.getLogisticNo()+"-"+record.getProductItems(),64));
+		record.setId(getSubStringByLength(record.getId()+"-"+record.getProductItems(),64));
         record.setLastupdatedDateTime(validationUtil.getCurrentDate());
 		if(!StringUtils.isEmpty(strB.toString())) {
 			logger.debug("warning record:"+strB.toString());
