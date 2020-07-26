@@ -87,6 +87,8 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	public static List<String> vitaminOrderHeaders = null;
 	public static List<String> luxuryOrderHeaders = null;
 	public static List<String> everOrderHeaders = null; 
+	public static List<String> ozwearOrderHeaders = null; 	
+	public static List<String> auSpecialOrderHeaders = null; 	
 	public static List<String> mmcOrderHeaders = null;
 	public static List<String> shouhouOrderHeaders = null;
 	public static List<String> tasmanOrderHeaders = null;
@@ -183,15 +185,62 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		ozwearOrderHeaders = new ArrayList<String>();
+		try{
+            ozwearOrderHeaders.add("订单号");
+			ozwearOrderHeaders.add("物流公司");
+			ozwearOrderHeaders.add("物流单号");
+			ozwearOrderHeaders.add("收件人姓名");
+			ozwearOrderHeaders.add("收件人手机");
+			ozwearOrderHeaders.add("收件人地址");
+			ozwearOrderHeaders.add("货号");
+			ozwearOrderHeaders.add("颜色");
+			ozwearOrderHeaders.add("尺码");
+			ozwearOrderHeaders.add("数量");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        auSpecialOrderHeaders = new ArrayList<String>();
+		try{
+            auSpecialOrderHeaders.add("订单号");
+			auSpecialOrderHeaders.add("物流公司");
+			auSpecialOrderHeaders.add("物流单号");
+			auSpecialOrderHeaders.add("下单时间");
+			auSpecialOrderHeaders.add("数量");
+			auSpecialOrderHeaders.add("金额");
+			auSpecialOrderHeaders.add("寄件人");
+			auSpecialOrderHeaders.add("收件人");
+			auSpecialOrderHeaders.add("内件");
+			auSpecialOrderHeaders.add("状态");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		everOrderHeaders = new ArrayList<String>();
 		try{
-            everOrderHeaders.add("订单号");
-			everOrderHeaders.add("订单日期");
-			everOrderHeaders.add("发货单号");
-			everOrderHeaders.add("配单号");
+            everOrderHeaders.add("代发明细编号");
+			everOrderHeaders.add("");
 			everOrderHeaders.add("收件人");
-			everOrderHeaders.add("PHONE");
-			everOrderHeaders.add("ADDRESS");
+			everOrderHeaders.add("收件人手机号");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("收件人详细地址");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("货号"); //13
+			everOrderHeaders.add("颜色");
+			everOrderHeaders.add("尺码");
+			everOrderHeaders.add("订货数量");
+			everOrderHeaders.add("发货数量");
+			everOrderHeaders.add("处理状态"); //18
+			everOrderHeaders.add("");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("");
+			everOrderHeaders.add("物流公司");// 22
+			everOrderHeaders.add("物流单号");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

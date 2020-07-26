@@ -232,6 +232,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		}
 		if("mmc".equalsIgnoreCase(formatType) || "ozlana".equalsIgnoreCase(formatType) || "vitamin".equalsIgnoreCase(formatType)
 		   || "luxury".equalsIgnoreCase(formatType) || "ever".equalsIgnoreCase(formatType) || "tasman".equalsIgnoreCase(formatType)
+		   || "ozwear".equalsIgnoreCase(formatType) || "auspecial".equalsIgnoreCase(formatType)
 		   || "fruit".equalsIgnoreCase(formatType) || "shouhou".equalsIgnoreCase(formatType)) {
 			return true;
 		}
@@ -248,7 +249,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         	return res;
         }
         if(!isValidFormatType(formatType)) {
-        	res.setErrorDetails("excel file format type" + formatType + " is not correct");
+        	res.setErrorDetails("excel file format type " + formatType + " is not correct");
         	res.setUploadResult(AuslandApplicationConstants.STATUS_FAILED);  
         	return res;
         }
@@ -321,6 +322,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		 if("ever".equalsIgnoreCase(formatType)) {
 			 return validateEverExcelFile(excelFile);
 		 }
+		 if("ozwear".equalsIgnoreCase(formatType)) {
+			 return validateOzwearExcelFile(excelFile);
+		 }
+		 if("auspecial".equalsIgnoreCase(formatType)) {
+			 return validateAuSpecialExcelFile(excelFile);
+		 }		 
 		 if("fruit".equalsIgnoreCase(formatType)) {
 			 return validateFruitExcelFile(excelFile);
 		 }
@@ -547,7 +554,222 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		}
     
 
-	
+	private String validateOzwearExcelFile(MultipartFile excelFile){
+		logger.debug("entered validateOzwearExcelFile with excelFile");
+		List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
+		StringBuffer errorMessage = new StringBuffer();
+		Workbook workbook = null;
+		InputStream  inputStream = null;
+		try
+		{
+			inputStream = excelFile.getInputStream();
+			workbook = WorkbookFactory.create(inputStream);// new XSSFWorkbook(excelFile.getInputStream());
+			Sheet datatypeSheet = workbook.getSheetAt(0);
+			Iterator<Row> iterator = datatypeSheet.iterator();
+			int i = 0;
+			String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+			FormulaEvaluator objFormulaEvaluator = null;
+			
+			try {
+				if(workbook instanceof HSSFWorkbook) {
+					objFormulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) workbook);
+				}
+				else if(workbook instanceof XSSFWorkbook){
+					objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+				}
+				else {
+					logger.debug("invalidate excel format");
+					errorMessage.append("invalid excel format:"+excelFile.getOriginalFilename());
+					return errorMessage.toString();
+				}
+			}
+			catch(Exception e1) {
+				logger.debug("validate header returns false, not mmc format");
+				errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+				return errorMessage.toString();
+			}
+			boolean foundHeader = false;
+			while(iterator.hasNext())
+			{
+				Row currentRow = iterator.next();
+				if (foundHeader != true){
+					if(i > 4) {
+						logger.debug("validate header returns false, not luxury format");
+						errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+						return errorMessage.toString();
+					}
+					if (isValidHeader(currentRow,AuslandweixinConfig.ozwearOrderHeaders) == true){
+						foundHeader = true;
+					}
+				}
+				else
+				{
+					try
+					{
+						OrderListFromExcel record = provisionOneRowForOzwear(fileName, currentRow, objFormulaEvaluator);
+						if(record != null && !StringUtils.isEmpty(record.getId()) && StringUtils.isEmpty(record.getErrorMsg())) {
+							logger.debug("provisionOneRowForOzwear: add record="+record.toString());
+							records.add(record);
+							if(records.size() >= AuslandApplicationConstants.DB_BATCH_SIZE)
+							{
+								orderListFromExcelRepository.save(records);
+								orderListFromExcelRepository.flush();
+								records.clear();
+							}
+						}else {
+							logger.debug("provisionOneRowForOzwear: skip this record");
+						}
+					}
+					catch(Exception e)
+					{
+						logger.info("caught exception :"+e.getMessage());
+						int line = i + 2;
+						errorMessage.append("parse line: "+ line + "got exception:"+e.getMessage());
+					}
+				}
+				i ++;
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("got exception:"+e.getMessage());
+			errorMessage.append("got exception:"+e.getMessage());
+		}
+		finally
+		{
+			if(inputStream != null)
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			if(workbook != null)
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		if(records.size() > 0)
+		{
+			orderListFromExcelRepository.save(records);
+			orderListFromExcelRepository.flush();
+			records.clear();
+		}
+		
+		return errorMessage.toString();
+	}
+    
+	private String validateAuSpecialExcelFile(MultipartFile excelFile){
+		logger.debug("entered validateAuspecialExcelFile with excelFile");
+		List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
+		StringBuffer errorMessage = new StringBuffer();
+		Workbook workbook = null;
+		InputStream  inputStream = null;
+		try
+		{
+			inputStream = excelFile.getInputStream();
+			workbook = WorkbookFactory.create(inputStream);// new XSSFWorkbook(excelFile.getInputStream());
+			Sheet datatypeSheet = workbook.getSheetAt(0);
+			Iterator<Row> iterator = datatypeSheet.iterator();
+			int i = 0;
+			String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+			FormulaEvaluator objFormulaEvaluator = null;
+			
+			try {
+				if(workbook instanceof HSSFWorkbook) {
+					objFormulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) workbook);
+				}
+				else if(workbook instanceof XSSFWorkbook){
+					objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+				}
+				else {
+					logger.debug("invalid excel format");
+					errorMessage.append("invalid excel format:"+excelFile.getOriginalFilename());
+					return errorMessage.toString();
+				}
+			}
+			catch(Exception e1) {
+				logger.debug("validate header returns false, not mmc format");
+				errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+				return errorMessage.toString();
+			}
+			boolean foundHeader = false;
+			while(iterator.hasNext())
+			{
+				Row currentRow = iterator.next();
+				if (foundHeader != true){
+					if(i > 4) {
+						logger.debug("validate header returns false, not auspecial format");
+						errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+						return errorMessage.toString();
+					}
+					if (isValidHeader(currentRow,AuslandweixinConfig.auSpecialOrderHeaders) == true){
+						foundHeader = true;
+					}
+				}
+				else
+				{
+					try
+					{
+						OrderListFromExcel record = provisionOneRowForAuSpecial(fileName, currentRow, objFormulaEvaluator);
+						if(record != null && !StringUtils.isEmpty(record.getId()) && StringUtils.isEmpty(record.getErrorMsg())) {
+							logger.debug("provisionOneRowForAuSpecial: add record="+record.toString());
+							records.add(record);
+							if(records.size() >= AuslandApplicationConstants.DB_BATCH_SIZE)
+							{
+								orderListFromExcelRepository.save(records);
+								orderListFromExcelRepository.flush();
+								records.clear();
+							}
+						}else {
+							logger.debug("provisionOneRowForAuSpecial: skip this record");
+						}
+					}
+					catch(Exception e)
+					{
+						logger.info("caught exception :"+e.getMessage());
+						int line = i + 2;
+						errorMessage.append("parse line: "+ line + "got exception:"+e.getMessage());
+					}
+				}
+				i ++;
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("got exception:"+e.getMessage());
+			errorMessage.append("got exception:"+e.getMessage());
+		}
+		finally
+		{
+			if(inputStream != null)
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			if(workbook != null)
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		if(records.size() > 0)
+		{
+			orderListFromExcelRepository.save(records);
+			orderListFromExcelRepository.flush();
+			records.clear();
+		}
+		
+		return errorMessage.toString();
+	}
+
 	    private String validateTasmanExcelFile(MultipartFile excelFile){
 	        logger.debug("entered validateTasmanExcelFile with excelFile");
 	        List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
@@ -1581,10 +1803,10 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
             //logger.debug("got cell value:"+cell);
 	        if(i == 0)
 	        {
-	        	//订单编号
+	        	// 代发明细编号
 	        	if(StringUtils.isEmpty(cell))
 	        	{
-	        		strB.append("没有订单编号");
+	        		strB.append("没有代发明细编号");
 	        		record.setErrorMsg(strB.toString());
 	        		return record;
 	        	}
@@ -1594,71 +1816,71 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					record.setId(getSubStringByLength(cell,19));
 	        	}
 	        }
-	        else if(i == 1) {
-	        	// 日期
-	        	if(!StringUtils.isEmpty(cell))
-	        	{
-	        		record.setCreatedDateTime(stringToDate(cell, "M/d/yy"));
-	        	} 
-	        }
-	        else if(i == 4) {
-	        	// 收货人姓名
+	        else if(i == 2) {
+	        	// 收件人
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setReceiverName(getSubStringByLength(cell,64));
 	        	} 
 	        }
-	        else if(i == 5)
+	        else if(i == 3)
 	        {
-	        	//收货人电话
+	        	// 收件人手机号
 	        	if(!StringUtils.isEmpty(cell)) 
 	        	{
 	        		record.setReceiverPhone(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 9) {
-				//goodsno
+			else if(i == 13) {
+				// 货号
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setProductItems(getSubStringByLength(cell,16)); 
+	        		record.setProductItems(getSubStringByLength(cell,32)); 
 	        	} 
 	        }
-			else if(i == 10) {
-				//goodsname
-	        	if(!StringUtils.isEmpty(cell))
-	        	{
-	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,32)); 
-	        	} 
-	        }
-			else if(i == 11) {
-				//colordesc
+			else if(i == 14) {
+				// 颜色
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,16));
 	        	} 
 	        }
-			else if(i == 12) {
-				//sizedesc
+			else if(i == 15) {
+				// 尺码
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,16));
 	        	} 
 	        }
-            else if(i == 14) {
-				//quantity
+//            else if(i == 16) {
+//				// 订货数量
+//	        	if(!StringUtils.isEmpty(cell))
+//	        	{
+//	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,8));
+//	        	} 
+//	        }
+//            else if(i == 17) {
+//				// 发货数量
+//	        	if(!StringUtils.isEmpty(cell))
+//	        	{
+//	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,8));
+//	        	} 
+//	        }
+			else if(i == 18) {
+				//处理状态
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,8));
+	        		record.setStatus(getSubStringByLength(cell,32)); 
 	        	} 
 	        }
-			else if(i == 16) {
+			else if(i == 22) {
 				//traffic_company
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setLogisticCompany(getSubStringByLength(cell,64)); 
 	        	} 
 	        }
-			else if(i == 17) {
+			else if(i == 23) {
 				//traffic_no
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
@@ -1675,6 +1897,199 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         logger.debug("provisionOneRowForEver returns with record:"+record.toString());
 		return record;
 	}	
+
+    private OrderListFromExcel provisionOneRowForAuSpecial(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
+	{
+		if(currentRow == null)
+		{
+			return null;
+		}
+		logger.debug("entered provisionOneRowForAuSpecial with filename:"+fileName);
+		OrderListFromExcel record = new OrderListFromExcel();
+		StringBuffer strB = new StringBuffer();
+
+		for(int i = 0; i < currentRow.getLastCellNum(); i++)
+		{
+	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
+	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
+	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
+            //logger.debug("got cell value:"+cell);
+	        if(i == 0)
+	        {
+	        	//订单号
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有订单号");
+	        		record.setErrorMsg(strB.toString());
+	        		return record;
+	        	}
+	        	else
+	            {
+	        		record.setOrderNo(getSubStringByLength(cell,64));
+					record.setId(getSubStringByLength(cell,19));
+	        	}
+	        }
+	        else if(i == 1) {
+				// 物流公司
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setLogisticCompany(getSubStringByLength(cell,64)); 
+	        	} 
+	        }
+			else if(i == 2) {
+				// 物流单号
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setLogisticNo(getSubStringByLength(cell,64));
+	        	}
+	        } 
+	        else if(i == 7) {
+	        	// 收件人,电话，地址
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		String[] items = cell.split(",");
+					for (i=0; i < items.length && i < 2; i ++){
+						if (i == 0 && !StringUtils.isEmpty(items[0])){
+							//收件人
+						    record.setReceiverName(getSubStringByLength(items[0],64));
+						}else if (i == 1 && !StringUtils.isEmpty(items[1])){
+							//电话
+							record.setReceiverPhone(getSubStringByLength(items[1],64));
+						}
+					}				
+	        	} 
+	        }
+	        else if(i == 8)
+	        {
+	        	//内件
+	        	if(!StringUtils.isEmpty(cell)) 
+	        	{
+	        		String []items = cell.split(" ");
+					for (i = 0; i < items.length && i <=2; i ++){
+						if (!StringUtils.isEmpty(items[i])){
+							record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(items[i],32));
+						}
+					}
+	        	}
+	        }
+			else if(i == 9){
+				// 状态
+				if(!StringUtils.isEmpty(cell)) 
+	        	{
+                    if (!StringUtils.isEmpty(cell)){
+						record.setStatus(getSubStringByLength(cell, 64));
+					}
+				}
+				break;
+			}
+		}
+		record.setId(getSubStringByLength(record.getId()+"-"+record.getLogisticNo()+"-"+record.getProductItems(),64));
+        record.setLastupdatedDateTime(validationUtil.getCurrentDate());
+		if(!StringUtils.isEmpty(strB.toString())) {
+			logger.debug("warning record:"+strB.toString());
+		}
+        logger.debug("provisionOneRowForAuSpecial returns with record:"+record.toString());
+		return record;
+	}
+
+    private OrderListFromExcel provisionOneRowForOzwear(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
+	{
+		if(currentRow == null)
+		{
+			return null;
+		}
+		logger.debug("entered provisionOneRowForOzwear with filename:"+fileName);
+		OrderListFromExcel record = new OrderListFromExcel();
+		StringBuffer strB = new StringBuffer();
+
+		for(int i = 0; i < currentRow.getLastCellNum(); i++)
+		{
+	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
+	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
+	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
+            //logger.debug("got cell value:"+cell);
+	        if(i == 0)
+	        {
+	        	//订单号
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有订单号");
+	        		record.setErrorMsg(strB.toString());
+	        		return record;
+	        	}
+	        	else
+	            {
+	        		record.setOrderNo(getSubStringByLength(cell,64));
+					record.setId(getSubStringByLength(cell,19));
+	        	}
+	        }
+	        else if(i == 1) {
+				// 物流公司
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setLogisticCompany(getSubStringByLength(cell,64)); 
+	        	} 
+	        }
+			else if(i == 2) {
+				// 物流单号
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setLogisticNo(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 3) {
+	        	// 收件人姓名
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setReceiverName(getSubStringByLength(cell,64));
+	        	} 
+	        }
+	        else if(i == 4)
+	        {
+	        	//收件人手机
+	        	if(!StringUtils.isEmpty(cell)) 
+	        	{
+	        		record.setReceiverPhone(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 6) {
+				//goodsno
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setProductItems(getSubStringByLength(cell,16)); 
+	        	} 
+	        }
+			else if(i == 7) {
+				//colordesc
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,16));
+	        	} 
+	        }
+			else if(i == 8) {
+				//sizedesc
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,16));
+	        	} 
+	        }
+            else if(i == 9) {
+				//quantity
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,8));
+	        	} 
+				break;
+	        }
+		}
+		record.setId(getSubStringByLength(record.getId()+"-"+record.getLogisticNo()+"-"+record.getProductItems(),64));
+        record.setLastupdatedDateTime(validationUtil.getCurrentDate());
+		if(!StringUtils.isEmpty(strB.toString())) {
+			logger.debug("warning record:"+strB.toString());
+		}
+        logger.debug("provisionOneRowForOzwear returns with record:"+record.toString());
+		return record;
+	}
 
 	private OrderListFromExcel provisionOneRowForLuxury(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
 	{

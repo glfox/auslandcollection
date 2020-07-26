@@ -75,6 +75,20 @@ public class UploadController {
 		logger.debug("entered uploadVitaminFormatOrderExcel");
 		return excelOrderService.uploadOrderExcel(file, "vitamin");
 	}
+
+	@PostMapping(value = "/order/excel/ozwear")
+	public UploadZhonghanCourierExcelRes uploadOzwearFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	{
+		logger.debug("entered uploadOzwearFormatOrderExcel");
+		return excelOrderService.uploadOrderExcel(file, "ozwear");
+	}
+
+    @PostMapping(value = "/order/excel/auspecial")
+	public UploadZhonghanCourierExcelRes uploadAuSpecialFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	{
+		logger.debug("entered uploadAuSpecialFormatOrderExcel");
+		return excelOrderService.uploadOrderExcel(file, "auspecial");
+	}
 	
 	@PostMapping(value = "/shouhou/excel/shouhou")
 	public UploadZhonghanCourierExcelRes uploadShouhouExcel(@RequestParam("excelFile") MultipartFile file)
