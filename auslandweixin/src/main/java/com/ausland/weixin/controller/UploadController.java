@@ -76,7 +76,7 @@ public class UploadController {
 		return excelOrderService.uploadOrderExcel(file, "cch");
 	}
 	
-	@PostMapping(value = "/order/excel/cch")
+	@PostMapping(value = "/order/excel/c.chow")
 	public UploadZhonghanCourierExcelRes uploadCchFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
 	{
 		logger.debug("entered uploadCchFormatOrderExcel");

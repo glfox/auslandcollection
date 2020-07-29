@@ -2822,27 +2822,28 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        	    record.setProductItems(getSubStringByLength(cell,128));
 	        		IdBuf.append("-").append(cell);
 	        	}
+				break;
 	        }
-	        else if(i == 14)
-	        {
-	        	//规格
-	        	if(!StringUtils.isEmpty(cell))
-	        	{
-	        		String p = record.getProductItems()+"-"+cell;
-	        		record.setProductItems(getSubStringByLength(p,128));
-	        		IdBuf.append("-").append(cell);
-	        	}
-	        } 
-	        else if(i == 16)
-	        {
-	        	//数量
-	        	if(!StringUtils.isEmpty(cell))
-	        	{
-	        		String p = record.getProductItems()+"-"+cell;
-	        		record.setProductItems(getSubStringByLength(p,128));
-	        	}
-	        	break;
-	        }
+	        // else if(i == 14)
+	        // {
+	        // 	//规格
+	        // 	if(!StringUtils.isEmpty(cell))
+	        // 	{
+	        // 		String p = record.getProductItems()+"-"+cell;
+	        // 		record.setProductItems(getSubStringByLength(p,128));
+	        // 		IdBuf.append("-").append(cell);
+	        // 	}
+	        // } 
+	        // else if(i == 16)
+	        // {
+	        // 	//数量
+	        // 	if(!StringUtils.isEmpty(cell))
+	        // 	{
+	        // 		String p = record.getProductItems()+"-"+cell;
+	        // 		record.setProductItems(getSubStringByLength(p,128));
+	        // 	}
+	        // 	break;
+	        // }
 		}
 		record.setId(getSubStringByLength(IdBuf.toString(),64));
          

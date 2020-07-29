@@ -378,11 +378,6 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			cchOrderHeaders.add("");
 			cchOrderHeaders.add("");
 			cchOrderHeaders.add("品名"); //11
-			cchOrderHeaders.add("");
-			cchOrderHeaders.add("");
-			cchOrderHeaders.add("规格"); //14
-			cchOrderHeaders.add("");
-			cchOrderHeaders.add("数量");  //16
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
