@@ -233,6 +233,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		if("mmc".equalsIgnoreCase(formatType) || "ozlana".equalsIgnoreCase(formatType) || "vitamin".equalsIgnoreCase(formatType)
 		   || "luxury".equalsIgnoreCase(formatType) || "ever".equalsIgnoreCase(formatType) || "tasman".equalsIgnoreCase(formatType)
 		   || "ozwear".equalsIgnoreCase(formatType) || "auspecial".equalsIgnoreCase(formatType)
+		   || "dk".equalsIgnoreCase(formatType) || "cch".equalsIgnoreCase(formatType)
 		   || "fruit".equalsIgnoreCase(formatType) || "shouhou".equalsIgnoreCase(formatType)) {
 			return true;
 		}
@@ -306,6 +307,12 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         }
 		 if("mmc".equalsIgnoreCase(formatType)) {
 			 return validateMmcExcelFile(excelFile);
+		 }
+		 if("cch".equalsIgnoreCase(formatType)) {
+			 return validateCchExcelFile(excelFile);
+		 }
+		 if("dk".equalsIgnoreCase(formatType)) {
+			 return validateDkExcelFile(excelFile);
 		 }
 		 if("ozlana".equalsIgnoreCase(formatType)) {
 			 return validateOzlanaExcelFile(excelFile);
@@ -1136,17 +1143,18 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         	while(iterator.hasNext())
         	{
         		Row currentRow = iterator.next();
-        		if(i == 0)
+        		if(i < 3)
         		{
                    //do nothing
-        		}else if(i == 1) {
-					if(isValidHeader(currentRow,AuslandweixinConfig.ozlanaOrderHeaders) == false) {
-						logger.debug("validate header returns false, not ozlana format");
-						errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
-						return errorMessage.toString();
-					}
-					logger.debug("this is the ozlana format excel order file");
-				}
+        		}
+				// else if(i == 1) {
+				// 	if(isValidHeader(currentRow,AuslandweixinConfig.ozlanaOrderHeaders) == false) {
+				// 		logger.debug("validate header returns false, not ozlana format");
+				// 		errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+				// 		return errorMessage.toString();
+				// 	}
+				// 	logger.debug("this is the ozlana format excel order file");
+				// }
         		else
         		{
         			try
@@ -1336,7 +1344,204 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
         return objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
     }
-    
+
+    private String validateCchExcelFile(MultipartFile excelFile){
+        logger.debug("entered validateCchExcelFile with excelFile");
+        List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
+		StringBuffer errorMessage = new StringBuffer();
+		Workbook workbook = null;
+        InputStream  inputStream = null;
+        try
+        {
+        	inputStream = excelFile.getInputStream();
+        	workbook = WorkbookFactory.create(inputStream);// new XSSFWorkbook(excelFile.getInputStream());
+        	Sheet datatypeSheet = workbook.getSheetAt(0);
+            Iterator<Row> iterator = datatypeSheet.iterator();
+            int i = 0;
+            String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+            FormulaEvaluator objFormulaEvaluator = null;
+           
+            try {
+            	if(workbook instanceof HSSFWorkbook) {
+            		objFormulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) workbook);
+            	}
+            	else if(workbook instanceof XSSFWorkbook){
+            		objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+            	}
+            	else {
+            		logger.debug("invalidate excel format");
+					errorMessage.append("invalid excel format:"+excelFile.getOriginalFilename());
+					return errorMessage.toString();
+            	}
+            }
+            catch(Exception e1) {
+            	logger.debug("validate header returns false, not cch format");
+				errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+				return errorMessage.toString();
+            }
+
+        	while(iterator.hasNext())
+        	{
+        		Row currentRow = iterator.next();
+        		if(i == 0)
+        		{
+                   if(isValidHeader(currentRow,AuslandweixinConfig.cchOrderHeaders) == false) {
+						logger.debug("validate header returns false, not cch format");
+						errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+						return errorMessage.toString();
+					}
+					logger.debug("this is the cch format excel order file");
+        		}else{
+        			try
+        			{
+						OrderListFromExcel record = provisionOneRowForCch(fileName, currentRow, objFormulaEvaluator);
+						records.add(record);
+						if(records.size() >= AuslandApplicationConstants.DB_BATCH_SIZE)
+						{
+							orderListFromExcelRepository.save(records);
+							orderListFromExcelRepository.flush();
+							records.clear();
+						}
+        			}
+        			catch(Exception e)
+        			{
+        				logger.info("caught exception :"+e.getMessage());
+        				int line = i + 1;
+        				errorMessage.append("parse line: "+ line + "got exception:"+e.getMessage());
+        			}
+        		}
+        		i ++;
+        	}
+        }
+        catch(Exception e)
+        {
+        	logger.error("got exception:"+e.getMessage());
+        	errorMessage.append("got exception:"+e.getMessage());
+        }
+        finally
+        {
+        	if(inputStream != null)
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	if(workbook != null)
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        }
+        if(records.size() > 0)
+		{
+			orderListFromExcelRepository.save(records);
+			orderListFromExcelRepository.flush();
+			records.clear();
+		}
+        return errorMessage.toString();
+	}
+	private String validateDkExcelFile(MultipartFile excelFile){
+        logger.debug("entered validateDkExcelFile with excelFile");
+        List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
+		StringBuffer errorMessage = new StringBuffer();
+		Workbook workbook = null;
+        InputStream  inputStream = null;
+        try
+        {
+        	inputStream = excelFile.getInputStream();
+        	workbook = WorkbookFactory.create(inputStream);// new XSSFWorkbook(excelFile.getInputStream());
+        	Sheet datatypeSheet = workbook.getSheetAt(0);
+            Iterator<Row> iterator = datatypeSheet.iterator();
+            int i = 0;
+            String fileName = FilenameUtils.getBaseName(excelFile.getOriginalFilename());
+            FormulaEvaluator objFormulaEvaluator = null;
+           
+            try {
+            	if(workbook instanceof HSSFWorkbook) {
+            		objFormulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) workbook);
+            	}
+            	else if(workbook instanceof XSSFWorkbook){
+            		objFormulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+            	}
+            	else {
+            		logger.debug("invalidate excel format");
+					errorMessage.append("invalid excel format:"+excelFile.getOriginalFilename());
+					return errorMessage.toString();
+            	}
+            }
+            catch(Exception e1) {
+            	logger.debug("validate header returns false, not dk format");
+				errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+				return errorMessage.toString();
+            }
+
+        	while(iterator.hasNext())
+        	{
+        		Row currentRow = iterator.next();
+        		if(i == 0)
+        		{
+                   if(isValidHeader(currentRow,AuslandweixinConfig.dkOrderHeaders) == false) {
+						logger.debug("validate header returns false, not dk format");
+						errorMessage.append("validate header failed for excel file:"+excelFile.getOriginalFilename());
+						return errorMessage.toString();
+					}
+					logger.debug("this is the dk format excel order file");
+        		}else{
+        			try
+        			{
+						OrderListFromExcel record = provisionOneRowForDk(fileName, currentRow, objFormulaEvaluator);
+						records.add(record);
+						if(records.size() >= AuslandApplicationConstants.DB_BATCH_SIZE)
+						{
+							orderListFromExcelRepository.save(records);
+							orderListFromExcelRepository.flush();
+							records.clear();
+						}
+        			}
+        			catch(Exception e)
+        			{
+        				logger.info("caught exception :"+e.getMessage());
+        				int line = i + 1;
+        				errorMessage.append("parse line: "+ line + "got exception:"+e.getMessage());
+        			}
+        		}
+        		i ++;
+        	}
+        }
+        catch(Exception e)
+        {
+        	logger.error("got exception:"+e.getMessage());
+        	errorMessage.append("got exception:"+e.getMessage());
+        }
+        finally
+        {
+        	if(inputStream != null)
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	if(workbook != null)
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        }
+        if(records.size() > 0)
+		{
+			orderListFromExcelRepository.save(records);
+			orderListFromExcelRepository.flush();
+			records.clear();
+		}
+        return errorMessage.toString();
+	}
+
 	private String validateMmcExcelFile(MultipartFile excelFile){
         logger.debug("entered validateMmcExcelFile with excelFile");
         List<OrderListFromExcel> records = new ArrayList<OrderListFromExcel>();
@@ -1578,17 +1783,14 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					IdBuf.append(cell);
 	        	}
 	        }
-	        else if(i == 1) {
+	        else if(i == 2) {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setCreatedDateTime(stringToDate(cell, "yyyy-MM-dd"));
 	        	} 
 	        }
-	        else if(i == 2) {
-	        	// 代理名称
-	        }
-	        else if(i == 3)
+	        else if(i == 4)
 	        {
 	        	//收件人
 	        	if(StringUtils.isEmpty(cell))
@@ -1600,7 +1802,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setReceiverName(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 4) {
+	        else if(i == 5) {
 	        	// 电话号码
 	        	if(StringUtils.isEmpty(cell))
 	        	{
@@ -1611,7 +1813,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setReceiverPhone(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 5)
+	        else if(i == 12)
 	        {
 	        	//产品编号
 	        	if(!StringUtils.isEmpty(cell))
@@ -1620,7 +1822,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					IdBuf.append("-").append(cell);
 	        	}       	
 	        }
-	        else if(i == 6)
+	        else if(i == 13)
 	        {
 	        	//尺码
 	        	if(!StringUtils.isEmpty(cell))
@@ -1630,7 +1832,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					IdBuf.append("-").append(cell);
 	        	} 
 	        }
-	        else if(i == 7)
+	        else if(i == 14)
 	        {
 	        	//颜色
 	        	if(!StringUtils.isEmpty(cell))
@@ -1639,7 +1841,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
-	        else if(i == 8)
+	        else if(i == 15)
 	        {
 	        	//数量
 	        	if(!StringUtils.isEmpty(cell))
@@ -1648,14 +1850,22 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setProductItems(getSubStringByLength(p,128));
 	        	}
 	        }
-	        else if(i == 9) {
+			else if(i == 18)
+	        {
+	        	//订单状态
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setStatus(getSubStringByLength(cell,16));
+	        	}
+	        }
+	        else if(i == 20) {
 	        	// 快递名称
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 10)
+	        else if(i == 21)
 	        {
 	        	//快递单号
 	        	if(!StringUtils.isEmpty(cell))
@@ -2314,8 +2524,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		logger.warn("can not getTel from "+receiverInfo);
 		return "";
 	}
-
-	private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
+private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
 	{
 		OrderListFromExcel record = new OrderListFromExcel();
 		StringBuffer strB = new StringBuffer();
@@ -2347,32 +2556,37 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		IdBuf.append(cell);
 	        	}
 	        }
-	        else if(i == 1) {
-	        	//交易时间
-	        	if(!StringUtils.isEmpty(cell))
-	        	{
-	        		record.setCreatedDateTime(stringToDate(cell, "yyyy/M/d"));
-	        	}
-	        }
-	        else if(i == 2)
+	        else if(i == 5)
 	        {
 	        	//收货人
 	        	if(StringUtils.isEmpty(cell))
 	        	{
-	        		strB.append("没有收件人");
+	        		strB.append("没有收货人");
 	        	}
 	        	else
 	        	{
 	        		record.setReceiverName(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 3) {
+			else if(i == 6)
+	        {
+	        	//联系电话
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有联系电话");
+	        	}
+	        	else
+	        	{
+	        		record.setReceiverPhone(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 7) {
 	        	// 物流方式
 	        	if(!StringUtils.isEmpty(cell)) {
 	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 4)
+	        else if(i == 8)
 	        {
 	        	//物流单号
 	        	if(!StringUtils.isEmpty(cell))
@@ -2380,7 +2594,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 5)
+	        else if(i == 12)
 	        {
 	        	//品名
 	        	if(!StringUtils.isEmpty(cell))
@@ -2389,7 +2603,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		IdBuf.append("-").append(cell);
 	        	}
 	        }
-	        else if(i == 6)
+	        else if(i == 14)
 	        {
 	        	//规格
 	        	if(!StringUtils.isEmpty(cell))
@@ -2399,7 +2613,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		IdBuf.append("-").append(cell);
 	        	}
 	        } 
-	        else if(i == 7)
+	        else if(i == 16)
 	        {
 	        	//数量
 	        	if(!StringUtils.isEmpty(cell))
@@ -2416,7 +2630,227 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
         if(!StringUtils.isEmpty(strB.toString())) {
 			logger.debug("warning record:"+strB.toString());
 		}
-        logger.debug("provisionOneRowForOzlana returns with record:"+record.toString());
+        logger.debug("provisionOneRowForMmc returns with record:"+record.toString());
+		return record;
+	}
+
+	private OrderListFromExcel provisionOneRowForDk(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
+	{
+		OrderListFromExcel record = new OrderListFromExcel();
+		StringBuffer strB = new StringBuffer();
+		if(currentRow == null)
+		{
+			return null;
+		}
+		 
+		StringBuffer IdBuf = new StringBuffer();
+		for(int i = 0; i < currentRow.getLastCellNum(); i++)
+		{
+
+	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
+	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
+	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
+            //logger.debug("got cell value:"+cell);
+	        if(i == 0)
+	        {
+	        	//订单编号
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有订单编号");
+	        		record.setErrorMsg(strB.toString());
+	        		return record;
+	        	}
+	        	else
+	            {
+	        		record.setOrderNo(getSubStringByLength(cell,64));
+	        		IdBuf.append(cell);
+	        	}
+	        }
+	        else if(i == 5)
+	        {
+	        	//收货人
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有收货人");
+	        	}
+	        	else
+	        	{
+	        		record.setReceiverName(getSubStringByLength(cell,64));
+	        	}
+	        }
+			else if(i == 6)
+	        {
+	        	//联系电话
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有联系电话");
+	        	}
+	        	else
+	        	{
+	        		record.setReceiverPhone(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 7) {
+	        	// 物流方式
+	        	if(!StringUtils.isEmpty(cell)) {
+	        		record.setLogisticCompany(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 8)
+	        {
+	        	//物流单号
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setLogisticNo(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 11)
+	        {
+	        	//品名
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        	    record.setProductItems(getSubStringByLength(cell,128));
+	        		IdBuf.append("-").append(cell);
+	        	}
+	        }
+	        else if(i == 13)
+	        {
+	        	//规格
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		String p = record.getProductItems()+"-"+cell;
+	        		record.setProductItems(getSubStringByLength(p,128));
+	        		IdBuf.append("-").append(cell);
+	        	}
+	        } 
+	        else if(i == 15)
+	        {
+	        	//数量
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		String p = record.getProductItems()+"-"+cell;
+	        		record.setProductItems(getSubStringByLength(p,128));
+	        	}
+	        	break;
+	        }
+		}
+		record.setId(getSubStringByLength(IdBuf.toString(),64));
+         
+        record.setLastupdatedDateTime(validationUtil.getCurrentDate());
+        if(!StringUtils.isEmpty(strB.toString())) {
+			logger.debug("warning record:"+strB.toString());
+		}
+        logger.debug("provisionOneRowForDk returns with record:"+record.toString());
+		return record;
+	}
+
+	private OrderListFromExcel provisionOneRowForCch(String fileName, Row currentRow, FormulaEvaluator objFormulaEvaluator)
+	{
+		OrderListFromExcel record = new OrderListFromExcel();
+		StringBuffer strB = new StringBuffer();
+		if(currentRow == null)
+		{
+			return null;
+		}
+		 
+		StringBuffer IdBuf = new StringBuffer();
+		for(int i = 0; i < currentRow.getLastCellNum(); i++)
+		{
+
+	        Cell currentCell = currentRow.getCell(i,AuslandApplicationConstants.xRow.CREATE_NULL_AS_BLANK);
+	        objFormulaEvaluator.evaluate(currentCell); // This will evaluate the cell, And any type of cell will return string value
+	        String cell = objDefaultFormat.formatCellValue(currentCell,objFormulaEvaluator);
+            //logger.debug("got cell value:"+cell);
+	        if(i == 0)
+	        {
+	        	//订单编号
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有订单编号");
+	        		record.setErrorMsg(strB.toString());
+	        		return record;
+	        	}
+	        	else
+	            {
+	        		record.setOrderNo(getSubStringByLength(cell,64));
+	        		IdBuf.append(cell);
+	        	}
+	        }
+	        else if(i == 5)
+	        {
+	        	//收货人
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有收货人");
+	        	}
+	        	else
+	        	{
+	        		record.setReceiverName(getSubStringByLength(cell,64));
+	        	}
+	        }
+			else if(i == 6)
+	        {
+	        	//联系电话
+	        	if(StringUtils.isEmpty(cell))
+	        	{
+	        		strB.append("没有联系电话");
+	        	}
+	        	else
+	        	{
+	        		record.setReceiverPhone(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 7) {
+	        	// 物流方式
+	        	if(!StringUtils.isEmpty(cell)) {
+	        		record.setLogisticCompany(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 8)
+	        {
+	        	//物流单号
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		record.setLogisticNo(getSubStringByLength(cell,64));
+	        	}
+	        }
+	        else if(i == 11)
+	        {
+	        	//品名
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        	    record.setProductItems(getSubStringByLength(cell,128));
+	        		IdBuf.append("-").append(cell);
+	        	}
+	        }
+	        else if(i == 14)
+	        {
+	        	//规格
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		String p = record.getProductItems()+"-"+cell;
+	        		record.setProductItems(getSubStringByLength(p,128));
+	        		IdBuf.append("-").append(cell);
+	        	}
+	        } 
+	        else if(i == 16)
+	        {
+	        	//数量
+	        	if(!StringUtils.isEmpty(cell))
+	        	{
+	        		String p = record.getProductItems()+"-"+cell;
+	        		record.setProductItems(getSubStringByLength(p,128));
+	        	}
+	        	break;
+	        }
+		}
+		record.setId(getSubStringByLength(IdBuf.toString(),64));
+         
+        record.setLastupdatedDateTime(validationUtil.getCurrentDate());
+        if(!StringUtils.isEmpty(strB.toString())) {
+			logger.debug("warning record:"+strB.toString());
+		}
+        logger.debug("provisionOneRowForMmc returns with record:"+record.toString());
 		return record;
 	}
 	

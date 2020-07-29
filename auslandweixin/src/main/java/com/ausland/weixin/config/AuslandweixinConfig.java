@@ -90,6 +90,8 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 	public static List<String> ozwearOrderHeaders = null; 	
 	public static List<String> auSpecialOrderHeaders = null; 	
 	public static List<String> mmcOrderHeaders = null;
+	public static List<String> cchOrderHeaders = null;
+	public static List<String> dkOrderHeaders = null;
 	public static List<String> shouhouOrderHeaders = null;
 	public static List<String> tasmanOrderHeaders = null;
 	
@@ -264,17 +266,24 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		}
 		ozlanaOrderHeaders = new ArrayList<String>();
 		try {
-			ozlanaOrderHeaders.add("订单号");
-			ozlanaOrderHeaders.add("下单时间");
-			ozlanaOrderHeaders.add("代理名称");
-			ozlanaOrderHeaders.add("收件人");
-			ozlanaOrderHeaders.add("电话号码");
-			ozlanaOrderHeaders.add("产品编号");
-			ozlanaOrderHeaders.add("尺码");
-			ozlanaOrderHeaders.add("颜色");
-			ozlanaOrderHeaders.add("数量");
-			ozlanaOrderHeaders.add("快递名称");
-			ozlanaOrderHeaders.add("快递单号");
+			ozlanaOrderHeaders.add("订单号");  // 0
+			ozlanaOrderHeaders.add("");
+			ozlanaOrderHeaders.add("下单时间");  // 2
+			ozlanaOrderHeaders.add("");
+			ozlanaOrderHeaders.add("收件人");   //4
+			ozlanaOrderHeaders.add("电话号码");  // 5
+			ozlanaOrderHeaders.add("");
+			ozlanaOrderHeaders.add("");
+			ozlanaOrderHeaders.add("产品编号");  // 12
+			ozlanaOrderHeaders.add("尺码"); //13
+			ozlanaOrderHeaders.add("颜色"); //14
+			ozlanaOrderHeaders.add("数量");  //15
+			ozlanaOrderHeaders.add("");
+			ozlanaOrderHeaders.add("");
+			ozlanaOrderHeaders.add("订单状态"); // 18
+			ozlanaOrderHeaders.add("");
+			ozlanaOrderHeaders.add("快递名称"); // 20
+			ozlanaOrderHeaders.add("快递单号"); // 21
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -309,16 +318,71 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			e.printStackTrace();
 		}
 		
+		dkOrderHeaders = new ArrayList<String>();
+		try {
+			dkOrderHeaders.add("订单编号"); // 0
+			dkOrderHeaders.add("");
+			dkOrderHeaders.add("");
+			dkOrderHeaders.add("");
+			dkOrderHeaders.add("");
+			dkOrderHeaders.add("收货人"); //5
+			dkOrderHeaders.add("联系电话");
+			dkOrderHeaders.add("物流方式");
+			dkOrderHeaders.add("物流单号");
+			dkOrderHeaders.add("");
+			dkOrderHeaders.add("");
+			dkOrderHeaders.add("品名"); //11
+			dkOrderHeaders.add("");
+			dkOrderHeaders.add("规格"); //13
+			dkOrderHeaders.add("");
+			dkOrderHeaders.add("数量");  //15
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		mmcOrderHeaders = new ArrayList<String>();
 		try {
-			mmcOrderHeaders.add("订单编号");
-			mmcOrderHeaders.add("交易时间");
-			mmcOrderHeaders.add("收货人");
+			mmcOrderHeaders.add("订单编号"); // 0
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("收货人"); //5
+			mmcOrderHeaders.add("联系电话");
 			mmcOrderHeaders.add("物流方式");
 			mmcOrderHeaders.add("物流单号");
-			mmcOrderHeaders.add("品名");
-			mmcOrderHeaders.add("规格");
-			mmcOrderHeaders.add("数量");
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("品名"); //12
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("规格"); //14
+			mmcOrderHeaders.add("");
+			mmcOrderHeaders.add("数量");  //16
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		cchOrderHeaders = new ArrayList<String>();
+		// someothers and cch is sharing the same format
+		try {
+			cchOrderHeaders.add("订单编号"); // 0
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("收货人"); //5
+			cchOrderHeaders.add("联系电话");
+			cchOrderHeaders.add("物流方式");
+			cchOrderHeaders.add("物流单号");
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("品名"); //11
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("规格"); //14
+			cchOrderHeaders.add("");
+			cchOrderHeaders.add("数量");  //16
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -62,11 +62,32 @@ public class UploadController {
 		return excelOrderService.uploadOrderExcel(file, "ozlana");
 	}
 	
-	@PostMapping(value = "/order/excel/difou")
-	public UploadZhonghanCourierExcelRes uploadDifouFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	@PostMapping(value = "/order/excel/macymccoy")
+	public UploadZhonghanCourierExcelRes uploadMmcFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
 	{
-		logger.debug("entered uploadDifouFormatOrderExcel");
+		logger.debug("entered uploadMmcFormatOrderExcel");
 		return excelOrderService.uploadOrderExcel(file, "mmc");
+	}
+
+	@PostMapping(value = "/order/excel/someothers")
+	public UploadZhonghanCourierExcelRes uploadSomeOthersFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	{
+		logger.debug("entered uploadSomeOthersFormatOrderExcel");
+		return excelOrderService.uploadOrderExcel(file, "cch");
+	}
+	
+	@PostMapping(value = "/order/excel/cch")
+	public UploadZhonghanCourierExcelRes uploadCchFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	{
+		logger.debug("entered uploadCchFormatOrderExcel");
+		return excelOrderService.uploadOrderExcel(file, "cch");
+	}
+	
+	@PostMapping(value = "/order/excel/dk")
+	public UploadZhonghanCourierExcelRes uploadDkFormatOrderExcel(@RequestParam("excelFile") MultipartFile file)
+	{
+		logger.debug("entered uploadDkFormatOrderExcel");
+		return excelOrderService.uploadOrderExcel(file, "dk");
 	}
 
 	@PostMapping(value = "/order/excel/vitamin")
