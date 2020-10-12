@@ -190,6 +190,7 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 		ozwearOrderHeaders = new ArrayList<String>();
 		try{
             ozwearOrderHeaders.add("订单号");
+            ozwearOrderHeaders.add("原始订单号");
 			ozwearOrderHeaders.add("物流公司");
 			ozwearOrderHeaders.add("物流单号");
 			ozwearOrderHeaders.add("收件人姓名");

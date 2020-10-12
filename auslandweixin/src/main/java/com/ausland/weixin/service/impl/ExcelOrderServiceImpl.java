@@ -2234,28 +2234,28 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 					record.setId(getSubStringByLength(cell,19));
 	        	}
 	        }
-	        else if(i == 1) {
+	        else if(i == 2) {
 				// 物流公司
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setLogisticCompany(getSubStringByLength(cell,64)); 
 	        	} 
 	        }
-			else if(i == 2) {
+			else if(i == 3) {
 				// 物流单号
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 3) {
+	        else if(i == 4) {
 	        	// 收件人姓名
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setReceiverName(getSubStringByLength(cell,64));
 	        	} 
 	        }
-	        else if(i == 4)
+	        else if(i == 5)
 	        {
 	        	//收件人手机
 	        	if(!StringUtils.isEmpty(cell)) 
@@ -2263,28 +2263,28 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        		record.setReceiverPhone(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 6) {
+	        else if(i == 7) {
 				//goodsno
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setProductItems(getSubStringByLength(cell,16)); 
 	        	} 
 	        }
-			else if(i == 7) {
+			else if(i == 8) {
 				//colordesc
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,16));
 	        	} 
 	        }
-			else if(i == 8) {
+			else if(i == 9) {
 				//sizedesc
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
 	        		record.setProductItems(record.getProductItems() + "-" + getSubStringByLength(cell,16));
 	        	} 
 	        }
-            else if(i == 9) {
+            else if(i == 10) {
 				//quantity
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
