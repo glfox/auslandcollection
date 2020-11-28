@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -169,6 +170,10 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		
 		QueryZhongHuanLastThreeMonthByPhoneNoRes res = new QueryZhongHuanLastThreeMonthByPhoneNoRes();
 		try {
+			String[] strs = userNameOrPhoneNo.split("+");
+			if strs.length > 1{
+				 searchDate
+			}
 			List<OrderListFromExcel> ret = null;
 			if(validationUtil.isValidChinaMobileNo(userNameOrPhoneNo)) {
 				//query by phone no
@@ -1644,6 +1649,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	private Date stringToDate(String str, String format) {
 	    Date date = null;
 	    SimpleDateFormat formatter = new SimpleDateFormat(format);
+	    formatter.setTimeZone(TimeZone.getTimeZone("CTT"));
 	    try {
 	       date = formatter.parse(str);
 	    } catch (ParseException e) {
@@ -1723,7 +1729,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		        	// 日期
 		        	if(!StringUtils.isEmpty(cell))
 		        	{
-		        		record.setCreatedDateTime(stringToDate(cell, "yyyyMMdd"));
+		        		record.setCreatedDateTime(stringToDate(cell, "yyyyMMdd HH:mm:ss"));
 		        	} 
 		        }
 				else if(i == 11) {
@@ -2580,13 +2586,13 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		record.setReceiverPhone(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 7) {
+	        else if(i == 8) {
 	        	// 物流方式
 	        	if(!StringUtils.isEmpty(cell)) {
 	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 8)
+	        else if(i == 9)
 	        {
 	        	//物流单号
 	        	if(!StringUtils.isEmpty(cell))
@@ -2594,7 +2600,7 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 12)
+	        else if(i == 13)
 	        {
 	        	//品名
 	        	if(!StringUtils.isEmpty(cell))
@@ -2603,7 +2609,7 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		IdBuf.append("-").append(cell);
 	        	}
 	        }
-	        else if(i == 14)
+	        else if(i == 15)
 	        {
 	        	//规格
 	        	if(!StringUtils.isEmpty(cell))
@@ -2613,7 +2619,7 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		IdBuf.append("-").append(cell);
 	        	}
 	        } 
-	        else if(i == 16)
+	        else if(i == 17)
 	        {
 	        	//数量
 	        	if(!StringUtils.isEmpty(cell))
@@ -2690,13 +2696,13 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		record.setReceiverPhone(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 7) {
+	        else if(i == 8) {
 	        	// 物流方式
 	        	if(!StringUtils.isEmpty(cell)) {
 	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 8)
+	        else if(i == 9)
 	        {
 	        	//物流单号
 	        	if(!StringUtils.isEmpty(cell))
@@ -2704,7 +2710,7 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 11)
+	        else if(i == 12)
 	        {
 	        	//品名
 	        	if(!StringUtils.isEmpty(cell))
@@ -2713,7 +2719,7 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		IdBuf.append("-").append(cell);
 	        	}
 	        }
-	        else if(i == 13)
+	        else if(i == 14)
 	        {
 	        	//规格
 	        	if(!StringUtils.isEmpty(cell))
@@ -2723,7 +2729,7 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		IdBuf.append("-").append(cell);
 	        	}
 	        } 
-	        else if(i == 15)
+	        else if(i == 16)
 	        {
 	        	//数量
 	        	if(!StringUtils.isEmpty(cell))
@@ -2800,13 +2806,13 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		record.setReceiverPhone(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 7) {
+	        else if(i == 8) {
 	        	// 物流方式
 	        	if(!StringUtils.isEmpty(cell)) {
 	        		record.setLogisticCompany(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 8)
+	        else if(i == 9)
 	        {
 	        	//物流单号
 	        	if(!StringUtils.isEmpty(cell))
@@ -2814,7 +2820,7 @@ private OrderListFromExcel provisionOneRowForMmc(String fileName, Row currentRow
 	        		record.setLogisticNo(getSubStringByLength(cell,64));
 	        	}
 	        }
-	        else if(i == 11)
+	        else if(i == 12)
 	        {
 	        	//品名
 	        	if(!StringUtils.isEmpty(cell))

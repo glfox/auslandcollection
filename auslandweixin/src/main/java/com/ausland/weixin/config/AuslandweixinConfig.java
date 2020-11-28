@@ -328,15 +328,16 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			dkOrderHeaders.add("");
 			dkOrderHeaders.add("收货人"); //5
 			dkOrderHeaders.add("联系电话");
+			dkOrderHeaders.add("");
 			dkOrderHeaders.add("物流方式");
 			dkOrderHeaders.add("物流单号");
 			dkOrderHeaders.add("");
 			dkOrderHeaders.add("");
-			dkOrderHeaders.add("品名"); //11
+			dkOrderHeaders.add("品名"); //12
 			dkOrderHeaders.add("");
-			dkOrderHeaders.add("规格"); //13
+			dkOrderHeaders.add("规格"); //14
 			dkOrderHeaders.add("");
-			dkOrderHeaders.add("数量");  //15
+			dkOrderHeaders.add("数量");  //16
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -350,16 +351,17 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			mmcOrderHeaders.add("");
 			mmcOrderHeaders.add("收货人"); //5
 			mmcOrderHeaders.add("联系电话");
+			mmcOrderHeaders.add("");
 			mmcOrderHeaders.add("物流方式");
 			mmcOrderHeaders.add("物流单号");
 			mmcOrderHeaders.add("");
 			mmcOrderHeaders.add("");
 			mmcOrderHeaders.add("");
-			mmcOrderHeaders.add("品名"); //12
+			mmcOrderHeaders.add("品名"); //13
 			mmcOrderHeaders.add("");
-			mmcOrderHeaders.add("规格"); //14
+			mmcOrderHeaders.add("规格"); //15
 			mmcOrderHeaders.add("");
-			mmcOrderHeaders.add("数量");  //16
+			mmcOrderHeaders.add("数量");  //17
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -374,11 +376,12 @@ public class AuslandweixinConfig extends WebMvcConfigurerAdapter {
 			cchOrderHeaders.add("");
 			cchOrderHeaders.add("收货人"); //5
 			cchOrderHeaders.add("联系电话");
+			cchOrderHeaders.add("");
 			cchOrderHeaders.add("物流方式");
 			cchOrderHeaders.add("物流单号");
 			cchOrderHeaders.add("");
 			cchOrderHeaders.add("");
-			cchOrderHeaders.add("品名"); //11
+			cchOrderHeaders.add("品名"); //12
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
