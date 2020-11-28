@@ -170,10 +170,6 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		
 		QueryZhongHuanLastThreeMonthByPhoneNoRes res = new QueryZhongHuanLastThreeMonthByPhoneNoRes();
 		try {
-			String[] strs = userNameOrPhoneNo.split("+");
-			if strs.length > 1{
-				 searchDate
-			}
 			List<OrderListFromExcel> ret = null;
 			if(validationUtil.isValidChinaMobileNo(userNameOrPhoneNo)) {
 				//query by phone no
@@ -1729,7 +1725,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 		        	// 日期
 		        	if(!StringUtils.isEmpty(cell))
 		        	{
-		        		record.setCreatedDateTime(stringToDate(cell, "yyyyMMdd HH:mm:ss"));
+		        		record.setCreatedDateTime(stringToDate(cell, "yyyyMMdd"));
 		        	} 
 		        }
 				else if(i == 11) {
@@ -1793,7 +1789,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(stringToDate(cell, "yyyy-MM-dd"));
+	        		record.setCreatedDateTime(stringToDate(cell, "yyyy-MM-dd HH:mm:ss"));
 	        	} 
 	        }
 	        else if(i == 4)
