@@ -1645,7 +1645,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	private Date stringToDate(String str, String format) {
 	    Date date = null;
 	    SimpleDateFormat formatter = new SimpleDateFormat(format);
-	    formatter.setTimeZone(TimeZone.getTimeZone("CTT"));
+	    //formatter.setTimeZone(TimeZone.getTimeZone("CTT"));
 	    try {
 	       date = formatter.parse(str);
 	    } catch (ParseException e) {
@@ -1789,7 +1789,7 @@ public class ExcelOrderServiceImpl implements ExcelOrderService {
 	        	// 下单日期
 	        	if(!StringUtils.isEmpty(cell))
 	        	{
-	        		record.setCreatedDateTime(stringToDate(cell, "yyyy-MM-dd HH:mm:ss"));
+	        		record.setCreatedDateTime(stringToDate(cell, "yyyy-MM-dd"));
 	        	} 
 	        }
 	        else if(i == 4)
